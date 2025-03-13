@@ -103,9 +103,7 @@ You can download the full input file from this [link](../files/inputs_3d_magneti
 ### Let's take a look at the input file
 
 ```{r engine='bash', comment=''}
-pwd
-cat episodes/files/inputs_3d_magnetic_mirror.txt
-cat https://github.com/aeriforme/warpx-tutorials/blob/main/episodes/files/inputs_3d_magnetic_mirror.txt
+cat ./files/inputs_3d_magnetic_mirror.txt
 ```
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
