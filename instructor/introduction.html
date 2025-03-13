@@ -441,21 +441,96 @@ You can download the full input file from this <a href="../files/inputs_3d_magne
   Let’s take a look at the input file
   </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="bu">pwd</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">cat</span> episodes/files/inputs_3d_magnetic_mirror.txt</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">cat</span> https://github.com/aeriforme/warpx-tutorials/blob/main/episodes/files/inputs_3d_magnetic_mirror.txt</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">cat</span> ./files/inputs_3d_magnetic_mirror.txt</span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>/home/runner/work/warpx-tutorials/warpx-tutorials/site/built
-cat: episodes/files/inputs_3d_magnetic_mirror.txt: No such file or directory
-cat: 'https://github.com/aeriforme/warpx-tutorials/blob/main/episodes/files/inputs_3d_magnetic_mirror.txt': No such file or directory</code></pre>
+<pre class="output" tabindex="0"><code>##########################
+# USER-DEFINED CONSTANTS #
+##########################
+my_constants.Lx = 2 # [m]
+my_constants.Ly = 2 # [m]
+my_constants.Lz = 5 # [m]
+my_constants.dt = 4.4e-7 # [s]
+my_constants.Np = 1000
+
+############
+# NUMERICS #
+############
+geometry.dims = 3
+geometry.prob_hi =  0.5*Lx  0.5*Ly Lz
+geometry.prob_lo = -0.5*Lx -0.5*Ly 0
+amr.n_cell = 40 40 40
+max_step = 500
+warpx.const_dt = dt
+
+##############
+# ALGORITHMS #
+##############
+algo.particle_shape = 1
+amr.max_level = 0
+warpx.do_electrostatic = labframe
+warpx.grid_type = collocated
+warpx.serialize_initial_conditions = 0
+warpx.use_filter = 0
+
+##############
+# BOUNDARIES #
+##############
+boundary.field_hi = pec pec pec
+boundary.field_lo = pec pec pec
+boundary.particle_hi = absorbing absorbing absorbing
+boundary.particle_lo = absorbing absorbing absorbing
+
+#############
+# PARTICLES #
+#############
+particles.species_names = protons
+protons.charge = q_e
+protons.mass = m_p
+protons.do_not_deposit = 1 # test particles
+protons.initialize_self_fields = 0
+protons.injection_style = gaussian_beam
+protons.x_rms = 0.1*Lx
+protons.y_rms = 0.1*Ly
+protons.z_rms = 0.1*Lz
+protons.x_m = 0.
+protons.y_m = 0.
+protons.z_m = 0.5*Lz
+protons.npart = Np
+protons.q_tot = q_e*Np
+protons.momentum_distribution_type = uniform
+protons.ux_min = -9.5e-05
+protons.uy_min = -9.5e-05
+protons.uz_min = -0.000134
+protons.ux_max = 9.5e-05
+protons.uy_max = 9.5e-05
+protons.uz_max = 0.000134
+
+##########
+# FIELDS #
+##########
+# field here is applied on directly the particles!
+particles.B_ext_particle_init_style = read_from_file
+particles.read_fields_from_path = example-femm-3d.h5
+
+###############
+# DIAGNOSTICS #
+###############
+diagnostics.diags_names = diag1
+diag1.diag_type = Full
+diag1.fields_to_plot = Bx By Bz
+diag1.format = openpmd
+diag1.intervals = 1
+diag1.proton.variables = ux uy uz w x y z
+diag1.species = protons
+diag1.write_species = 1</code></pre>
 </div>
 </div>
 </div>
