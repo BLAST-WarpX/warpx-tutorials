@@ -1,117 +1,199 @@
 ---
-title: "Using RMarkdown"
-teaching: 10
-exercises: 2
+title: 'Using WarpX, a general purpose particle-in-cell code'  
+teaching: 30
+exercises: 30
 ---
 
 :::::::::::::::::::::::::::::::::::::: questions 
 
-- How do you write a lesson using R Markdown and `{sandpaper}`?
+- 🤌 What is WarpX? 
+- 🧮 How can I install and run WarpX?
+- 🕵️ How can I analyze the simulation results?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: objectives
 
-- Explain how to use markdown with the new lesson template
-- Demonstrate how to include pieces of code, figures, and nested challenge blocks
+- 💻 Install WarpX on your local machine with [Conda](https://docs.conda.io/en/latest/)
+- 🏃 Run a fusion-relevant example on your local machine: protons in a magnetic mirror!
+- 👀 Visualize the results with `python` and `Paraview`
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Introduction
+## WarpX: an open-source high-performance particle-in-cell code 
 
-This is a lesson created via The Carpentries Workbench. It is written in
-[Pandoc-flavored Markdown](https://pandoc.org/MANUAL.txt) for static files and
-[R Markdown][r-markdown] for dynamic files that can render code into output. 
-Please refer to the [Introduction to The Carpentries 
-Workbench](https://carpentries.github.io/sandpaper-docs/) for full documentation.
+[WarpX](https://github.com/BLAST-WarpX/warpx) is a general purpose Particle-In-Cell (PIC) code.  
+If you are not familiar with the PIC method, here is a picture that condenses the core idea:  
 
-What you need to know is that there are three sections required for a valid
-Carpentries lesson template:
+If you want to know more, here are a few references:
 
- 1. `questions` are displayed at the beginning of the episode to prime the
-    learner for the content.
- 2. `objectives` are the learning objectives for an episode displayed with
-    the questions.
- 3. `keypoints` are displayed at the end of the episode to reinforce the
-    objectives.
+*  The two bibles on PIC 📚
+     *  [C. K. Birdsall and A. B. Langdon. Plasma Physics Via Computer Simulation.](https://doi.org/10.1201/9781315275048)  
+     *  [R. W. Hockney and J. W. Eastwood. Computer simulation using particles.](https://doi.org/10.1201/9780367806934)  
+*  An old review written by one of the pioneers: [John M. Dawson, Particle simulation of plasmas, Rev. Mod. Phys. 55, 403](https://doi.org/10.1103/RevModPhys.55.403)  
 
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
-Inline instructor notes can help inform instructors of timing challenges
-associated with the lessons. They appear in the "Instructor View"
+In this tutorial we will go through the basics of WarpX: installation, running a simple example and visualizing the results. 
+Along the way, we will point to the documentation for references.
 
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-::::::::::::::::::::::::::::::::::::: challenge 
+::: callout
+Everything you need to know to use WarpX is in the [documentation](https://warpx.readthedocs.io/en/latest/index.html), check it out!
+:::
 
-## Challenge 1: Can you do it?
+Some cool features of WarpX:  
 
-What is the output of this command?
-
-```r
-paste("This", "new", "lesson", "looks", "good")
-```
-
-:::::::::::::::::::::::: solution 
-
-## Output
+*  Open-source - we wouldn't be here otherwise!
+*  Runs on GPUs: NVIDIA, AMD, and Intel! 
+*  Runs on multiple GPUs or CPUs, from laptops to supercomputers!
+*  It has many options: 
+    *  electrostatic, electromagnetic, magnetostatic
+    *  mesh refinement
+    *  embedded boundaries
  
-```output
-[1] "This new lesson looks good"
+
+## Installing WarpX using Conda-Forge
+
+First, you need a Conda installation and we will assume that you indeed have one.
+If not, follow the instruction at this [link](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation).  
+You can install Conda on most operative systems: Windows, macOS, and Linux.  
+Once you have Conda on your system, WarpX is available as a package via [Conda-Forge](https://conda-forge.org/download/).  
+It's a one-liner, no-brainer, small-potatoes 😌!
+
+::: callout
+```bash
+conda install -c conda-forge warpx 
+```
+:::
+
+Ok, maybe two lines if you want to keep your system clean by creating a new environment. 
+
+```bash
+conda create -n warpx -c conda-forge warpx 
+conda activate warpx 
 ```
 
-:::::::::::::::::::::::::::::::::
+Now you should have 4 different WarpX binaries in your `PATH` called `warpx.1d`, `warpx.2d`, `warpx.3d`, `warpx.rz`.  
+Each binary for a different dimensionality.  
+
+To check this, run:
+```bash
+which warpx.1d warpx.2d warpx.3d
+```
+If you get 3 different paths that look something like:
+```bash
+/home/<username>/anaconda3/envs/warpx/bin/warpx.xd
+```
+then you got this 🙌! You can also import `pywarpx` in `python`
 
 
-## Challenge 2: how do you nest solutions within challenge blocks?
 
-:::::::::::::::::::::::: solution 
+## A simple example of a magnetic mirror
 
-You can add a line with at least three colons and a `solution` tag.
+In this example we will simulate a bunch of protons inside a magnetic mirror machine. 
+The protons are initialized with random positions and velocities. 
+The magnetic field is loaded from a `.h5` file.
+You can download the full input file from this [link](../files/inputs_3d_magnetic_mirror.txt)
 
-:::::::::::::::::::::::::::::::::
-::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::::::::::: spoiler
 
-## Figures
+### Let's take a look at the input file
 
-You can also include figures generated from R Markdown:
+```
+##########################
+# USER-DEFINED CONSTANTS #
+##########################
+my_constants.Lx = 2 # [m]
+my_constants.Ly = 2 # [m] 
+my_constants.Lz = 5 # [m]
+my_constants.dt = 4.4e-7 # [s]
+my_constants.Np = 1000 
 
-```{r pyramid, fig.alt = "pie chart illusion of a pyramid", fig.cap = "Sun arise each and every morning"}
-pie(
-  c(Sky = 78, "Sunny side of pyramid" = 17, "Shady side of pyramid" = 5), 
-  init.angle = 315, 
-  col = c("deepskyblue", "yellow", "yellow3"), 
-  border = FALSE
-)
+############
+# NUMERICS #
+############
+geometry.dims = 3
+geometry.prob_hi =  0.5*Lx  0.5*Ly Lz
+geometry.prob_lo = -0.5*Lx -0.5*Ly 0
+amr.n_cell = 40 40 40
+max_step = 500
+warpx.const_dt = dt
+
+##############
+# ALGORITHMS #
+##############
+algo.particle_shape = 1
+amr.max_level = 0
+warpx.do_electrostatic = labframe
+warpx.grid_type = collocated
+warpx.serialize_initial_conditions = 0
+warpx.use_filter = 0
+
+##############
+# BOUNDARIES #
+##############
+boundary.field_hi = pec pec pec
+boundary.field_lo = pec pec pec
+boundary.particle_hi = absorbing absorbing absorbing
+boundary.particle_lo = absorbing absorbing absorbing
+
+#############
+# PARTICLES #
+#############
+particles.species_names = protons
+protons.charge = q_e
+protons.mass = m_p
+protons.do_not_deposit = 1 # test particles
+protons.initialize_self_fields = 0
+protons.injection_style = gaussian_beam
+protons.x_rms = 0.1*Lx
+protons.y_rms = 0.1*Ly
+protons.z_rms = 0.1*Lz
+protons.x_m = 0. 
+protons.y_m = 0.
+protons.z_m = 0.5*Lz
+protons.npart = Np 
+protons.q_tot = q_e*Np
+protons.momentum_distribution_type = uniform
+protons.ux_min = -9.5e-05
+protons.uy_min = -9.5e-05
+protons.uz_min = -0.000134
+protons.ux_max = 9.5e-05
+protons.uy_max = 9.5e-05
+protons.uz_max = 0.000134
+
+##########
+# FIELDS #
+##########
+# field here is applied on directly the particles! 
+particles.B_ext_particle_init_style = read_from_file
+particles.read_fields_from_path = example-femm-3d.h5
+
+###############
+# DIAGNOSTICS #
+###############
+diagnostics.diags_names = diag1
+diag1.diag_type = Full
+diag1.fields_to_plot = Bx By Bz
+diag1.format = openpmd
+diag1.intervals = 1
+diag1.proton.variables = ux uy uz w x y z
+diag1.species = protons
+diag1.write_species = 1
 ```
 
-Or you can use standard markdown for static figures with the following syntax:
-
-`![optional caption that appears below the figure](figure url){alt='alt text for
-accessibility purposes'}`
-
-![You belong in The Carpentries!](https://raw.githubusercontent.com/carpentries/logo/master/Badge_Carpentries.svg){alt='Blue Carpentries hex person logo with no text.'}
-
-::::::::::::::::::::::::::::::::::::: callout
-
-Callout sections can highlight information.
-
-They are sometimes used to emphasise particularly important points
-but are also used in some lessons to present "asides": 
-content that is not central to the narrative of the lesson,
-e.g. by providing the answer to a commonly-asked question.
-
-::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
-## Math
 
-One of our episodes contains $\LaTeX$ equations when describing how to create
-dynamic reports with {knitr}, so we now use mathjax to describe this:
 
-`$\alpha = \dfrac{1}{(1 - \beta)^2}$` becomes: $\alpha = \dfrac{1}{(1 - \beta)^2}$
+## Visualizing with Paraview 
 
-Cool, right?
+
+![Protons trajectories in a magnetic mirror](../fig/zoom3.png){alt="simulation of proton trajectories inside a magnetic mirror"}
+
+
+## Visualizing with python
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
@@ -121,5 +203,3 @@ Cool, right?
 - Run `sandpaper::build_lesson()` to preview your lesson locally
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
-
-[r-markdown]: https://rmarkdown.rstudio.com/
