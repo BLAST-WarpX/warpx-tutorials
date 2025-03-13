@@ -45,20 +45,16 @@ Everything you need to know to use WarpX is in the [documentation](https://warpx
 
 Some cool features of WarpX:  
 
-*  Open-source - we wouldn't be here otherwise!
-*  Runs on GPUs: NVIDIA, AMD, and Intel! 
-*  Runs on multiple GPUs or CPUs, from laptops to supercomputers!
-*  It has many options: 
-    *  electrostatic, electromagnetic, magnetostatic
-    *  mesh refinement
-    *  embedded boundaries
+- [x] Open-source - we wouldn't be here otherwise  
+- [x] Runs on GPUs: NVIDIA, AMD, and Intel  
+- [x] Runs on multiple GPUs or CPUs, on systems ranging from laptops to supercomputers
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Installing WarpX using Conda-Forge
 
 First, you need a Conda installation and we will assume that you indeed have one.
-If not, follow the instruction at this [link](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation).  
+If not, follow the [instruction at this link](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation).  
 You can install Conda on most operative systems: Windows, macOS, and Linux.  
 Once you have Conda on your system, WarpX is available as a package via [Conda-Forge](https://conda-forge.org/download/).  
 It's a one-liner, no-brainer, small-potatoes 😌!
@@ -96,7 +92,7 @@ then you got this 🙌! You can also import `pywarpx` in `python`
 In this example we will simulate a bunch of protons inside a magnetic mirror machine. 
 The protons are initialized with random positions and velocities. 
 The magnetic field is loaded from a `.h5` file.
-You can download the full input file from this [link](../files/inputs_3d_magnetic_mirror.txt)
+You can download the [input file](./files/inputs_3d_magnetic_mirror.txt). 
 
 :::::::::::::::::::::::::::::::::::::::::: spoiler
 
@@ -191,10 +187,28 @@ diag1.write_species = 1
 ```
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
+Set up the directory, download the file, activate the environment.
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+## Let's run it
+
+Q: How?
+
+:::::::::::::::: solution
+
+```bash
+warpx.3d inputs_3d_magnetic_mirror.txt
+```
+
+:::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::::::::::::::::
 
 
 
 ## Visualizing with Paraview 
+
+Add stuff...
 
 
 ![Protons trajectories in a magnetic mirror](https://gist.github.com/user-attachments/assets/24b11226-4242-4958-bc12-c09159363065){alt="simulation of proton trajectories inside a magnetic mirror"}
@@ -202,11 +216,17 @@ diag1.write_species = 1
 
 ## Visualizing with python
 
+Add stuff...
+
+
+
+
+
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
-- Use `.md` files for episodes when you want static content
-- Use `.Rmd` files for episodes when you need to generate output
-- Run `sandpaper::check_lesson()` to identify any issues with your lesson
-- Run `sandpaper::build_lesson()` to preview your lesson locally
+- WarpX is a open-source high-performance particle-in-cell code
+- WarpX is easy to install using `Conda`: `conda -c conda-forge warpx`
+- The documentation is the first place to look for answers, otherwise check out our Issues and Discussions 
+- Visualizing 3D results with Paraview and `openpmd` data using `.pmd` files. 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

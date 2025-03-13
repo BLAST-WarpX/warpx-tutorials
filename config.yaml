@@ -15,32 +15,32 @@
 carpentry: 'incubator'
 
 # Alt-text description of the lesson.
-carpentry_description: 'Lesson Description'
+carpentry_description: 'a collection of warpx tutorials'
 
 # Overall title for pages.
-title: 'Lesson Title' # FIXME
+title: 'WarpX tutorials' # FIXME
 
 # Date the lesson was created (YYYY-MM-DD, this is empty by default)
 created: ~ # FIXME: ( ~ means empty, replace with date formatted as above)
 
 # Comma-separated list of keywords for the lesson
-keywords: 'software, data, lesson, The Carpentries' # FIXME
+keywords: 'particle-in-cell, simulations, physics, plasmas, beams, fusion' # FIXME
 
 # Life cycle stage of the lesson
 # possible values: pre-alpha, alpha, beta, stable
-life_cycle: 'pre-alpha' # FIXME
+life_cycle: 'alpha' # FIXME
 
 # License of the lesson
 license: 'CC-BY 4.0'
 
 # Link to the source repository for this lesson
-source: 'https://github.com/carpentries/workbench-template-rmd' # FIXME
+source: 'https://aeriforme.github.io/warpx-tutorials/' # FIXME
 
 # Default branch of your lesson
 branch: 'main'
 
 # Who to contact if there are any issues
-contact: 'team@carpentries.org' # FIXME
+contact: 'ariannaformenti@lbl.gov' # FIXME
 
 # Navigation ------------------------------------------------
 #
