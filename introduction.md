@@ -41,6 +41,8 @@ Along the way, we will point to the documentation for references.
 Everything you need to know to use WarpX is in the [documentation](https://warpx.readthedocs.io/en/latest/index.html), check it out!
 :::
 
+::::::::::::::::::::::::::::::::::::::::::::::: checklist
+
 Some cool features of WarpX:  
 
 *  Open-source - we wouldn't be here otherwise!
@@ -50,7 +52,8 @@ Some cool features of WarpX:
     *  electrostatic, electromagnetic, magnetostatic
     *  mesh refinement
     *  embedded boundaries
- 
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Installing WarpX using Conda-Forge
 
@@ -78,7 +81,7 @@ Each binary for a different dimensionality.
 
 To check this, run:
 ```bash
-which warpx.1d warpx.2d warpx.3d
+which warpx.1d warpx.2d warpx.3d warpx.rz
 ```
 If you get 3 different paths that look something like:
 ```bash
@@ -101,11 +104,15 @@ You can download the full input file from this [link](../files/inputs_3d_magneti
 
 
 ``` bash
-cat ../files/inputs_3d_magnetic_mirror.txt
+pwd
+cat episodes/files/inputs_3d_magnetic_mirror.txt
+cat https://github.com/aeriforme/warpx-tutorials/blob/main/episodes/files/inputs_3d_magnetic_mirror.txt
 ```
 
 ``` output
-cat: ../files/inputs_3d_magnetic_mirror.txt: No such file or directory
+/home/runner/work/warpx-tutorials/warpx-tutorials/site/built
+cat: episodes/files/inputs_3d_magnetic_mirror.txt: No such file or directory
+cat: 'https://github.com/aeriforme/warpx-tutorials/blob/main/episodes/files/inputs_3d_magnetic_mirror.txt': No such file or directory
 ```
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
