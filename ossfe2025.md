@@ -226,6 +226,7 @@ Let me know if the code fails in any way!
 ## Visualizing with python
 
 Now that we have the results, we can analyze them using `python`.  
+We will use the [openPMD-viewer](https://openpmd-viewer.readthedocs.io/en/latest/) library to grab the data that the simulation produced in `openPMD` format. 
 
 :::::::::::::::::::::::::::::::::::::::::: spoiler
 
