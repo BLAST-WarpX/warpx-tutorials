@@ -151,12 +151,12 @@ Now that we have the results, we can analyze them using `python`.
 
 ### Let's take a look at a simple Jupyter notebook
 
-```{r, echo=FALSE, result='asis', message=TRUE}
-html_text <- system("jupyter nbconvert --to html analysis_3d_magnetic_mirror.ipynb --stdout", intern = TRUE)
-cat(html_text, sep = "\n")
+```{r, results='asis', echo=FALSE}
+cat('<iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" 
+           width="100%" height="800" style="border:none;">
+     </iframe>')
 ```
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-cat(readLines(rmarkdown::convert_ipynb('./files/analysis_3d_magnetic_mirror.ipynb')), sep = '\n')
 
 
 ## Visualizing with Paraview 
