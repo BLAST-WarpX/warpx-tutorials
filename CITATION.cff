@@ -5,7 +5,7 @@
 # ensuring that the author list and other fields remain accurate.
 
 cff-version: 1.2.0
-title: FIXME
+title: WarpX tutorials
 message: >-
   Please cite this lesson using the information in this file
   when you refer to it in publications, and/or if you
@@ -13,10 +13,20 @@ message: >-
   training material.
 type: dataset
 authors:
-  - given-names: FIXME
-    family-names: FIXME
+  - given-names: Jean-Luc 
+    family-names: Vay
+    orcid: https://orcid.org/0000-0002-0040-799X
+  - given-names: Remi
+    family-names: Lehe
+    orcid: https://orcid.org/0000-0002-3656-9659
+  - given-names: Axel 
+    family-names: Huebl
+    orcid: https://orcid.org/0000-0003-1943-7141
+  - given-names: Arianna
+    family-names: Formenti
+    orcid: https://orcid.org/0000-0002-7887-9313
 abstract: >-
-  FIXME Replace this with a short abstract describing the
-  lesson, e.g. its target audience and main intended
-  learning objectives.
+  This is a collection of WarpX tutorials. 
+  The tutorials are designed to help users get started with WarpX and to provide examples of how to use the code for different applications.
+  The tutorials cover the fundamental concepts of WarpX, such as how to set up and run a simulation, and how to analyze the results.
 license: CC-BY-4.0
