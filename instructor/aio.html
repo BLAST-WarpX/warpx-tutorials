@@ -34,13 +34,13 @@
   <div class="container-fluid top-nav-container">
     <div class="col-md-8">
       <div class="large-logo">
-        <img id="incubator-logo" alt="a collection of warpx tutorials" src="../assets/images/incubator-logo.svg"><span class="badge text-bg-warning">
-          <abbr title="This lesson is in the alpha phase, which means that it has been taught once and lesson authors are iterating on feedback.">
-            <a href="https://cdh.carpentries.org/the-lesson-life-cycle.html#field-testing-alpha-stage" class="external-link alert-link">
-              <i aria-hidden="true" class="icon" data-feather="alert-triangle" style="border-radius: 5px"></i>
-              Alpha
+        <img id="incubator-logo" alt="a collection of warpx tutorials" src="../assets/images/incubator-logo.svg"><span class="badge text-bg-danger">
+          <abbr title="This lesson is in the pre-alpha phase, which means that it is in early development, but has not yet been taught.">
+            <a href="https://cdh.carpentries.org/the-lesson-life-cycle.html#early-development-pre-alpha-through-alpha" class="external-link alert-link">
+              <i aria-hidden="true" class="icon" data-feather="alert-octagon" style="border-radius: 5px"></i>
+              Pre-Alpha
             </a>
-            <span class="visually-hidden">This lesson is in the alpha phase, which means that it has been taught once and lesson authors are iterating on feedback.</span>
+            <span class="visually-hidden">This lesson is in the pre-alpha phase, which means that it is in early development, but has not yet been taught.</span>
           </abbr>
         </span>
 
@@ -244,7 +244,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="introduction.html">1. Using WarpX, a general purpose particle-in-cell code</a>
+        <a href="ossfe2025.html">1. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -308,11 +308,11 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         
         
-<section id="aio-introduction"><p>Content from <a href="introduction.html">Using WarpX, a general purpose particle-in-cell code</a></p>
+<section id="aio-ossfe2025"><p>Content from <a href="ossfe2025.html">OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a></p>
 <hr>
-<p>Last updated on 2025-03-13 |
+<p>Last updated on 2025-03-14 |
 
-        <a href="https://aeriforme.github.io/warpx-tutorials/edit/main/episodes/introduction.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+        <a href="https://aeriforme.github.io/warpx-tutorials/edit/main/episodes/ossfe2025.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 60 minutes</p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
@@ -350,11 +350,13 @@ magnetic mirror!</li>
 </div>
 </div>
 </div>
-<section><h2 class="section-heading" id="warpx-an-open-source-high-performance-particle-in-cell-code">WarpX: an open-source high-performance particle-in-cell code<a class="anchor" aria-label="anchor" href="#warpx-an-open-source-high-performance-particle-in-cell-code"></a>
+<section><h2 class="section-heading" id="warpx-a-particle-in-cell-code">WarpX, a particle-in-cell code<a class="anchor" aria-label="anchor" href="#warpx-a-particle-in-cell-code"></a>
 </h2>
 <hr class="half-width">
+<p>Welcome to the WarpX tutorial at <a href="https://ossfe.github.io/" class="external-link">OSSFE 2025</a>!</p>
 <p><a href="https://github.com/BLAST-WarpX/warpx" class="external-link">WarpX</a> is a general
-purpose Particle-In-Cell (PIC) code.<br>
+purpose <strong>open-source</strong> <strong>high-performance</strong>
+Particle-In-Cell (PIC) code.<br>
 If you are not familiar with the PIC method, here is a picture that
 condenses the core idea:</p>
 <p>If you want to know more, here are a few references:</p>
@@ -372,12 +374,15 @@ W. Eastwood. Computer simulation using particles.</a><br>
 </ul>
 </li>
 <li>An old review written by one of the pioneers: <a href="https://doi.org/10.1103/RevModPhys.55.403" class="external-link">John M. Dawson,
-Particle simulation of plasmas, Rev. Mod. Phys. 55, 403</a>
+Particle simulation of plasmas, Rev. Mod. Phys. 55, 403</a><br>
 </li>
+<li>Browse our docs for <a href="https://warpx.readthedocs.io/en/latest/theory/pic.html" class="external-link">many more
+references about advanced algorithms and methods</a>.</li>
 </ul>
 <p>In this tutorial we will go through the basics of WarpX:
 installation, running a simple example and visualizing the results.
-Along the way, we will point to the documentation for references.</p>
+Along the way, we will point to some specific locations in the
+documentation, for your reference.</p>
 <div id="callout1" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -405,6 +410,17 @@ be here otherwise<br></label></li>
 AMD, and Intel<br></label></li>
 <li><label><input type="checkbox" checked>Runs on multiple GPUs or
 CPUs, on systems ranging from laptops to supercomputers</label></li>
+<li><label><input type="checkbox" checked>Advanced algorithms and
+methods: mesh-refinement, embedded boundaries,
+electrostatic/electromagnetic/pseudospectral solvers, etc.</label></li>
+<li><label><input type="checkbox" checked>Standards: <a href="https://www.openpmd.org/#/start" class="external-link">openPMD</a> for output data, <a href="https://github.com/picmi-standard/picmi" class="external-link">PICMI</a> for
+inputs</label></li>
+<li><label><input type="checkbox" checked>Active development and
+mainteinance: check our <a href="https://github.com/BLAST-WarpX/warpx" class="external-link">GitHub repo</a></label></li>
+<li><label><input type="checkbox" checked>International,
+cross-disciplinary community: plasma physics, fusion devices,
+laser-plasma interactions, beam physics, plasma-based acceleration,
+astrophysics</label></li>
 </ul>
 </div>
 </div>
@@ -413,7 +429,9 @@ CPUs, on systems ranging from laptops to supercomputers</label></li>
 </h2>
 <hr class="half-width">
 <p>First, you need a Conda installation and we will assume that you
-indeed have one. If not, follow the <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation" class="external-link">instruction
+indeed have one.<br>
+We will also assume you have some familiarity with the terminal. If not,
+follow the <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation" class="external-link">instruction
 at this link</a>.<br>
 You can install Conda on most operative systems: Windows, macOS, and
 Linux.<br>
@@ -467,7 +485,7 @@ Each binary for a different dimensionality.</p>
 <p>In this example we will simulate a bunch of protons inside a magnetic
 mirror machine. The protons are initialized with random positions and
 velocities. The magnetic field is loaded from a <code>.h5</code> file.
-You can download the <a href=".././files/inputs_3d_magnetic_mirror.txt">input file</a>.</p>
+Make sure to download the <a href=".././files/inputs_3d_magnetic_mirror.txt">input file</a>.</p>
 <div id="accordionSpoiler1" class="accordion spoiler-accordion accordion-flush">
 <div class="accordion-item">
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
@@ -475,11 +493,6 @@ You can download the <a href=".././files/inputs_3d_magnetic_mirror.txt">input fi
 </button>
 <div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
-<div class="codewrapper sourceCode" id="cb5">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">cat</span> ./files/inputs_3d_magnetic_mirror.txt</span></code></pre>
-</div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -568,16 +581,20 @@ diag1.write_species = 1</code></pre>
 </div>
 </div>
 </div>
-<p>Set up the directory, download the file, activate the
-environment.</p>
-<div id="lets-run-it" class="callout challenge">
+<p>Now that we have an idea of what the input files looks like, let’s
+set up our environment. Activate the <code>warpx</code> environment if
+you need to. Create a new directory with your own copy of the input
+file. Also, don’t forget to <a href="../files/example-femm-3d.h5">download
+the field file</a> and place it in the directory where you will run the
+input.</p>
+<div id="lets-run-the-code" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
 </div>
-<div id="lets-run-it" class="callout-inner">
-<h3 class="callout-title">Let’s run it</h3>
+<div id="lets-run-the-code" class="callout-inner">
+<h3 class="callout-title">Let’s run the code</h3>
 <div class="callout-content">
-<p>Q: How?</p>
+<p>How would you do it? 🤷</p>
 </div>
 </div>
 </div>
@@ -588,24 +605,62 @@ environment.</p>
 </button>
 <div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
-<div class="codewrapper sourceCode" id="cb7">
+<div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">warpx.3d</span> inputs_3d_magnetic_mirror.txt</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">warpx.3d</span> inputs_3d_magnetic_mirror.txt</span></code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
+<p>You should see a standard output flashing out a lot of info.<br>
+At the end, you should find in your folder:</p>
+<ul>
+<li>a subfolder called <code>diags</code>: here is where the code stored
+the diagnostics<br>
+</li>
+<li>a file called <code>warpx_used_inputs</code>: this is a summary of
+the inputs that were used to run the simulation</li>
+</ul>
+<p>If that’s the case, yey! 💯</p>
+<p>If the run went wrong, you may find a <code>Backtrace.0.0</code> file
+which can be useful for debugging purposes. Let me know if the code
+fails in any way!</p>
+</section><section><h2 class="section-heading" id="visualizing-with-python">Visualizing with python<a class="anchor" aria-label="anchor" href="#visualizing-with-python"></a>
+</h2>
+<hr class="half-width">
+<p>Now that we have the results, we can analyze them using
+<code>python</code>.</p>
+<div id="accordionSpoiler2" class="accordion spoiler-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
+  <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at a simple Jupyter notebook </h3>
+</button>
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div class="accordion-body">
+<div class="codewrapper">
+<h3 class="code-label">ERROR<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="error" tabindex="0"><code>Error in system("jupyter nbconvert --to html analysis_3d_magnetic_mirror.ipynb --stdout", : error in running command</code></pre>
+</div>
+<div class="codewrapper">
+<h3 class="code-label">ERROR<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="error" tabindex="0"><code>Error: object 'html_text' not found</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>cat(readLines(rmarkdown::convert_ipynb(‘./files/analysis_3d_magnetic_mirror.ipynb’)),
+sep = ‘’)</p>
 </section><section><h2 class="section-heading" id="visualizing-with-paraview">Visualizing with Paraview<a class="anchor" aria-label="anchor" href="#visualizing-with-paraview"></a>
 </h2>
 <hr class="half-width">
 <p>Add stuff…</p>
-<figure><img src="https://gist.github.com/user-attachments/assets/24b11226-4242-4958-bc12-c09159363065" alt="simulation of proton trajectories inside a magnetic mirror" class="figure mx-auto d-block"><div class="figcaption">Protons trajectories in a magnetic mirror</div>
-</figure></section><section><h2 class="section-heading" id="visualizing-with-python">Visualizing with python<a class="anchor" aria-label="anchor" href="#visualizing-with-python"></a>
-</h2>
-<hr class="half-width">
-<p>Add stuff…</p>
+<p>You can get images like this. <img src="https://gist.github.com/user-attachments/assets/24b11226-4242-4958-bc12-c09159363065" alt="simulation of proton trajectories inside a magnetic mirror" class="figure"> …and
+videos like this:</p>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -677,9 +732,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/instructor/aio.html",
   "identifier": "https://warpx-tutorials.github.io/NA/instructor/aio.html",
-  "dateCreated": "2025-03-13",
-  "dateModified": "2025-03-13",
-  "datePublished": "2025-03-13"
+  "dateCreated": "2025-03-14",
+  "dateModified": "2025-03-14",
+  "datePublished": "2025-03-14"
 }
 
   </script><script>
