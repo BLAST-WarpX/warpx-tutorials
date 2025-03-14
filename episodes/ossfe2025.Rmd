@@ -164,15 +164,12 @@ cat('<iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/mai
 
 Add stuff...
 
-You can get images like this.
+You can get images and videos 😎
+
 ![Protons trajectories in a magnetic mirror](https://gist.github.com/user-attachments/assets/24b11226-4242-4958-bc12-c09159363065){alt="simulation of proton trajectories inside a magnetic mirror"}
-...and videos like this: 
 
 
-
-
-
-
+<iframe src="https://drive.google.com/file/d/1HhY2bL4kzkKoNp9eCkdI6S3m49JXUKsx/preview" width="100%" height="500" allow="autoplay"></iframe>
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
