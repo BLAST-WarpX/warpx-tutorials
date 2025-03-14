@@ -231,16 +231,10 @@ Now that we have the results, we can analyze them using `python`.
 
 ### Let's take a look at a simple Jupyter notebook
 
-
-``` error
-Error in system("jupyter nbconvert --to html analysis_3d_magnetic_mirror.ipynb --stdout", : error in running command
-```
-
-``` error
-Error: object 'html_text' not found
-```
+<iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" 
+           width="100%" height="800" style="border:none;">
+     </iframe>
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-cat(readLines(rmarkdown::convert_ipynb('./files/analysis_3d_magnetic_mirror.ipynb')), sep = '\n')
 
 
 ## Visualizing with Paraview 
