@@ -1,5 +1,5 @@
 ---
-title: 'Using WarpX, a general purpose particle-in-cell code'  
+title: 'OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code'  
 teaching: 30
 exercises: 30
 ---
@@ -20,9 +20,11 @@ exercises: 30
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## WarpX: an open-source high-performance particle-in-cell code 
+## WarpX, a particle-in-cell code
 
-[WarpX](https://github.com/BLAST-WarpX/warpx) is a general purpose Particle-In-Cell (PIC) code.  
+Welcome to the WarpX tutorial at [OSSFE 2025](https://ossfe.github.io/)!
+
+[WarpX](https://github.com/BLAST-WarpX/warpx) is a general purpose **open-source** **high-performance** Particle-In-Cell (PIC) code.  
 If you are not familiar with the PIC method, here is a picture that condenses the core idea:  
 
 If you want to know more, here are a few references:
@@ -31,10 +33,11 @@ If you want to know more, here are a few references:
      *  [C. K. Birdsall and A. B. Langdon. Plasma Physics Via Computer Simulation.](https://doi.org/10.1201/9781315275048)  
      *  [R. W. Hockney and J. W. Eastwood. Computer simulation using particles.](https://doi.org/10.1201/9780367806934)  
 *  An old review written by one of the pioneers: [John M. Dawson, Particle simulation of plasmas, Rev. Mod. Phys. 55, 403](https://doi.org/10.1103/RevModPhys.55.403)  
+*  Browse our docs for [many more references about advanced algorithms and methods](https://warpx.readthedocs.io/en/latest/theory/pic.html).
 
 
 In this tutorial we will go through the basics of WarpX: installation, running a simple example and visualizing the results. 
-Along the way, we will point to the documentation for references.
+Along the way, we will point to some specific locations in the documentation, for your reference.
 
 
 ::: callout
@@ -48,12 +51,17 @@ Some cool features of WarpX:
 - [x] Open-source - we wouldn't be here otherwise  
 - [x] Runs on GPUs: NVIDIA, AMD, and Intel  
 - [x] Runs on multiple GPUs or CPUs, on systems ranging from laptops to supercomputers
-
+- [x] Advanced algorithms and methods: mesh-refinement, embedded boundaries, electrostatic/electromagnetic/pseudospectral solvers, etc.
+- [x] Standards: [openPMD](https://www.openpmd.org/#/start) for output data, [PICMI](https://github.com/picmi-standard/picmi) for inputs 
+- [x] Active development and mainteinance: check our [GitHub repo](https://github.com/BLAST-WarpX/warpx)
+- [x] International, cross-disciplinary community: plasma physics, fusion devices, laser-plasma interactions, beam physics, plasma-based acceleration, astrophysics 
+ 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Installing WarpX using Conda-Forge
 
-First, you need a Conda installation and we will assume that you indeed have one.
+First, you need a Conda installation and we will assume that you indeed have one.  
+We will also assume you have some familiarity with the terminal. 
 If not, follow the [instruction at this link](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation).  
 You can install Conda on most operative systems: Windows, macOS, and Linux.  
 Once you have Conda on your system, WarpX is available as a package via [Conda-Forge](https://conda-forge.org/download/).  
@@ -86,22 +94,17 @@ If you get 3 different paths that look something like:
 then you got this 🙌! You can also import `pywarpx` in `python`
 
 
-
 ## A simple example of a magnetic mirror
 
 In this example we will simulate a bunch of protons inside a magnetic mirror machine. 
 The protons are initialized with random positions and velocities. 
 The magnetic field is loaded from a `.h5` file.
-You can download the [input file](./files/inputs_3d_magnetic_mirror.txt). 
+Make sure to download the [input file](./files/inputs_3d_magnetic_mirror.txt). 
 
 :::::::::::::::::::::::::::::::::::::::::: spoiler
 
 ### Let's take a look at the input file
 
-
-``` bash
-cat ./files/inputs_3d_magnetic_mirror.txt
-```
 
 ``` output
 ##########################
@@ -187,36 +190,68 @@ diag1.write_species = 1
 ```
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-Set up the directory, download the file, activate the environment.
+Now that we have an idea of what the input files looks like, let's set up our environment.
+Activate the `warpx` environment if you need to.
+Create a new directory with your own copy of the input file. 
+Also, don't forget to [download the field file](../files/example-femm-3d.h5) and place it in the directory where you will run the input. 
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-## Let's run it
+## Let's run the code
 
-Q: How?
+How would you do it? 🤷
 
 :::::::::::::::: solution
 
 ```bash
 warpx.3d inputs_3d_magnetic_mirror.txt
 ```
-
 :::::::::::::::::::::::::
 :::::::::::::::::::::::::::::::::::::::::::::::
 
+
+You should see a standard output flashing out a lot of info.  
+At the end, you should find in your folder:
+
+  * a subfolder called `diags`: here is where the code stored the diagnostics  
+  * a file called `warpx_used_inputs`: this is a summary of the inputs that were used to run the simulation  
+
+If that's the case, yey! 💯  
+
+If the run went wrong, you may find a `Backtrace.0.0` file which can be useful for debugging purposes. 
+Let me know if the code fails in any way! 
+
+
+
+## Visualizing with python
+
+Now that we have the results, we can analyze them using `python`.  
+
+:::::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Let's take a look at a simple Jupyter notebook
+
+
+``` error
+Error in system("jupyter nbconvert --to html analysis_3d_magnetic_mirror.ipynb --stdout", : error in running command
+```
+
+``` error
+Error: object 'html_text' not found
+```
+::::::::::::::::::::::::::::::::::::::::::::::::::
+cat(readLines(rmarkdown::convert_ipynb('./files/analysis_3d_magnetic_mirror.ipynb')), sep = '\n')
 
 
 ## Visualizing with Paraview 
 
 Add stuff...
 
-
+You can get images like this.
 ![Protons trajectories in a magnetic mirror](https://gist.github.com/user-attachments/assets/24b11226-4242-4958-bc12-c09159363065){alt="simulation of proton trajectories inside a magnetic mirror"}
+...and videos like this: 
 
 
-## Visualizing with python
-
-Add stuff...
 
 
 

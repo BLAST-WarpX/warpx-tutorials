@@ -28,7 +28,7 @@ keywords: 'particle-in-cell, simulations, physics, plasmas, beams, fusion' # FIX
 
 # Life cycle stage of the lesson
 # possible values: pre-alpha, alpha, beta, stable
-life_cycle: 'alpha' # FIXME
+life_cycle: 'pre-alpha' # FIXME
 
 # License of the lesson
 license: 'CC-BY 4.0'
@@ -66,7 +66,7 @@ contact: 'ariannaformenti@lbl.gov' # FIXME
 
 # Order of episodes in your lesson
 episodes: 
-- introduction.Rmd
+- ossfe2025.Rmd
 
 # Information for Learners
 learners: 
