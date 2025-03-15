@@ -8,3 +8,4 @@ any links that you are not going to use.
 [warpx-readthedocs]: https://warpx.readthedocs.io/en/latest/
 [openpmd]: http://www.openpmd.org/
 [picmi]: https://picmi.readthedocs.io/en/latest/
+[openpmd-viewer]: https://openpmd-viewer.readthedocs.io/
