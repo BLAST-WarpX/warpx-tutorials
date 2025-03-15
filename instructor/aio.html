@@ -310,7 +310,7 @@
         
 <section id="aio-ossfe2025"><p>Content from <a href="ossfe2025.html">OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a></p>
 <hr>
-<p>Last updated on 2025-03-14 |
+<p>Last updated on 2025-03-15 |
 
         <a href="https://aeriforme.github.io/warpx-tutorials/edit/main/episodes/ossfe2025.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 60 minutes</p>
@@ -326,7 +326,7 @@
 <h3 class="card-title">Questions</h3>
 <ul>
 <li>🤌 What is WarpX?</li>
-<li>🧮 How can I install and run WarpX?</li>
+<li>🔧 How can I install and run WarpX?</li>
 <li>🕵️ How can I analyze the simulation results?</li>
 </ul>
 </div>
@@ -353,13 +353,20 @@ magnetic mirror!</li>
 <section><h2 class="section-heading" id="warpx-a-particle-in-cell-code">WarpX, a particle-in-cell code<a class="anchor" aria-label="anchor" href="#warpx-a-particle-in-cell-code"></a>
 </h2>
 <hr class="half-width">
-<p>Welcome to the WarpX tutorial at <a href="https://ossfe.github.io/" class="external-link">OSSFE 2025</a>!</p>
+<p>Welcome to the WarpX tutorial at <a href="https://ossfe.github.io/" class="external-link">OSSFE 2025</a>! 👋</p>
 <p><a href="https://github.com/BLAST-WarpX/warpx" class="external-link">WarpX</a> is a general
 purpose <strong>open-source</strong> <strong>high-performance</strong>
-Particle-In-Cell (PIC) code.<br>
+<strong>Particle-In-Cell</strong> (PIC) code.<br>
 If you are not familiar with the PIC method, here is a picture that
 condenses the core idea:</p>
-<p>If you want to know more, here are a few references:</p>
+<figure><img src="https://gist.github.com/user-attachments/assets/50726d37-2b72-4664-9435-f90d7d2f0043" alt="macroparticles in the cells of a grid" class="figure mx-auto d-block"><div class="figcaption">Some computational particles (a.k.a.
+macroparticles) traveling in space, across the cells of a grid.</div>
+</figure><p>And here is a more informative image that explains the core
+algorithmic steps.</p>
+<figure><img src="https://gist.github.com/user-attachments/assets/659c0816-3c13-4375-b17d-03b894e17b93" alt="pic loop" class="figure mx-auto d-block"><div class="figcaption">The loop at the basis of standard PIC
+codes.</div>
+</figure><p>If you want to know more about PIC, here are a few
+<strong>references</strong>:</p>
 <ul>
 <li>The two bibles on PIC 📚
 <ul>
@@ -379,10 +386,10 @@ Particle simulation of plasmas, Rev. Mod. Phys. 55, 403</a><br>
 <li>Browse our docs for <a href="https://warpx.readthedocs.io/en/latest/theory/pic.html" class="external-link">many more
 references about advanced algorithms and methods</a>.</li>
 </ul>
-<p>In this tutorial we will go through the basics of WarpX:
-installation, running a simple example and visualizing the results.
-Along the way, we will point to some specific locations in the
-documentation, for your reference.</p>
+<p>In this tutorial we will go through the <strong>basics of
+WarpX</strong>: installation, running a simple example and visualizing
+the results. Along the way, we will point to some specific locations in
+the documentation, for your reference.</p>
 <div id="callout1" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -390,7 +397,7 @@ documentation, for your reference.</p>
 <div class="callout-inner">
 <h3 class="callout-title">Callout</h3>
 <div class="callout-content">
-<p>Everything you need to know to use WarpX is in the <a href="https://warpx.readthedocs.io/en/latest/index.html" class="external-link">documentation</a>,
+<p>📣 Everything you need to know to use WarpX is in the <a href="https://warpx.readthedocs.io/en/latest/index.html" class="external-link">documentation</a>,
 check it out!</p>
 </div>
 </div>
@@ -403,41 +410,35 @@ check it out!</p>
 <h3 class="callout-title">Checklist</h3>
 <div class="callout-content">
 <p>Some cool features of WarpX:</p>
-<ul class="task-list">
-<li><label><input type="checkbox" checked>Open-source - we wouldn’t
-be here otherwise<br></label></li>
-<li><label><input type="checkbox" checked>Runs on GPUs: NVIDIA,
-AMD, and Intel<br></label></li>
-<li><label><input type="checkbox" checked>Runs on multiple GPUs or
-CPUs, on systems ranging from laptops to supercomputers</label></li>
-<li><label><input type="checkbox" checked>Advanced algorithms and
-methods: mesh-refinement, embedded boundaries,
-electrostatic/electromagnetic/pseudospectral solvers, etc.</label></li>
-<li><label><input type="checkbox" checked>Standards: <a href="https://www.openpmd.org/#/start" class="external-link">openPMD</a> for output data, <a href="https://github.com/picmi-standard/picmi" class="external-link">PICMI</a> for
-inputs</label></li>
-<li><label><input type="checkbox" checked>Active development and
-mainteinance: check our <a href="https://github.com/BLAST-WarpX/warpx" class="external-link">GitHub repo</a></label></li>
-<li><label><input type="checkbox" checked>International,
-cross-disciplinary community: plasma physics, fusion devices,
-laser-plasma interactions, beam physics, plasma-based acceleration,
-astrophysics</label></li>
-</ul>
+<p>📖 Open-source - we wouldn’t be here otherwise!</p>
+<p>✈️ Runs on GPUs: NVIDIA, AMD, and Intel</p>
+<p>🚀 Runs on multiple GPUs or CPUs, on systems ranging from laptops to
+supercomputers</p>
+<p>🤓 Advanced algorithms and methods: mesh-refinement, embedded
+boundaries, electrostatic/electromagnetic/pseudospectral solvers,
+etc.</p>
+<p>💾 Standards: <a href="https://www.openpmd.org/#/start" class="external-link">openPMD</a>
+for input/output data, <a href="https://github.com/picmi-standard/picmi" class="external-link">PICMI</a> for inputs</p>
+<p>🤸 Active development and mainteinance: check our <a href="https://github.com/BLAST-WarpX/warpx" class="external-link">GitHub repo</a></p>
+<p>🗺️ International, cross-disciplinary community: plasma physics,
+fusion devices, laser-plasma interactions, beam physics, plasma-based
+acceleration, astrophysics</p>
 </div>
 </div>
 </div>
 </section><section><h2 class="section-heading" id="installing-warpx-using-conda-forge">Installing WarpX using Conda-Forge<a class="anchor" aria-label="anchor" href="#installing-warpx-using-conda-forge"></a>
 </h2>
 <hr class="half-width">
-<p>First, you need a Conda installation and we will assume that you
-indeed have one.<br>
-We will also assume you have some familiarity with the terminal. If not,
-follow the <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation" class="external-link">instruction
+<p>First, you need a <strong>Conda</strong> installation and we will
+assume that you indeed have one.<br>
+If not, follow the <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation" class="external-link">instruction
 at this link</a>.<br>
-You can install Conda on most operative systems: Windows, macOS, and
-Linux.<br>
-Once you have Conda on your system, WarpX is available as a package via
-<a href="https://conda-forge.org/download/" class="external-link">Conda-Forge</a>.<br>
-It’s a one-liner, no-brainer, small-potatoes 😌!</p>
+You can install Conda on most operative systems: <strong>Windows, macOS,
+and Linux</strong>.<br>
+We will also assume you have some familiarity with the
+<strong>terminal</strong>. Once you have Conda on your system,
+<strong>WarpX is available as a package</strong> via <a href="https://conda-forge.org/download/" class="external-link">Conda-Forge</a>.<br>
+The installation is a <strong>one-liner</strong> 😌!</p>
 <div id="callout2" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -454,7 +455,7 @@ It’s a one-liner, no-brainer, small-potatoes 😌!</p>
 </div>
 </div>
 <p>Ok, maybe two lines if you want to keep your system clean by creating
-a new environment.</p>
+a new <strong>environment</strong>.</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -482,16 +483,19 @@ Each binary for a different dimensionality.</p>
 </section><section><h2 class="section-heading" id="a-simple-example-of-a-magnetic-mirror">A simple example of a magnetic mirror<a class="anchor" aria-label="anchor" href="#a-simple-example-of-a-magnetic-mirror"></a>
 </h2>
 <hr class="half-width">
-<p>In this example we will simulate a bunch of protons inside a magnetic
-mirror machine. The protons are initialized with random positions and
-velocities. The magnetic field is loaded from a <code>.h5</code> file.
-Make sure to download the <a href=".././files/inputs_3d_magnetic_mirror.txt">input file</a>.</p>
+<p>In this example we will simulate a bunch of <strong>protons inside a
+magnetic mirror machine</strong>. The protons are initialized with
+random positions and velocities. The magnetic field is loaded from a
+<code>.h5</code> file. Make sure to download the <a href=".././files/inputs_3d_magnetic_mirror.txt">input file</a>.</p>
+<p>Whenever you need to prepare an input file, <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html" class="external-link">this
+is where you want to go</a>. By the way, analytics tell us that this is
+the most popular page of the documentation 👠!</p>
 <div id="accordionSpoiler1" class="accordion spoiler-accordion accordion-flush">
 <div class="accordion-item">
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the input file </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -603,7 +607,7 @@ input.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -627,35 +631,64 @@ the inputs that were used to run the simulation</li>
 <p>If the run went wrong, you may find a <code>Backtrace.0.0</code> file
 which can be useful for debugging purposes. Let me know if the code
 fails in any way!</p>
-</section><section><h2 class="section-heading" id="visualizing-with-python">Visualizing with python<a class="anchor" aria-label="anchor" href="#visualizing-with-python"></a>
+<p>Here we have loaded the field of hte magnetic bottle from a file. You
+can also you can <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html#applied-to-particles" class="external-link">define
+an external field analytically</a>.</p>
+</section><section><h2 class="section-heading" id="visualizing">Visualizing<a class="anchor" aria-label="anchor" href="#visualizing"></a>
 </h2>
 <hr class="half-width">
+<div class="section level3">
+<h3 id="with-python">With python 🐍<a class="anchor" aria-label="anchor" href="#with-python"></a>
+</h3>
 <p>Now that we have the results, we can analyze them using
 <code>python</code>.<br>
 We will use the <a href="https://openpmd-viewer.readthedocs.io/en/latest/" class="external-link">openPMD-viewer</a>
 library to grab the data that the simulation produced in
-<code>openPMD</code> format.</p>
+<code>openPMD</code> format. Here you can find <a href="https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html" class="external-link">a
+few great tutorials on how to use the viewer</a>. If you feel nerdy
+and/or you need to deal with the data in parallel workflows, you can use
+the <a href="https://openpmd-api.readthedocs.io/en/latest/" class="external-link">openPMD-api</a>.</p>
 <div id="accordionSpoiler2" class="accordion spoiler-accordion accordion-flush">
 <div class="accordion-item">
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
-  <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at a simple Jupyter notebook </h3>
+  <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Show details </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
+<p>Let’s take a look at a simple Jupyter notebook where we retrieve the
+magnetic field and the particle attributes at the end of the simulation.
+With a little bit more work, we also plot the trajectories of the
+particles.</p>
 <iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" width="100%" height="800" style="border:none;">
 </iframe>
 </div>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="visualizing-with-paraview">Visualizing with Paraview<a class="anchor" aria-label="anchor" href="#visualizing-with-paraview"></a>
-</h2>
-<hr class="half-width">
-<p>Add stuff…</p>
-<p>You can get images and videos 😎</p>
-<figure><img src="https://gist.github.com/user-attachments/assets/24b11226-4242-4958-bc12-c09159363065" alt="simulation of proton trajectories inside a magnetic mirror" class="figure mx-auto d-block"><div class="figcaption">Protons trajectories in a magnetic mirror</div>
+<p>You can <a href="../files/analysis_3d_magnetic_mirror.ipynb">download
+the notebook</a> and try it yourself. Remember to either run the
+notebook from the simulation directory or change the corresponding path
+in the notebook.</p>
+</div>
+<div class="section level3">
+<h3 id="with-paraview">With Paraview<a class="anchor" aria-label="anchor" href="#with-paraview"></a>
+</h3>
+<p>Now it’s time to produce some pretty cool images and videos! 😎 If
+you don’t have it, you can <a href="https://www.paraview.org/download/" class="external-link">download Paraview here</a>. In
+the <code>diags/diag1</code> directory you should find a file named
+<code>paraview.pmd</code>: Paraview can read <code>.pmd</code> files.
+Just open Paraview and from there open the <code>.pmd</code> file. You
+should see <code>Meshes</code> and <code>Particles</code> in your
+pipeline browser (usually on the left). We can zhuzh up the pipeline so
+that we can visualize the trajectories of the protons in time</p>
+<p>This is the pipeline that I have used to produce the visualizations
+below.</p>
+<figure><img src="../fig/paraview_pipeline.png" alt="paraview pipeline" class="figure mx-auto d-block"></figure><figure><img src="https://gist.github.com/user-attachments/assets/24b11226-4242-4958-bc12-c09159363065" alt="simulation of proton trajectories inside a magnetic mirror" class="figure mx-auto d-block"><div class="figcaption">Protons trajectories in a magnetic mirror</div>
 </figure><iframe src="https://drive.google.com/file/d/1HhY2bL4kzkKoNp9eCkdI6S3m49JXUKsx/preview" width="100%" height="500" allow="autoplay">
 </iframe>
+<p>If you make any other 3D visualization with this data, let me know!
+We can add it here 😉!</p>
+<p>And that’s all for now! 👋</p>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -663,16 +696,17 @@ library to grab the data that the simulation produced in
 <div class="callout-inner">
 <h3 class="callout-title">Key Points</h3>
 <div class="callout-content">
-<ul>
-<li>WarpX is a open-source high-performance particle-in-cell code</li>
-<li>WarpX is easy to install using <code>Conda</code>:
-<code>conda -c conda-forge warpx</code>
-</li>
-<li>The documentation is the first place to look for answers, otherwise
-check out our Issues and Discussions</li>
-<li>Visualizing 3D results with Paraview and <code>openpmd</code> data
-using <code>.pmd</code> files.</li>
-</ul>
+<p>📖 <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
+is a open-source high-performance particle-in-cell code</p>
+<p>🔧 WarpX is <strong>easy to install via Conda</strong>:
+<code>conda -c conda-forge warpx</code></p>
+<p>🔍 The <a href="https://warpx.readthedocs.io/en/latest/" class="external-link"><strong>documentation</strong></a>
+is the first place to look for answers, otherwise check out our <a href="https://github.com/BLAST-WarpX/warpx/issues" class="external-link"><strong>issues</strong></a>
+and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-link"><strong>discussions</strong></a>.</p>
+<p>👀 To visualize the simulation results in <a href="http://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
+can use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link"><strong>openPMD-viewer</strong></a>
+library for <code>python</code> or you can open <code>.pmd</code> files
+directly in <a href="(https://www.paraview.org/download/)" class="external-link"><strong>Paraview</strong></a>.</p>
 </div>
 </div>
 </div>
@@ -680,6 +714,7 @@ using <code>.pmd</code> files.</li>
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
  -->
+</div>
 </section></section>
 </div>
     </main>
@@ -727,9 +762,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/instructor/aio.html",
   "identifier": "https://warpx-tutorials.github.io/NA/instructor/aio.html",
-  "dateCreated": "2025-03-14",
-  "dateModified": "2025-03-14",
-  "datePublished": "2025-03-14"
+  "dateCreated": "2025-03-15",
+  "dateModified": "2025-03-15",
+  "datePublished": "2025-03-15"
 }
 
   </script><script>
