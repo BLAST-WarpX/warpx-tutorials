@@ -60,7 +60,7 @@ Some cool features of WarpX:
 
  🚀 Runs on multiple GPUs or CPUs, on systems ranging from laptops to supercomputers  
 
- 🤓 Advanced algorithms and methods: mesh-refinement, embedded boundaries, electrostatic/electromagnetic/pseudospectral solvers, etc.  
+ 🤓 **Many many advanced algorithms and methods**: mesh-refinement, embedded boundaries, electrostatic/electromagnetic/pseudospectral solvers, etc.  
  
  💾 Standards: [openPMD](https://www.openpmd.org/#/start) for input/output data, [PICMI](https://github.com/picmi-standard/picmi) for inputs  
 
@@ -128,7 +128,7 @@ cat ./files/inputs_3d_magnetic_mirror.txt
 Now that we have an idea of what the input files looks like, let's set up our environment.
 Activate the `warpx` environment if you need to.
 Create a new directory with your own copy of the input file. 
-Also, don't forget to [download the field file](../files/example-femm-3d.h5) and place it in the directory where you will run the input. 
+Also, don't forget to [download the field file](./files/example-femm-3d.h5) and place it in the directory where you will run the input. 
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
@@ -209,12 +209,12 @@ And that's all for now! 👋
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
- 📖 [**WarpX**](https://ecp-warpx.github.io/) is a open-source high-performance particle-in-cell code  
+ 🚀 [**WarpX**](https://ecp-warpx.github.io/) is a open-source high-performance particle-in-cell code  
 
- 🔧 WarpX is **easy to install via Conda**: `conda -c conda-forge warpx`  
+ 🎯 WarpX is **easy to install via Conda**: `conda -c conda-forge warpx`  
 
  🔍 The [**documentation**](https://warpx.readthedocs.io/en/latest/) is the first place to look for answers, otherwise check out our [**issues**](https://github.com/BLAST-WarpX/warpx/issues) and [**discussions**](https://github.com/BLAST-WarpX/warpx/discussions).   
 
- 👀 To visualize the simulation results in [**openPMD**](http://www.openpmd.org/) format, you can use the [**openPMD-viewer**](https://openpmd-viewer.readthedocs.io/) library for `python` or you can open `.pmd` files directly in [**Paraview**]((https://www.paraview.org/download/)).
+ 📷 To visualize the simulation results in [**openPMD**](http://www.openpmd.org/) format, you can use the [**openPMD-viewer**](https://openpmd-viewer.readthedocs.io/) library for `python` or you can open `.pmd` files directly in [**Paraview**]((https://www.paraview.org/download/)).
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
