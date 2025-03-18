@@ -20,8 +20,6 @@ title: 'Reference'
 
 * [**PICMI**](https://picmi.readthedocs.io/en/latest/): `Particle-In-Cell Modeling Interface`, a standard proposing naming and structure conventions for particle-in-cell simulation input
 
-* [**Slack Workspace**](https://ecpwarpx.slack.com)
-
 
 ## Glossary
 

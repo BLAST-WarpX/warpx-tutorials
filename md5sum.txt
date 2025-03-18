@@ -7,6 +7,6 @@
 "episodes/ossfe2025.Rmd" "3a99bcb6ae3c61518fb6ba037c6aea5c" "site/built/ossfe2025.md" "2025-03-18"
 "instructors/instructor-notes.md" "cae72b6712578d74a49fea7513099f8c" "site/built/instructor-notes.md" "2025-03-13"
 "learners/setup.md" "243e0622be13af18694e39df63fcfd69" "site/built/setup.md" "2025-03-14"
-"learners/reference.md" "40157dbb5abc156cc12a43490e9792bd" "site/built/reference.md" "2025-03-18"
+"learners/reference.md" "6c26d14c8d90d0564886e084c39a1fe2" "site/built/reference.md" "2025-03-18"
 "profiles/learner-profiles.md" "60b93493cf1da06dfd63255d73854461" "site/built/learner-profiles.md" "2025-03-13"
 "renv/profiles/lesson-requirements/renv.lock" "434d234962dfd7efe31eab7079420884" "site/built/renv.lock" "2025-03-13"
