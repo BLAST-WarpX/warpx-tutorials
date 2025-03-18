@@ -18,13 +18,13 @@
   <div class="container-fluid top-nav-container">
     <div class="col-md-8">
       <div class="large-logo">
-        <img id="incubator-logo" alt="a collection of warpx tutorials" src="assets/images/incubator-logo.svg"><span class="badge text-bg-danger">
-          <abbr title="This lesson is in the pre-alpha phase, which means that it is in early development, but has not yet been taught.">
-            <a href="https://cdh.carpentries.org/the-lesson-life-cycle.html#early-development-pre-alpha-through-alpha" class="external-link alert-link">
-              <i aria-hidden="true" class="icon" data-feather="alert-octagon" style="border-radius: 5px"></i>
-              Pre-Alpha
+        <img id="incubator-logo" alt="a collection of warpx tutorials" src="assets/images/incubator-logo.svg"><span class="badge text-bg-warning">
+          <abbr title="This lesson is in the alpha phase, which means that it has been taught once and lesson authors are iterating on feedback.">
+            <a href="https://cdh.carpentries.org/the-lesson-life-cycle.html#field-testing-alpha-stage" class="external-link alert-link">
+              <i aria-hidden="true" class="icon" data-feather="alert-triangle" style="border-radius: 5px"></i>
+              Alpha
             </a>
-            <span class="visually-hidden">This lesson is in the pre-alpha phase, which means that it is in early development, but has not yet been taught.</span>
+            <span class="visually-hidden">This lesson is in the alpha phase, which means that it has been taught once and lesson authors are iterating on feedback.</span>
           </abbr>
         </span>
 
@@ -284,7 +284,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</h1>
-        <p>Last updated on 2025-03-15 |
+        <p>Last updated on 2025-03-18 |
 
         <a href="https://aeriforme.github.io/warpx-tutorials/edit/main/episodes/ossfe2025.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -380,9 +380,9 @@ check it out!</p>
 <p>✈️ Runs on GPUs: NVIDIA, AMD, and Intel</p>
 <p>🚀 Runs on multiple GPUs or CPUs, on systems ranging from laptops to
 supercomputers</p>
-<p>🤓 Advanced algorithms and methods: mesh-refinement, embedded
-boundaries, electrostatic/electromagnetic/pseudospectral solvers,
-etc.</p>
+<p>🤓 <strong>Many many advanced algorithms and methods</strong>:
+mesh-refinement, embedded boundaries,
+electrostatic/electromagnetic/pseudospectral solvers, etc.</p>
 <p>💾 Standards: <a href="https://www.openpmd.org/#/start" class="external-link">openPMD</a>
 for input/output data, <a href="https://github.com/picmi-standard/picmi" class="external-link">PICMI</a> for inputs</p>
 <p>🤸 Active development and mainteinance: check our <a href="https://github.com/BLAST-WarpX/warpx" class="external-link">GitHub repo</a></p>
@@ -457,7 +457,7 @@ the most popular page of the documentation 👠!</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the input file </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -550,9 +550,8 @@ diag1.write_species = 1</code></pre>
 <p>Now that we have an idea of what the input files looks like, let’s
 set up our environment. Activate the <code>warpx</code> environment if
 you need to. Create a new directory with your own copy of the input
-file. Also, don’t forget to <a href="files/example-femm-3d.h5">download
-the field file</a> and place it in the directory where you will run the
-input.</p>
+file. Also, don’t forget to <a href="./files/example-femm-3d.h5">download the field file</a> and place
+it in the directory where you will run the input.</p>
 <div id="lets-run-the-code" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -569,7 +568,7 @@ input.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -609,7 +608,7 @@ the <a href="https://openpmd-api.readthedocs.io/en/latest/" class="external-link
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Show details </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <p>Let’s take a look at a simple Jupyter notebook where we retrieve the
 magnetic field and the particle attributes at the end of the simulation.
@@ -651,14 +650,14 @@ We can add it here 😉!</p>
 <div class="callout-inner">
 <h3 class="callout-title">Key Points</h3>
 <div class="callout-content">
-<p>📖 <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
+<p>🚀 <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
 is a open-source high-performance particle-in-cell code</p>
-<p>🔧 WarpX is <strong>easy to install via Conda</strong>:
+<p>🎯 WarpX is <strong>easy to install via Conda</strong>:
 <code>conda -c conda-forge warpx</code></p>
 <p>🔍 The <a href="https://warpx.readthedocs.io/en/latest/" class="external-link"><strong>documentation</strong></a>
 is the first place to look for answers, otherwise check out our <a href="https://github.com/BLAST-WarpX/warpx/issues" class="external-link"><strong>issues</strong></a>
 and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-link"><strong>discussions</strong></a>.</p>
-<p>👀 To visualize the simulation results in <a href="http://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
+<p>📷 To visualize the simulation results in <a href="http://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
 can use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link"><strong>openPMD-viewer</strong></a>
 library for <code>python</code> or you can open <code>.pmd</code> files
 directly in <a href="(https://www.paraview.org/download/)" class="external-link"><strong>Paraview</strong></a>.</p>
@@ -727,8 +726,8 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/ossfe2025.html",
   "identifier": "https://warpx-tutorials.github.io/NA/ossfe2025.html",
-  "dateCreated": "2025-03-15",
-  "dateModified": "2025-03-15",
+  "dateCreated": "2025-03-18",
+  "dateModified": "2025-03-18",
   "datePublished": "2025-03-18"
 }
 
