@@ -16,7 +16,7 @@ exercises: 30
 
 - 💻 Install WarpX on your local machine with [Conda](https://docs.conda.io/en/latest/)
 - 🏃 Run a fusion-relevant example on your local machine: protons in a magnetic mirror!
-- 👀 Visualize the results with `python` and `Paraview`
+- 👀 Visualize the results with `Python` and `Paraview`
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -24,7 +24,7 @@ exercises: 30
 
 Welcome to the WarpX tutorial at [OSSFE 2025](https://ossfe.github.io/)! 👋
 
-[WarpX](https://github.com/BLAST-WarpX/warpx) is a general purpose **open-source** **high-performance** **Particle-In-Cell** (PIC) code.  
+[WarpX][warpx] is a general purpose **open-source** **high-performance** **Particle-In-Cell** (PIC) code.  
 If you are not familiar with the PIC method, here is a picture that condenses the core idea:  
 
 ![Some computational particles (a.k.a. macroparticles) traveling in space, across the cells of a grid.](https://gist.github.com/user-attachments/assets/50726d37-2b72-4664-9435-f90d7d2f0043
@@ -47,7 +47,7 @@ In this tutorial we will go through the **basics of WarpX**: installation, runni
 Along the way, we will point to some specific locations in the documentation, for your reference.
 
 ::: callout
-📣 Everything you need to know to use WarpX is in the [documentation](https://warpx.readthedocs.io/en/latest/index.html), check it out!
+📣 Everything you need to know to use WarpX is in the [documentation][warpx-readthedocs], check it out!
 :::
 
 ::::::::::::::::::::::::::::::::::::::::::::::: checklist
@@ -62,9 +62,9 @@ Some cool features of WarpX:
 
  🤓 **Many many advanced algorithms and methods**: mesh-refinement, embedded boundaries, electrostatic/electromagnetic/pseudospectral solvers, etc.  
  
- 💾 Standards: [openPMD](https://www.openpmd.org/#/start) for input/output data, [PICMI](https://github.com/picmi-standard/picmi) for inputs  
+ 💾 Standards: [openPMD][openpmd] for input/output data, [PICMI][picmi] for inputs  
 
- 🤸 Active development and mainteinance: check our [GitHub repo](https://github.com/BLAST-WarpX/warpx)  
+ 🤸 Active development and mainteinance: check our [GitHub repo][warpx-github]  
 
  🗺️ International, cross-disciplinary community: plasma physics, fusion devices, laser-plasma interactions, beam physics, plasma-based acceleration, astrophysics 
  
@@ -103,7 +103,7 @@ If you get 3 different paths that look something like:
 ```bash
 /home/<username>/anaconda3/envs/warpx/bin/warpx.xd
 ```
-then you got this 🙌! You can also import `pywarpx` in `python`
+then you got this 🙌! You can also import `pywarpx` in Python.
 
 
 ## A simple example of a magnetic mirror
@@ -240,19 +240,21 @@ Here we have loaded the field of hte magnetic bottle from a file.
 You can also you can [define an external field analytically](https://warpx.readthedocs.io/en/latest/usage/parameters.html#applied-to-particles).
 
 
-## Visualizing 
+## Data handling and visualizations 
 
-### With python 🐍
+### With Python 🐍
 
-Now that we have the results, we can analyze them using `python`.  
-We will use the [openPMD-viewer](https://openpmd-viewer.readthedocs.io/en/latest/) library to grab the data that the simulation produced in `openPMD` format. 
+Now that we have the results, we can analyze them using Python.  
+We will use the [openPMD-viewer][openpmd-viewer] library to grab the data that the simulation produced in `openPMD` format. 
 Here you can find [a few great tutorials on how to use the viewer](https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html).
-If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api](https://openpmd-api.readthedocs.io/en/latest/).
-
-:::::::::::::::::::::::::::::::::::::::::: spoiler
+If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api][opepmd-api].
 
 Let's take a look at a simple Jupyter notebook where we retrieve the magnetic field and the particle attributes at the end of the simulation.
 With a little bit more work, we also plot the trajectories of the particles.
+
+:::::::::::::::::::::::::::::::::::::::::: spoiler
+
+## Show me the Jupyter notebbok
 
 <iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" 
            width="100%" height="800" style="border:none;">
@@ -260,7 +262,7 @@ With a little bit more work, we also plot the trajectories of the particles.
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
-You can [download the notebook](../files/analysis_3d_magnetic_mirror.ipynb) and try it yourself.
+You can [download the notebook](./files/analysis_3d_magnetic_mirror.ipynb) and try it yourself.
 Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook.
 
 ### With Paraview
@@ -274,7 +276,7 @@ We can zhuzh up the pipeline so that we can visualize the trajectories of the pr
 
 This is the pipeline that I have used to produce the visualizations below.
 
-![](fig/paraview_pipeline.png){alt="paraview pipeline"}
+![](https://gist.github.com/user-attachments/assets/5847ad00-2f68-4c13-ab42-51485a6551cd){alt="paraview pipeline"}
 
 ![Protons trajectories in a magnetic mirror](https://gist.github.com/user-attachments/assets/24b11226-4242-4958-bc12-c09159363065){alt="simulation of proton trajectories inside a magnetic mirror"}
 
@@ -287,12 +289,15 @@ And that's all for now! 👋
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
- 🚀 [**WarpX**](https://ecp-warpx.github.io/) is a open-source high-performance particle-in-cell code  
+ 🚀 [**WarpX**][warpx] is a open-source high-performance particle-in-cell code  
 
  🎯 WarpX is **easy to install via Conda**: `conda -c conda-forge warpx`  
 
- 🔍 The [**documentation**](https://warpx.readthedocs.io/en/latest/) is the first place to look for answers, otherwise check out our [**issues**](https://github.com/BLAST-WarpX/warpx/issues) and [**discussions**](https://github.com/BLAST-WarpX/warpx/discussions).   
+ 🔍 The [**documentation**][warpx-readthedocs] is the first place to look for answers, 
+ otherwise check out our [**issues**][warpx-issues] and [**discussions**][warpx-discussions] and ask there.  
 
- 📷 To visualize the simulation results in [**openPMD**](http://www.openpmd.org/) format, you can use the [**openPMD-viewer**](https://openpmd-viewer.readthedocs.io/) library for `python` or you can open `.pmd` files directly in [**Paraview**]((https://www.paraview.org/download/)).
+ 📷 To analyze and visualize the simulation results in [**openPMD**][openpmd] format, 
+ you can use the [**openPMD-viewer**][openpmd-viewer] library for Python 
+ or you can open `.pmd` files directly in [**Paraview**]((https://www.paraview.org/download/)).
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

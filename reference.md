@@ -1,5 +1,5 @@
 ---
-title: 'Reference'
+title: 'References'
 ---
 
 ## Useful links
@@ -18,7 +18,7 @@ title: 'Reference'
 
 * [**openPMD viewer**](https://openpmd-viewer.readthedocs.io/): an open-source Python package to access openPMD data
 
-* [**PICMI**](https://picmi.readthedocs.io/en/latest/): `Particle-In-Cell Modeling Interface`, a standard proposing naming and structure conventions for particle-in-cell simulation input
+* [**PICMI**][https://picmi.readthedocs.io/en/latest/]: `Particle-In-Cell Modeling Interface`, a standard proposing naming and structure conventions for particle-in-cell simulation input
 
 
 ## Glossary
