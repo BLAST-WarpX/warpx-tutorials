@@ -249,12 +249,13 @@ We will use the [openPMD-viewer][openpmd-viewer] library to grab the data that t
 Here you can find [a few great tutorials on how to use the viewer](https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html).
 If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api][opepmd-api].
 
-Let's take a look at a simple Jupyter notebook where we retrieve the magnetic field and the particle attributes at the end of the simulation.
+As an example for the magnetic bottle simulation, we have developed simple Jupyter notebook where we retrieve the magnetic field 
+and the particle attributes at the end of the simulation.
 With a little bit more work, we also plot the trajectories of the particles.
 
 :::::::::::::::::::::::::::::::::::::::::: spoiler
 
-## Show me the Jupyter notebbok
+## Let's take a look at the Jupyter notebook
 
 <iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" 
            width="100%" height="800" style="border:none;">
