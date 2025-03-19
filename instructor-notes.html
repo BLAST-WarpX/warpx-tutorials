@@ -122,7 +122,7 @@
             More <i data-feather="chevron-down"></i>
           </button>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-<li><a class="dropdown-item" href="reference.html">Reference</a></li>
+<li><a class="dropdown-item" href="reference.html">References</a></li>
           </ul>
 </li>
       </ul>
@@ -276,7 +276,7 @@
                       <li>
                         <a href="profiles.html">Learner Profiles</a>
                       </li>
-                      <li><a href="reference.html">Reference</a></li>
+                      <li><a href="reference.html">References</a></li>
                     </ul>
 </div>
                 </div>
@@ -306,13 +306,37 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Instructor Notes</h1>
         
-
-<p>This is a placeholder file. Please add content here.</p>
+<div class="section level3">
+<h3 id="discussions-at-ossfe-2025">Discussions at OSSFE 2025<a class="anchor" aria-label="anchor" href="#discussions-at-ossfe-2025"></a>
+</h3>
+<ul>
+<li><p>Who develops WarpX? [A lot of people][<a href="https://github.com/BLAST-WarpX/warpx/graphs/contributors" class="external-link uri">https://github.com/BLAST-WarpX/warpx/graphs/contributors</a>]
+from all around the world that work in different fields! WarpX is an
+open-source project that belongs to the <a href="https://hpsf.io/" class="external-link">High
+Performance Software Foundation</a>, which itself is part of the
+nonprofit [Linux Foundation][<a href="https://www.linuxfoundation.org/" class="external-link uri">https://www.linuxfoundation.org/</a>].</p></li>
+<li><p>What is the difference between a Monte Carlo code and a
+Particle-In-Cell code? Typically in MC the particles are independent one
+another, while in PIC they interact through the self-consistent field
+(collective effect). That being said, MC can and are included in the
+core PIC loop to simulate, e.g., binary collisions, ionzation, nuclear
+reactions, QED processes.</p></li>
+<li><p>Why Conda environments over Python environments? Conda is a
+system package manager, while <code>pip</code> is a Python package
+manager. With <code>conda</code> you can install much more than just
+Python libraries.</p></li>
+<li><p>Can WarpX deal with different species? [But of course][<a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html#particle-initialization" class="external-link uri">https://warpx.readthedocs.io/en/latest/usage/parameters.html#particle-initialization</a>]!
+One can initialize as many species as desired, with user-define mass and
+charge. Beware that not all the additional physics modules (ionization,
+QED, …) may work for arbitrary species!</p></li>
+<li><p>Does WarpX support mixed kinetic and fluid descriptions? Yes,
+check out the [hybrid solver][<a href="https://warpx.readthedocs.io/en/latest/theory/kinetic_fluid_hybrid_model.html" class="external-link uri">https://warpx.readthedocs.io/en/latest/theory/kinetic_fluid_hybrid_model.html</a>]!
 <!--
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
- -->
-
+ --></p></li>
+</ul>
+</div>
 
       <section id="aggregate-instructor-notes"></section>
 </div>
@@ -361,9 +385,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/instructor-notes.html",
   "identifier": "https://warpx-tutorials.github.io/NA/instructor-notes.html",
-  "dateCreated": "2025-03-18",
-  "dateModified": "2025-03-18",
-  "datePublished": "2025-03-18"
+  "dateCreated": "2025-03-19",
+  "dateModified": "2025-03-19",
+  "datePublished": "2025-03-19"
 }
 
   </script><script>
