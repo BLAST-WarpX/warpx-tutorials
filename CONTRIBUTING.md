@@ -35,7 +35,7 @@ If you plan to prepare a class, lesson, workshop, exercize, or tutorial about Wa
 this is there right place to include it!
 
 There are many ways to contribute, from writing new material and improving the
-existing one, to submitting [bug reports][issues] about things that do not work, are not clear, or are missing.
+existing one, to submitting [bug reports][repo-issues] about things that do not work, are not clear, or are missing.
 
 We will expand the WarpX tutorials as we develop new material for future events. 
 
@@ -43,7 +43,7 @@ We will expand the WarpX tutorials as we develop new material for future events.
 
 If you choose to contribute via GitHub, you may want to look at [How to
 Contribute to an Open Source Project on GitHub][how-contribute] and 
-[specifically to WarpX](warpx-how-contribute). In brief, we
+[specifically to WarpX][warpx-how-contribute]. In brief, we
 use [GitHub flow][github-flow] to manage changes:  
 
 1. Create a new branch in your desktop copy of this repository for each
@@ -63,3 +63,4 @@ use [GitHub flow][github-flow] to manage changes:
 [github-join]: https://github.com/join
 [how-contribute]: https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github
 [warpx-how-contribute]: https://github.com/BLAST-WarpX/warpx/blob/development/CONTRIBUTING.rst  
+[template-doc]: https://carpentries.github.io/workbench/
