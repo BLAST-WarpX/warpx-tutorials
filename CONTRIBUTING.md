@@ -62,5 +62,4 @@ use [GitHub flow][github-flow] to manage changes:
 [github-flow]: https://guides.github.com/introduction/flow/
 [github-join]: https://github.com/join
 [how-contribute]: https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github
-[warpx-how-contribute]: https://github.com/BLAST-WarpX/warpx/blob/development/CONTRIBUTING.rst  
-[template-doc]: https://carpentries.github.io/workbench/
+[warpx-how-contribute]: https://github.com/BLAST-WarpX/warpx/blob/development/CONTRIBUTING.rstS
