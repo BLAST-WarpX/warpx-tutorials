@@ -55,11 +55,11 @@ use [GitHub flow][github-flow] to manage changes:
    branch on GitHub: the pull request will update automatically.
 
 
-[repo]: https://github.com/aeriforme/warpx-tutorials
-[repo-issues]: https://github.com/aeriforme/warpx-tutorials/issues
+[repo]: https://github.com/BLAST-WarpX/warpx-tutorials
+[repo-issues]: https://github.com/BLAST-WarpX/warpx-tutorials/issues
 [contact]: mailto:ariannaformenti@lbl.gov
 [github]: https://github.com
 [github-flow]: https://guides.github.com/introduction/flow/
 [github-join]: https://github.com/join
 [how-contribute]: https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github
-[warpx-how-contribute]: https://github.com/BLAST-WarpX/warpx/blob/development/CONTRIBUTING.rstS
+[warpx-how-contribute]: https://github.com/BLAST-WarpX/warpx/blob/development/CONTRIBUTING.rst
