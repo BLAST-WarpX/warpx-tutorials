@@ -34,7 +34,7 @@ life_cycle: 'alpha' # FIXME
 license: 'CC-BY 4.0'
 
 # Link to the source repository for this lesson
-source: 'https://aeriforme.github.io/warpx-tutorials/' # FIXME
+source: 'https://blast-warpx.github.io/warpx-tutorials/' # FIXME
 
 # Default branch of your lesson
 branch: 'main'
