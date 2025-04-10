@@ -18,7 +18,7 @@ carpentry: 'incubator'
 carpentry_description: 'a collection of warpx tutorials'
 
 # Overall title for pages.
-title: 'WarpX tutorials' # FIXME
+title: 'WarpX tutorials'
 
 # Date the lesson was created (YYYY-MM-DD, this is empty by default)
 created: ~ # FIXME: ( ~ means empty, replace with date formatted as above)
@@ -28,19 +28,19 @@ keywords: 'particle-in-cell, simulations, physics, plasmas, beams, fusion' # FIX
 
 # Life cycle stage of the lesson
 # possible values: pre-alpha, alpha, beta, stable
-life_cycle: 'alpha' # FIXME
+life_cycle: 'alpha' 
 
 # License of the lesson
 license: 'CC-BY 4.0'
 
 # Link to the source repository for this lesson
-source: 'https://blast-warpx.github.io/warpx-tutorials/' # FIXME
+source: 'https://blast-warpx.github.io/warpx-tutorials/'
 
 # Default branch of your lesson
 branch: 'main'
 
 # Who to contact if there are any issues
-contact: 'ariannaformenti@lbl.gov' # FIXME
+contact: 'ariannaformenti@lbl.gov' 
 
 # Navigation ------------------------------------------------
 #
