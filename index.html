@@ -197,12 +197,19 @@
                   <div class="accordion accordion-flush" id="accordionFlushcurrent">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-headingcurrent">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapsecurrent" aria-expanded="true" aria-controls="flush-collapsecurrent">
         <span class="visually-hidden">Current Chapter</span>
         <span class="current-chapter">
         Summary and Setup
         </span>
-      
+      </button>
     </div><!--/div.accordion-header-->
+
+    <div id="flush-collapsecurrent" class="accordion-collapse collapse show" aria-labelledby="flush-headingcurrent" data-bs-parent="#accordionFlushcurrent">
+      <div class="accordion-body">
+        <ul><li><a href="#basic-prerequisites">Basic prerequisites</a></li>
+        </ul></div><!--/div.accordion-body-->
+    </div><!--/div.accordion-collapse-->
 
   </div><!--/div.accordion-item-->
 </div><!--/div.accordion-flush-->
@@ -210,7 +217,34 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="ossfe2025.html">1. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
+        <a href="introduction.html">1. Introduction to WarpX</a>
+    </div><!--/div.accordion-header-->
+
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush3">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading3">
+        <a href="install.html">2. Install</a>
+    </div><!--/div.accordion-header-->
+
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush4">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading4">
+        <a href="a-beam-beam-collision.html">3. A Beam-Beam Collision</a>
+    </div><!--/div.accordion-header-->
+
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush5">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading5">
+        <a href="a-magnetic-mirror.html">4. A Magnetic Mirror</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -258,35 +292,39 @@
         <!-- START: inst/pkgdown/templates/content-syllabus.html -->
   <div class="col-xl-8 col-lg-12 primary-content">
     <nav class="lesson-content mx-md-4" aria-label="Next Chapter"><!-- content for small screens --><div class="d-block d-sm-block d-md-none">
-        <a class="chapter-link float-end" href="ossfe2025.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="introduction.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
-        <a class="chapter-link float-end" href="ossfe2025.html" rel="next">Next: OSSFE 2025 - Using... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="introduction.html" rel="next">Next: Introduction to... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <hr></nav><main id="main-content" class="main-content"><h1 class="schedule-heading">Summary and Setup</h1>
       
-
-<p>This is a collection of <a href="https://ecp-warpx.github.io/" class="external-link">WarpX</a> tutorials built with <a href="https://carpentries.github.io/sandpaper-docs" class="external-link">The Carpentries
+<section><h2 class="section-heading" id="welcome-to-the-warpx-tutorials">Welcome to the WarpX tutorials! 👋<a class="anchor" aria-label="anchor" href="#welcome-to-the-warpx-tutorials"></a></h2>
+<hr class="half-width"><p>This is a collection of tutorials, examples, and training material
+for <a href="https://ecp-warpx.github.io/" class="external-link">WarpX</a>!<br>
+We will use this space in a dynamic way, adding and updating stuff as we
+move along.</p>
+<p>This website is built using <a href="https://carpentries.github.io/sandpaper-docs" class="external-link">The Carpentries
 Workbench</a>.</p>
 <!--
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
  -->
-
-
-      <section id="setup"><p>Throughout this tutorial we will assume that you have a installation
-of Conda in your machine. If you do not, follow the <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation" class="external-link">instructions
+</section><section id="setup"><section><h2 class="section-heading" id="basic-prerequisites">Basic prerequisites<a class="anchor" aria-label="anchor" href="#basic-prerequisites"></a></h2>
+<hr class="half-width"><p>Throughout the tutorials we will assume that you have a <strong>Conda
+installation</strong> in your machine. If you do not, follow the <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation" class="external-link">instructions
 at this link</a>. You can install Conda on most operative systems:
 Windows, macOS, and Linux.</p>
-<p>We will also assume that you have access to a command line interface.
-This is straightforward in Linux and macOS, just open the
-<code>terminal</code> app. In Windows, you can install <a href="https://learn.microsoft.com/en-us/windows/wsl/install" class="external-link">WSL, the
+<p>We will also assume that you have access to a <strong>command line
+interface</strong>. This is straightforward in Linux and macOS, just
+open the <code>terminal</code> app. In Windows, you can install <a href="https://learn.microsoft.com/en-us/windows/wsl/install" class="external-link">WSL, the
 Windows Subsystem for Linux</a>. This will provide you with a Linux
-distribution and command line tools.</p>
-<p>Lastly, we will assume that you have some familiarity with the basic
-terminal functionalities, like <code>cd</code>, <code>mkdir</code>,
-<code>ls</code> and so forth. If you don’t, you can check out <a href="https://ubuntu.com/tutorials/command-line-for-beginners#1-overview" class="external-link">this
+distribution and command line tools. 😎</p>
+<p>Lastly, we will assume that you have some familiarity with the
+<strong>basic terminal functionalities</strong>, like <code>cd</code>,
+<code>mkdir</code>, <code>ls</code> and so forth. If you don’t, you can
+check out <a href="https://ubuntu.com/tutorials/command-line-for-beginners#1-overview" class="external-link">this
 tutorial by Canonical</a>.</p>
 <!--
 FIXME: place any data you want learners to use in `episodes/data` and then use
@@ -303,7 +341,7 @@ FIXME: place any data you want learners to use in `episodes/data` and then use
   Windows
   </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <p>Install <a href="https://learn.microsoft.com/en-us/windows/wsl/install" class="external-link">WSL, the
 Windows Subsystem for Linux</a>!</p>
@@ -319,7 +357,7 @@ Windows Subsystem for Linux</a>!</p>
   Linux, MacOS, Windows
   </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
 <p>Install <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation" class="external-link">Conda</a>!</p>
 </div>
@@ -330,14 +368,12 @@ Windows Subsystem for Linux</a>!</p>
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
  -->
-
-
-      </section></main><nav class="bottom-pagination mx-md-4" aria-label="Next Chapter"><!-- content for small screens --><div class="d-block d-sm-block d-md-none">
-        <a class="chapter-link float-end" href="ossfe2025.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+</section></section></main><nav class="bottom-pagination mx-md-4" aria-label="Next Chapter"><!-- content for small screens --><div class="d-block d-sm-block d-md-none">
+        <a class="chapter-link float-end" href="introduction.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
-        <a class="chapter-link float-end" href="ossfe2025.html" rel="next">Next: OSSFE 2025 - Using... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="introduction.html" rel="next">Next: Introduction to... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
     </nav></div>
 <!-- END  : inst/pkgdown/templates/content-syllabus.html -->
@@ -380,9 +416,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/index.html",
   "identifier": "https://warpx-tutorials.github.io/NA/index.html",
-  "dateCreated": "2025-03-20",
-  "dateModified": "2025-04-08",
-  "datePublished": "2025-04-08"
+  "dateCreated": "2025-04-13",
+  "dateModified": "2025-04-13",
+  "datePublished": "2025-04-13"
 }
 
   </script><script>

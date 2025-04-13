@@ -10,6 +10,12 @@
     <loc>https://warpx-tutorials.github.io/NA/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://warpx-tutorials.github.io/NA/a-beam-beam-collision.html</loc>
+  </url>
+  <url>
+    <loc>https://warpx-tutorials.github.io/NA/a-magnetic-mirror.html</loc>
+  </url>
+  <url>
     <loc>https://warpx-tutorials.github.io/NA/aio.html</loc>
   </url>
   <url>
@@ -17,6 +23,9 @@
   </url>
   <url>
     <loc>https://warpx-tutorials.github.io/NA/index.html</loc>
+  </url>
+  <url>
+    <loc>https://warpx-tutorials.github.io/NA/install.html</loc>
   </url>
   <url>
     <loc>https://warpx-tutorials.github.io/NA/instructor/404.html</loc>
@@ -28,6 +37,12 @@
     <loc>https://warpx-tutorials.github.io/NA/instructor/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://warpx-tutorials.github.io/NA/instructor/a-beam-beam-collision.html</loc>
+  </url>
+  <url>
+    <loc>https://warpx-tutorials.github.io/NA/instructor/a-magnetic-mirror.html</loc>
+  </url>
+  <url>
     <loc>https://warpx-tutorials.github.io/NA/instructor/aio.html</loc>
   </url>
   <url>
@@ -35,6 +50,9 @@
   </url>
   <url>
     <loc>https://warpx-tutorials.github.io/NA/instructor/index.html</loc>
+  </url>
+  <url>
+    <loc>https://warpx-tutorials.github.io/NA/instructor/install.html</loc>
   </url>
   <url>
     <loc>https://warpx-tutorials.github.io/NA/instructor/instructor-notes.html</loc>

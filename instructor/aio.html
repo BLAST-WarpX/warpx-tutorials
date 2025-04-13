@@ -244,7 +244,43 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="ossfe2025.html">1. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
+        <a href="introduction.html">1. Introduction to WarpX</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush3">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading3">
+        <a href="install.html">2. Install</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush4">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading4">
+        <a href="a-beam-beam-collision.html">3. A Beam-Beam Collision</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush5">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading5">
+        <a href="a-magnetic-mirror.html">4. A Magnetic Mirror</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -308,12 +344,12 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         
         
-<section id="aio-ossfe2025"><p>Content from <a href="ossfe2025.html">OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a></p>
+<section id="aio-introduction"><p>Content from <a href="introduction.html">Introduction to WarpX</a></p>
 <hr>
-<p>Last updated on 2025-03-19 |
+<p>Last updated on 2025-04-13 |
 
-        <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/ossfe2025.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
-<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 60 minutes</p>
+        <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/introduction.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 10 minutes</p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -326,8 +362,8 @@
 <h3 class="card-title">Questions</h3>
 <ul>
 <li>🤌 What is WarpX?</li>
-<li>🔧 How can I install and run WarpX?</li>
-<li>🕵️ How can I analyze the simulation results?</li>
+<li>🤔 What is a PIC code?</li>
+<li>🧐 What can I use WarpX for?</li>
 </ul>
 </div>
 </div>
@@ -337,32 +373,56 @@
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <ul>
-<li>💻 Install WarpX on your local machine with <a href="https://docs.conda.io/en/latest/" class="external-link">Conda</a>
-</li>
-<li>🏃 Run a fusion-relevant example on your local machine: protons in a
-magnetic mirror!</li>
-<li>👀 Visualize the results with <code>Python</code> and
-<code>Paraview</code>
-</li>
+<li>💡 Understand the basics of PIC codes</li>
+<li>🧑‍💻 Learn about the features of WarpX</li>
+<li>🎯 Figure out if WarpX can be useful for you!</li>
 </ul>
 </div>
 </div>
 </div>
 </div>
 </div>
-<section><h2 class="section-heading" id="warpx-a-particle-in-cell-code">WarpX, a particle-in-cell code<a class="anchor" aria-label="anchor" href="#warpx-a-particle-in-cell-code"></a>
+<section><h2 class="section-heading" id="overview-of-pic">Overview of PIC<a class="anchor" aria-label="anchor" href="#overview-of-pic"></a>
 </h2>
 <hr class="half-width">
-<p>Welcome to the WarpX tutorial at <a href="https://ossfe.github.io/" class="external-link">OSSFE 2025</a>! 👋</p>
 <p><a href="https://ecp-warpx.github.io/" class="external-link">WarpX</a> is a general purpose
 <strong>open-source</strong> <strong>high-performance</strong>
 <strong>Particle-In-Cell</strong> (PIC) code.<br>
-If you are not familiar with the PIC method, here is a picture that
-condenses the core idea:</p>
-<figure><img src="https://gist.github.com/user-attachments/assets/50726d37-2b72-4664-9435-f90d7d2f0043" alt="macroparticles in the cells of a grid" class="figure mx-auto d-block"><div class="figcaption">Some computational particles (a.k.a.
-macroparticles) traveling in space, across the cells of a grid.</div>
-</figure><p>And here is a more informative image that explains the core
-algorithmic steps.</p>
+The PIC method is a very popular approach to <strong>simulate the
+dynamics of physical systems governed by relativistic
+electrodynamics</strong>. <strong>Plasmas ⭐ and beams ☄️</strong>,
+which are often made of charged particles that may travel almost at the
+speed of light, fall into this category. Additionally, other physical
+effects can be integrated into the PIC algorithm, such as different
+<strong>quantum</strong> 🎲 processes.</p>
+<p>Here is a picture that condenses the core idea: there are
+<em>particles</em> and <em>fields</em>. The particles are approximated
+as <em>macroparticles</em> (usually each representative of many real
+particles), while the fields are approximated on a <em>grid</em> in
+space. The particles and the fields are updated, self-consistently, in a
+temporal loop.</p>
+<figure><img src="https://gist.github.com/user-attachments/assets/50726d37-2b72-4664-9435-f90d7d2f0043" alt="macroparticles in the cells of a grid" class="figure mx-auto d-block"><div class="figcaption">Some macroparticles traveling in space, across
+the cells of a grid.</div>
+</figure><p>Here is a more informative image that explains the core algorithmic
+steps. As the particles travel in space, they generate currents, which
+in turn generate an electromagnetic field. The electromagnetic field
+then push the particles via the Lorentz force. Therefore, the current
+density <span class="math inline">\(\textbf{J}\)</span> and the force
+<span class="math inline">\(\textbf{F}_L\)</span> are the quantitieis
+that connect the particles and the fields, or in PIC lingo, the
+macroparticles and the grid. Hence, the idea is the following. First,
+define a well-posed initial condition, and then iterate the following: *
+Interpolate the fields from the grid to the particles’ positions and
+compute the Lorentz force that acts on each macroparticle, * Advance the
+position and momenta of the macroparticles using Newton equations, *
+Project while cumulating the contribution to the current density of each
+macroparticles, * Solve Maxwell’s equations.</p>
+<p>In some cases, one can choose to solve Poisson’s equation instead of
+Maxwell’s. In that case, the current <span class="math inline">\(\textbf{J}\)</span> calculation is replaced with
+the charge density <span class="math inline">\(\rho\)</span>
+calculation. Once <span class="math inline">\(\rho\)</span> is known,
+the electrostic potential is computed to then find the electric
+field.</p>
 <figure><img src="https://gist.github.com/user-attachments/assets/659c0816-3c13-4375-b17d-03b894e17b93" alt="pic loop" class="figure mx-auto d-block"><div class="figcaption">The loop at the basis of standard PIC
 codes.</div>
 </figure><p>If you want to know more about PIC, here are a few
@@ -383,13 +443,103 @@ W. Eastwood. Computer simulation using particles.</a><br>
 <li>An old review written by one of the pioneers: <a href="https://doi.org/10.1103/RevModPhys.55.403" class="external-link">John M. Dawson,
 Particle simulation of plasmas, Rev. Mod. Phys. 55, 403</a><br>
 </li>
-<li>Browse our docs for <a href="https://warpx.readthedocs.io/en/latest/theory/pic.html" class="external-link">many more
-references about advanced algorithms and methods</a>.</li>
+<li>Browse our docs for <a href="https://warpx.readthedocs.io/en/latest/theory/pic.html" class="external-link">many, many
+more references about advanced algorithms and methods</a>.</li>
+</ul></section><section><h2 class="section-heading" id="features-and-applications-of-warpx">Features and applications of WarpX<a class="anchor" aria-label="anchor" href="#features-and-applications-of-warpx"></a>
+</h2>
+<hr class="half-width">
+<p>WarpX is developed and used by a wide range of researchers working in
+different fields, from beam physics to nuclear fusion and a lot more. To
+learn about what WarpX can be used for, <a href="https://warpx.readthedocs.io/en/latest/usage/examples.html" class="external-link">check
+out our examples</a> and the <a href="https://warpx.readthedocs.io/en/latest/highlights.html" class="external-link">scientific
+publications that acknowledged WarpX</a>.</p>
+<div id="checklist1" class="callout checklist">
+<div class="callout-square">
+<i class="callout-icon" data-feather="check-square"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Checklist</h3>
+<div class="callout-content">
+<p>Some cool features of WarpX:</p>
+<p>📖 Open-source!</p>
+<p>✈️ Runs on GPUs: NVIDIA, AMD, and Intel</p>
+<p>🚀 Runs on multiple GPUs or CPUs, on systems ranging from laptops to
+supercomputers</p>
+<p>🤓 <strong>Many many advanced algorithms and methods</strong>:
+mesh-refinement, embedded boundaries,
+electrostatic/electromagnetic/pseudospectral solvers, etc.</p>
+<p>💾 Standards: <a href="https://www.openpmd.org/" class="external-link">openPMD</a> for
+input/output data, <a href="https://picmi.readthedocs.io/en/latest/" class="external-link">PICMI</a> for inputs</p>
+<p>🤸 Active development and mainteinance: check out our <a href="https://github.com/BLAST-WarpX/warpx" class="external-link">GitHub repo</a></p>
+<p>🗺️ International, cross-disciplinary community: plasma physics,
+fusion devices, laser-plasma interactions, beam physics, plasma-based
+acceleration, astrophysics, others?</p>
+</div>
+</div>
+</div>
+<p>We will add here more details soon!</p>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Key Points</h3>
+<div class="callout-content">
+<p>🔮 <strong>The particle-in-cell</strong> method is used to simulate
+the self-consistent dynamics of relativistic charged particles</p>
+<p>🚀 <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
+is a open-source high-performance particle-in-cell code</p>
+<p>✨ <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
+is used in a variety of scientif domains</p>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-install"><p>Content from <a href="install.html">Install</a></p>
+<hr>
+<p>Last updated on 2025-04-13 |
+
+        <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/install.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 10 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>🔧 How can I install and run WarpX?</li>
+<li>🕵️ How can I analyze the simulation results?</li>
 </ul>
-<p>In this tutorial we will go through the <strong>basics of
-WarpX</strong>: installation, running a simple example and visualizing
-the results. Along the way, we will point to some specific locations in
-the documentation, for your reference.</p>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>💻 Install WarpX on your local machine either with <a href="https://docs.conda.io/en/latest/" class="external-link">Conda</a> or from source</li>
+<li>👀 Install the visualizations tools in <code>Python</code> and
+<code>Paraview</code>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="basic-dependencies">Basic dependencies<a class="anchor" aria-label="anchor" href="#basic-dependencies"></a>
+</h2>
+<hr class="half-width">
+<p>Just a heads-up before we dive deeper.</p>
 <div id="callout1" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -402,31 +552,7 @@ it out!</p>
 </div>
 </div>
 </div>
-<div id="checklist1" class="callout checklist">
-<div class="callout-square">
-<i class="callout-icon" data-feather="check-square"></i>
-</div>
-<div class="callout-inner">
-<h3 class="callout-title">Checklist</h3>
-<div class="callout-content">
-<p>Some cool features of WarpX:</p>
-<p>📖 Open-source - we wouldn’t be here otherwise!</p>
-<p>✈️ Runs on GPUs: NVIDIA, AMD, and Intel</p>
-<p>🚀 Runs on multiple GPUs or CPUs, on systems ranging from laptops to
-supercomputers</p>
-<p>🤓 <strong>Many many advanced algorithms and methods</strong>:
-mesh-refinement, embedded boundaries,
-electrostatic/electromagnetic/pseudospectral solvers, etc.</p>
-<p>💾 Standards: <a href="https://www.openpmd.org/" class="external-link">openPMD</a> for
-input/output data, <a href="https://picmi.readthedocs.io/en/latest/" class="external-link">PICMI</a> for inputs</p>
-<p>🤸 Active development and mainteinance: check our <a href="https://github.com/BLAST-WarpX/warpx" class="external-link">GitHub repo</a></p>
-<p>🗺️ International, cross-disciplinary community: plasma physics,
-fusion devices, laser-plasma interactions, beam physics, plasma-based
-acceleration, astrophysics</p>
-</div>
-</div>
-</div>
-</section><section><h2 class="section-heading" id="installing-warpx-using-conda-forge">Installing WarpX using Conda-Forge<a class="anchor" aria-label="anchor" href="#installing-warpx-using-conda-forge"></a>
+</section><section><h2 class="section-heading" id="via-conda-forge">Via Conda-Forge<a class="anchor" aria-label="anchor" href="#via-conda-forge"></a>
 </h2>
 <hr class="half-width">
 <p>First, you need a <strong>Conda</strong> installation and we will
@@ -480,7 +606,644 @@ Each binary for a different dimensionality.</p>
 </div>
 <p>then you got this 🙌! You can also import <code>pywarpx</code> in
 Python.</p>
-</section><section><h2 class="section-heading" id="a-simple-example-of-a-magnetic-mirror">A simple example of a magnetic mirror<a class="anchor" aria-label="anchor" href="#a-simple-example-of-a-magnetic-mirror"></a>
+</section><section><h2 class="section-heading" id="from-source">From source<a class="anchor" aria-label="anchor" href="#from-source"></a>
+</h2>
+<hr class="half-width">
+<div id="caution1" class="callout caution">
+<div class="callout-square">
+<i class="callout-icon" data-feather="alert-triangle"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Caution</h3>
+<div class="callout-content">
+<p>Coming soon. For now, <a href="https://warpx.readthedocs.io/en/latest/install/users.html#from-source-with-cmake" class="external-link">refer
+to the main documentation</a>.</p>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Key Points</h3>
+<div class="callout-content">
+<p>🎯 WarpX is <strong>easy to install via Conda</strong>:
+<code>conda -c conda-forge warpx</code></p>
+<p>🔍 The <a href="https://warpx.readthedocs.io/en/latest/" class="external-link"><strong>documentation</strong></a>
+is the first place to look for answers, otherwise check out our <a href="https://github.com/BLAST-WarpX/warpx/issues" class="external-link"><strong>issues</strong></a>
+and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-link"><strong>discussions</strong></a>
+and ask there.</p>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-a-beam-beam-collision"><p>Content from <a href="a-beam-beam-collision.html">A Beam-Beam Collision</a></p>
+<hr>
+<p>Last updated on 2025-04-13 |
+
+        <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/a-beam-beam-collision.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 30 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<p>How to use WarpX for beam-beam simulations of colliders 💥?</p>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<p>Learn how to setup, run, and visualize your own beam-beam ☄️☄️
+simulation</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<figure><img src="https://gist.github.com/user-attachments/assets/217dfcde-8a77-4f73-b4bb-26c83e921255" alt="snapshot of a beam-beam simulation" class="figure mx-auto d-block"><div class="figcaption">A snapshot of a beam-beam simulation.</div>
+</figure><section><h2 class="section-heading" id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
+</h2>
+<hr class="half-width">
+<p>In this example we will simulate a bunch of electrons colliding
+against a bunch of positrons. We have selected the parameters of the
+C<span class="math inline">\(^3\)</span> linear collider,
+arbitrarily.</p>
+<p>Some notable details:</p>
+<ul>
+<li><p>Poisson solver</p></li>
+<li><p>Resolution</p></li>
+<li><p>Timestep</p></li>
+<li><p>QED lookup tables</p></li>
+<li><p>Diagnostics</p></li>
+</ul>
+<p>Whenever you need to prepare an input file, <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html" class="external-link">this
+is where you want to go</a>.</p>
+<div id="accordionSpoiler1" class="accordion spoiler-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
+  <h3 class="accordion-header" id="headingSpoiler1">
+  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div>
+  Let’s take a look at the input file
+  </h3>
+</button>
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div class="accordion-body">
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code>#################################
+########## MY CONSTANTS #########
+#################################
+my_constants.mc2   = m_e*clight*clight
+my_constants.nano  = 1.0e-9
+my_constants.micro = 1.e-6
+my_constants.GeV   = q_e*1.e9
+my_constants.milli = 1.e-3
+
+# BEAMS
+my_constants.beam_energy = 125*GeV
+my_constants.beam_gamma  = beam_energy/mc2
+my_constants.beam_npart  = 6.24e9
+my_constants.nmacropart  = 1e5
+my_constants.beam_charge = q_e * beam_npart
+#my_constants.sigmax      = 210.0*nano
+#my_constants.sigmay      = 3.1*nano
+my_constants.sigmaz      = 100.*micro
+my_constants.beam_uth    = 0.3/100*beam_gamma
+my_constants.mux         = 0.*sigmax
+my_constants.muy         = 0.*sigmay
+my_constants.muz         = 4*sigmaz
+my_constants.emitx       = 900*nano
+my_constants.emity       = 20*nano
+my_constants.dux         = emitx / sigmax
+my_constants.duy         = emity / sigmay
+my_constants.betax = 12*milli
+my_constants.betay = 0.12*milli
+my_constants.sigmax      = sqrt( emitx * betax / beam_gamma )
+my_constants.sigmay      = sqrt( emity * betay / beam_gamma )
+#my_constants.emitx = sigmax**2 * beam_gamma / beta
+#my_constants.emity = sigmay**2 * beam_gamma / beta
+
+# BOX
+my_constants.Lx = 20*sigmax
+my_constants.Ly = 20*sigmay
+my_constants.Lz = 16*sigmaz
+my_constants.nx = 256
+my_constants.ny = 256
+my_constants.nz = 64
+my_constants.dx = Lx/nx
+my_constants.dy = Ly/ny
+my_constants.dz = Lz/nz
+
+# TIME
+my_constants.T = 0.5*Lz/clight
+my_constants.dt = T / nz
+
+
+my_constants.nt = floor(T/dt)
+my_constants.coll_time = abs(muz)/clight
+my_constants.coll_step = floor(nt*coll_time/T)
+
+# DIAGS
+my_constants.hundo = floor(nt/100.)
+my_constants.every_full = floor(nt/100.)
+warpx.used_inputs_file = warpx_used_inputs.txt
+
+#################################
+####### GENERAL PARAMETERS ######
+#################################
+stop_time = T
+amr.n_cell = nx ny nz
+amr.max_grid_size = nz
+amr.blocking_factor = 2
+amr.max_level = 0
+geometry.dims = 3
+geometry.prob_lo = -0.5*Lx -0.5*Ly -0.5*Lz
+geometry.prob_hi =  0.5*Lx  0.5*Ly  0.5*Lz
+
+#################################
+######## BOUNDARY CONDITION #####
+#################################
+boundary.field_lo = open open open
+boundary.field_hi = open open open
+boundary.particle_lo = Absorbing Absorbing Absorbing
+boundary.particle_hi = Absorbing Absorbing Absorbing
+
+#################################
+############ NUMERICS ###########
+#################################
+warpx.do_electrostatic = relativistic
+warpx.const_dt = dt
+warpx.grid_type = collocated
+algo.particle_shape = 3
+algo.particle_pusher = vay
+warpx.poisson_solver = fft
+
+#################################
+########### PARTICLES ###########
+#################################
+particles.species_names = beam1 beam2 pho1 pho2 ele_nlbw1 pos_nlbw1 ele_nlbw2 pos_nlbw2
+particles.photon_species = pho1 pho2
+
+beam1.species_type = electron
+beam1.injection_style = gaussian_beam
+beam1.x_rms = sigmax
+beam1.y_rms = sigmay
+beam1.z_rms = sigmaz
+beam1.x_m = - mux
+beam1.y_m = - muy
+beam1.z_m = - muz
+beam1.npart = nmacropart
+beam1.q_tot = -beam_charge
+beam1.z_cut = 4
+beam1.focal_distance = muz
+beam1.momentum_distribution_type = gaussian
+beam1.uz_m = beam_gamma
+beam1.uy_m = 0.0
+beam1.ux_m = 0.0
+beam1.ux_th = dux
+beam1.uy_th = duy
+beam1.uz_th = beam_uth
+beam1.initialize_self_fields = 1
+beam1.do_qed_quantum_sync = 1
+beam1.qed_quantum_sync_phot_product_species = pho1
+beam1.do_classical_radiation_reaction = 0
+
+beam2.species_type = positron
+beam2.injection_style = gaussian_beam
+beam2.x_rms = sigmax
+beam2.y_rms = sigmay
+beam2.z_rms = sigmaz
+beam2.x_m = mux
+beam2.y_m = muy
+beam2.z_m = muz
+beam2.npart = nmacropart
+beam2.q_tot = beam_charge
+beam2.z_cut = 4
+beam2.focal_distance = muz
+beam2.momentum_distribution_type = gaussian
+beam2.uz_m = -beam_gamma
+beam2.uy_m = 0.0
+beam2.ux_m = 0.0
+beam2.ux_th = dux
+beam2.uy_th = duy
+beam2.uz_th = beam_uth
+beam2.initialize_self_fields = 1
+beam2.do_qed_quantum_sync = 1
+beam2.qed_quantum_sync_phot_product_species = pho2
+beam2.do_classical_radiation_reaction = 0
+
+pho1.species_type = photon
+pho1.injection_style = none
+pho1.do_qed_breit_wheeler = 1
+pho1.qed_breit_wheeler_ele_product_species = ele_nlbw1
+pho1.qed_breit_wheeler_pos_product_species = pos_nlbw1
+
+pho2.species_type = photon
+pho2.injection_style = none
+pho2.do_qed_breit_wheeler = 1
+pho2.qed_breit_wheeler_ele_product_species = ele_nlbw2
+pho2.qed_breit_wheeler_pos_product_species = pos_nlbw2
+
+ele_nlbw1.species_type = electron
+ele_nlbw1.injection_style = none
+ele_nlbw1.do_qed_quantum_sync = 1
+ele_nlbw1.qed_quantum_sync_phot_product_species = pho1
+ele_nlbw1.do_classical_radiation_reaction = 0
+
+pos_nlbw1.species_type = positron
+pos_nlbw1.injection_style = none
+pos_nlbw1.do_qed_quantum_sync = 1
+pos_nlbw1.qed_quantum_sync_phot_product_species = pho1
+pos_nlbw1.do_classical_radiation_reaction = 0
+
+ele_nlbw2.species_type = electron
+ele_nlbw2.injection_style = none
+ele_nlbw2.do_qed_quantum_sync = 1
+ele_nlbw2.qed_quantum_sync_phot_product_species = pho2
+ele_nlbw2.do_classical_radiation_reaction = 0
+
+pos_nlbw2.species_type = positron
+pos_nlbw2.injection_style = none
+pos_nlbw2.do_qed_quantum_sync = 1
+pos_nlbw2.qed_quantum_sync_phot_product_species = pho2
+pos_nlbw2.do_classical_radiation_reaction = 0
+
+#################################
+############# QED ###############
+#################################
+qed_qs.photon_creation_energy_threshold = 0.
+
+qed_qs.lookup_table_mode = load
+qed_qs.load_table_from = /global/cfs/cdirs/m4272/aforment/qed_tables/qs_table_chi_min_1.e-7_chi_max_1.e1_points_1024
+qed_qs.chi_min = 1.e-7
+
+qed_bw.lookup_table_mode = load
+qed_bw.chi_min = 1.e-2
+qed_bw.load_table_from = /global/cfs/cdirs/m4272/aforment/qed_tables/bw_table_chi_min_1.e-2_chi_max_1.e1_points_1024
+
+warpx.do_qed_schwinger = 0.
+
+#################################
+######### DIAGNOSTICS ###########
+#################################
+# FULL
+diagnostics.diags_names = bound trajs
+
+bound.dump_last_timestep = 1
+bound.diag_type = BoundaryScraping
+bound.format = openpmd
+bound.openpmd_backend = h5
+bound.intervals = 1
+
+beam1.save_particles_at_xlo = 1
+beam1.save_particles_at_ylo = 1
+beam1.save_particles_at_zlo = 1
+beam1.save_particles_at_xhi = 1
+beam1.save_particles_at_yhi = 1
+beam1.save_particles_at_zhi = 1
+
+beam2.save_particles_at_xlo = 1
+beam2.save_particles_at_ylo = 1
+beam2.save_particles_at_zlo = 1
+beam2.save_particles_at_xhi = 1
+beam2.save_particles_at_yhi = 1
+beam2.save_particles_at_zhi = 1
+
+ele_nlbw1.save_particles_at_xlo = 1
+ele_nlbw1.save_particles_at_ylo = 1
+ele_nlbw1.save_particles_at_zlo = 1
+ele_nlbw1.save_particles_at_xhi = 1
+ele_nlbw1.save_particles_at_yhi = 1
+ele_nlbw1.save_particles_at_zhi = 1
+
+ele_nlbw2.save_particles_at_xlo = 1
+ele_nlbw2.save_particles_at_ylo = 1
+ele_nlbw2.save_particles_at_zlo = 1
+ele_nlbw2.save_particles_at_xhi = 1
+ele_nlbw2.save_particles_at_yhi = 1
+ele_nlbw2.save_particles_at_zhi = 1
+
+pos_nlbw1.save_particles_at_xlo = 1
+pos_nlbw1.save_particles_at_ylo = 1
+pos_nlbw1.save_particles_at_zlo = 1
+pos_nlbw1.save_particles_at_xhi = 1
+pos_nlbw1.save_particles_at_yhi = 1
+pos_nlbw1.save_particles_at_zhi = 1
+
+pos_nlbw2.save_particles_at_xlo = 1
+pos_nlbw2.save_particles_at_ylo = 1
+pos_nlbw2.save_particles_at_zlo = 1
+pos_nlbw2.save_particles_at_xhi = 1
+pos_nlbw2.save_particles_at_yhi = 1
+pos_nlbw2.save_particles_at_zhi = 1
+
+pho1.save_particles_at_xlo = 1
+pho1.save_particles_at_ylo = 1
+pho1.save_particles_at_zlo = 1
+pho1.save_particles_at_xhi = 1
+pho1.save_particles_at_yhi = 1
+pho1.save_particles_at_zhi = 1
+
+pho2.save_particles_at_xlo = 1
+pho2.save_particles_at_ylo = 1
+pho2.save_particles_at_zlo = 1
+pho2.save_particles_at_xhi = 1
+pho2.save_particles_at_yhi = 1
+pho2.save_particles_at_zhi = 1
+
+trajs.intervals = 1
+trajs.diag_type = Full
+trajs.species = beam1 beam2 pho1 pho2 ele_nlbw1 pos_nlbw1 ele_nlbw2 pos_nlbw2
+trajs.fields_to_plot = none
+trajs.format = openpmd
+trajs.openpmd_backend = h5
+trajs.dump_last_timestep = 1
+
+# REDUCED
+warpx.reduced_diags_names = ParticleEnergy RhoMaximum ParticleNumber CollRel_beam1_beam2 CollRel_beam1_ele2 CollRel_beam1_pos2 CollRel_ele1_beam2 CollRel_ele1_ele2 CollRel_ele1_pos2 CollRel_pos1_beam2 CollRel_pos1_ele2 CollRel_pos1_pos2 DiffLumi_beam1_beam2 DiffLumi_beam1_ele2 DiffLumi_beam1_pos2 DiffLumi_beam1_pho2 DiffLumi_ele1_beam2 DiffLumi_ele1_ele2 DiffLumi_ele1_pos2 DiffLumi_ele1_pho2 DiffLumi_pos1_beam2 DiffLumi_pos1_ele2 DiffLumi_pos1_pos2 DiffLumi_pos1_pho2 DiffLumi_pho1_beam2 DiffLumi_pho1_ele2 DiffLumi_pho1_pos2 DiffLumi_pho1_pho2
+
+
+ParticleEnergy.type = ParticleEnergy
+ParticleEnergy.intervals = 1
+
+RhoMaximum.type = RhoMaximum
+RhoMaximum.intervals = 1
+
+ParticleNumber.type = ParticleNumber
+ParticleNumber.intervals = 1
+
+CollRel_beam1_beam2.type = ColliderRelevant
+CollRel_beam1_ele2.type = ColliderRelevant
+CollRel_beam1_pos2.type = ColliderRelevant
+CollRel_ele1_beam2.type = ColliderRelevant
+CollRel_ele1_ele2.type = ColliderRelevant
+CollRel_ele1_pos2.type = ColliderRelevant
+CollRel_pos1_beam2.type = ColliderRelevant
+CollRel_pos1_ele2.type = ColliderRelevant
+CollRel_pos1_pos2.type = ColliderRelevant
+
+CollRel_beam1_beam2.intervals = 1
+CollRel_beam1_ele2.intervals  = 1
+CollRel_beam1_pos2.intervals  = 1
+CollRel_ele1_beam2.intervals  = 1
+CollRel_ele1_ele2.intervals   = 1
+CollRel_ele1_pos2.intervals   = 1
+CollRel_pos1_beam2.intervals  = 1
+CollRel_pos1_ele2.intervals   = 1
+CollRel_pos1_pos2.intervals   = 1
+
+CollRel_beam1_beam2.species = beam1 beam2
+CollRel_beam1_ele2.species = beam1 ele_nlbw2
+CollRel_beam1_pos2.species = beam1 pos_nlbw2
+CollRel_ele1_beam2.species = ele_nlbw1 beam2
+CollRel_ele1_ele2.species = ele_nlbw1 ele_nlbw2
+CollRel_ele1_pos2.species = ele_nlbw1 pos_nlbw2
+CollRel_pos1_beam2.species = pos_nlbw1 beam2
+CollRel_pos1_ele2.species = pos_nlbw1 ele_nlbw2
+CollRel_pos1_pos2.species = pos_nlbw1 pos_nlbw2
+
+
+DiffLumi_beam1_beam2.type = DifferentialLuminosity
+DiffLumi_beam1_ele2.type  = DifferentialLuminosity
+DiffLumi_beam1_pos2.type  = DifferentialLuminosity
+DiffLumi_beam1_pho2.type  = DifferentialLuminosity
+DiffLumi_ele1_beam2.type  = DifferentialLuminosity
+DiffLumi_ele1_ele2.type   = DifferentialLuminosity
+DiffLumi_ele1_pos2.type   = DifferentialLuminosity
+DiffLumi_ele1_pho2.type   = DifferentialLuminosity
+DiffLumi_pos1_beam2.type  = DifferentialLuminosity
+DiffLumi_pos1_ele2.type   = DifferentialLuminosity
+DiffLumi_pos1_pos2.type   = DifferentialLuminosity
+DiffLumi_pos1_pho2.type   = DifferentialLuminosity
+DiffLumi_pho1_beam2.type  = DifferentialLuminosity
+DiffLumi_pho1_ele2.type   = DifferentialLuminosity
+DiffLumi_pho1_pos2.type   = DifferentialLuminosity
+DiffLumi_pho1_pho2.type   = DifferentialLuminosity
+
+
+DiffLumi_beam1_beam2.bin_max = 2.1*beam_energy/q_e
+DiffLumi_beam1_ele2.bin_max  = 2.1*beam_energy/q_e
+DiffLumi_beam1_pos2.bin_max  = 2.1*beam_energy/q_e
+DiffLumi_beam1_pho2.bin_max  = 2.1*beam_energy/q_e
+DiffLumi_ele1_beam2.bin_max  = 2.1*beam_energy/q_e
+DiffLumi_ele1_ele2.bin_max   = 2.1*beam_energy/q_e
+DiffLumi_ele1_pos2.bin_max   = 2.1*beam_energy/q_e
+DiffLumi_ele1_pho2.bin_max   = 2.1*beam_energy/q_e
+DiffLumi_pos1_beam2.bin_max  = 2.1*beam_energy/q_e
+DiffLumi_pos1_ele2.bin_max   = 2.1*beam_energy/q_e
+DiffLumi_pos1_pos2.bin_max   = 2.1*beam_energy/q_e
+DiffLumi_pos1_pho2.bin_max   = 2.1*beam_energy/q_e
+DiffLumi_pho1_beam2.bin_max  = 2.1*beam_energy/q_e
+DiffLumi_pho1_ele2.bin_max   = 2.1*beam_energy/q_e
+DiffLumi_pho1_pos2.bin_max   = 2.1*beam_energy/q_e
+DiffLumi_pho1_pho2.bin_max   = 2.1*beam_energy/q_e
+
+DiffLumi_beam1_beam2.bin_min = 0.
+DiffLumi_beam1_ele2.bin_min = 0.
+DiffLumi_beam1_pos2.bin_min = 0.
+DiffLumi_beam1_pho2.bin_min = 0.
+DiffLumi_ele1_beam2.bin_min = 0.
+DiffLumi_ele1_ele2.bin_min = 0.
+DiffLumi_ele1_pos2.bin_min = 0.
+DiffLumi_ele1_pho2.bin_min = 0.
+DiffLumi_pos1_beam2.bin_min = 0.
+DiffLumi_pos1_ele2.bin_min = 0.
+DiffLumi_pos1_pos2.bin_min = 0.
+DiffLumi_pos1_pho2.bin_min = 0.
+DiffLumi_pho1_beam2.bin_min = 0.
+DiffLumi_pho1_ele2.bin_min = 0.
+DiffLumi_pho1_pos2.bin_min = 0.
+DiffLumi_pho1_pho2.bin_min = 0.
+
+DiffLumi_beam1_beam2.species = beam1 beam2
+DiffLumi_beam1_ele2.species = beam1 ele_nlbw2
+DiffLumi_beam1_pos2.species = beam1 pos_nlbw2
+DiffLumi_beam1_pho2.species = beam1 pho2
+DiffLumi_ele1_beam2.species = ele_nlbw1 beam2
+DiffLumi_ele1_ele2.species= ele_nlbw1 ele_nlbw2
+DiffLumi_ele1_pos2.species= ele_nlbw1 pos_nlbw2
+DiffLumi_ele1_pho2.species= ele_nlbw1 pho2
+DiffLumi_pos1_beam2.species = pos_nlbw1 beam2
+DiffLumi_pos1_ele2.species= pos_nlbw1 ele_nlbw2
+DiffLumi_pos1_pos2.species= pos_nlbw1 pos_nlbw2
+DiffLumi_pos1_pho2.species= pos_nlbw1 pho2
+DiffLumi_pho1_beam2.species = pho1 beam2
+DiffLumi_pho1_ele2.species= pho1 ele_nlbw2
+DiffLumi_pho1_pos2.species= pho1 pos_nlbw2
+DiffLumi_pho1_pho2.species= pho1 pho2
+
+
+DiffLumi_beam1_beam2.bin_number = 256
+DiffLumi_beam1_ele2.bin_number = 256
+DiffLumi_beam1_pos2.bin_number = 256
+DiffLumi_beam1_pho2.bin_number = 256
+DiffLumi_ele1_beam2.bin_number = 256
+DiffLumi_ele1_ele2.bin_number = 256
+DiffLumi_ele1_pos2.bin_number = 256
+DiffLumi_ele1_pho2.bin_number = 256
+DiffLumi_pos1_beam2.bin_number = 256
+DiffLumi_pos1_ele2.bin_number = 256
+DiffLumi_pos1_pos2.bin_number = 256
+DiffLumi_pos1_pho2.bin_number = 256
+DiffLumi_pho1_beam2.bin_number = 256
+DiffLumi_pho1_ele2.bin_number = 256
+DiffLumi_pho1_pos2.bin_number = 256
+DiffLumi_pho1_pho2.bin_number = 256
+
+
+DiffLumi_beam1_beam2.intervals = nt
+DiffLumi_beam1_ele2.intervals = nt
+DiffLumi_beam1_pos2.intervals = nt
+DiffLumi_beam1_pho2.intervals = nt
+DiffLumi_ele1_beam2.intervals = nt
+DiffLumi_ele1_ele2.intervals = nt
+DiffLumi_ele1_pos2.intervals = nt
+DiffLumi_ele1_pho2.intervals = nt
+DiffLumi_pos1_beam2.intervals = nt
+DiffLumi_pos1_ele2.intervals = nt
+DiffLumi_pos1_pos2.intervals = nt
+DiffLumi_pos1_pho2.intervals = nt
+DiffLumi_pho1_beam2.intervals = nt
+DiffLumi_pho1_ele2.intervals = nt
+DiffLumi_pho1_pos2.intervals = nt
+DiffLumi_pho1_pho2.intervals = nt  </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="run">Run<a class="anchor" aria-label="anchor" href="#run"></a>
+</h2>
+<hr class="half-width">
+<div id="caution1" class="callout caution">
+<div class="callout-square">
+<i class="callout-icon" data-feather="alert-triangle"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Caution</h3>
+<div class="callout-content">
+<p>Coming soon. For now, <a href="https://warpx.readthedocs.io/en/latest/" class="external-link">refer to the main
+documentation</a>.</p>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="visualize">Visualize<a class="anchor" aria-label="anchor" href="#visualize"></a>
+</h2>
+<hr class="half-width">
+<div class="section level3">
+<h3 id="with-python">With Python 🐍<a class="anchor" aria-label="anchor" href="#with-python"></a>
+</h3>
+<p>Now that we have the results, we can analyze them using Python.<br>
+We will use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link">openPMD-viewer</a> library
+to grab the data that the simulation produced in <code>openPMD</code>
+format. Here you can find <a href="https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html" class="external-link">a
+few great tutorials on how to use the viewer</a>. If you feel nerdy
+and/or you need to deal with the data in parallel workflows, you can use
+the <a href="https://openpmd-api.readthedocs.io/en/latest/" class="external-link">openPMD-api</a>.</p>
+<p>As an example for the magnetic bottle simulation, we have developed
+simple Jupyter notebook where we retrieve the magnetic field and the
+particle attributes at the end of the simulation. With a little bit more
+work, we also plot the trajectories of the particles.</p>
+<div id="accordionSpoiler2" class="accordion spoiler-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
+  <h3 class="accordion-header" id="headingSpoiler2">
+  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div>
+  Let’s take a look at the Jupyter notebook
+  </h3>
+</button>
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div class="accordion-body">
+<iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" width="100%" height="800" style="border:none;">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="with-paraview">With Paraview<a class="anchor" aria-label="anchor" href="#with-paraview"></a>
+</h3>
+<div id="caution2" class="callout caution">
+<div class="callout-square">
+<i class="callout-icon" data-feather="alert-triangle"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Caution</h3>
+<div class="callout-content">
+<p>Coming soon!</p>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Key Points</h3>
+<div class="callout-content">
+<p>💅 There are several details one needs to take care when setting up a
+beam-beam simulation</p>
+<p>🔍 The <a href="https://warpx.readthedocs.io/en/latest/" class="external-link"><strong>documentation</strong></a>
+is the first place to look for answers, otherwise check out our <a href="https://github.com/BLAST-WarpX/warpx/issues" class="external-link"><strong>issues</strong></a>
+and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-link"><strong>discussions</strong></a>
+and ask there.</p>
+<p>📷 To analyze and visualize the simulation results in <a href="https://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
+can use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link"><strong>openPMD-viewer</strong></a>
+library for Python.</p>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</div>
+</section></section><section id="aio-a-magnetic-mirror"><p>Content from <a href="a-magnetic-mirror.html">A Magnetic Mirror</a></p>
+<hr>
+<p>Last updated on 2025-04-13 |
+
+        <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/a-magnetic-mirror.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 12 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<p>🪞 How to simulate the dynamics of charged particles in an external
+field?</p>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<p>🏃 Run and 👀 visualize some protons in a magnetic mirror!</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
 <hr class="half-width">
 <p>In this example we will simulate a bunch of <strong>protons inside a
@@ -495,7 +1258,7 @@ the most popular page of the documentation 👠!</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the input file </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -585,11 +1348,25 @@ diag1.write_species = 1</code></pre>
 </div>
 </div>
 </div>
+<p>A few notable details:</p>
+<ul>
+<li><p>The protons are test particles because of the parameter
+<code>protons.do_not_deposit=1</code>. This means that the protons do
+not deposit their current density, therefore they do not contribute to
+the fields.</p></li>
+<li><p>The magnetic field is applied directly to the particles with the
+<code>particles.B_ext_particle_init_style</code> flag, so in principle
+the grid is not used at all. For technical reasons, we must define a
+grid nonetheless.</p></li>
+</ul>
 <p>Now that we have an idea of what the input files looks like, let’s
 set up our environment. Activate the <code>warpx</code> environment if
 you need to. Create a new directory with your own copy of the input
 file. Also, don’t forget to <a href=".././files/example-femm-3d.h5">download the field file</a> and place
 it in the directory where you will run the input.</p>
+</section><section><h2 class="section-heading" id="run">Run<a class="anchor" aria-label="anchor" href="#run"></a>
+</h2>
+<hr class="half-width">
 <div id="lets-run-the-code" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -606,13 +1383,14 @@ it in the directory where you will run the input.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
-<div class="codewrapper sourceCode" id="cb6">
+<div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">warpx.3d</span> inputs_3d_magnetic_mirror.txt</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">warpx.3d</span> inputs_3d_magnetic_mirror.txt</span></code></pre>
 </div>
+<p>As simple as that! 😉</p>
 </div>
 </div>
 </div>
@@ -633,7 +1411,7 @@ fails in any way!</p>
 <p>Here we have loaded the field of hte magnetic bottle from a file. You
 can also you can <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html#applied-to-particles" class="external-link">define
 an external field analytically</a>.</p>
-</section><section><h2 class="section-heading" id="data-handling-and-visualizations">Data handling and visualizations<a class="anchor" aria-label="anchor" href="#data-handling-and-visualizations"></a>
+</section><section><h2 class="section-heading" id="visualize">Visualize<a class="anchor" aria-label="anchor" href="#visualize"></a>
 </h2>
 <hr class="half-width">
 <div class="section level3">
@@ -645,7 +1423,7 @@ to grab the data that the simulation produced in <code>openPMD</code>
 format. Here you can find <a href="https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html" class="external-link">a
 few great tutorials on how to use the viewer</a>. If you feel nerdy
 and/or you need to deal with the data in parallel workflows, you can use
-the [openPMD-api][opepmd-api].</p>
+the <a href="https://openpmd-api.readthedocs.io/en/latest/" class="external-link">openPMD-api</a>.</p>
 <p>As an example for the magnetic bottle simulation, we have developed
 simple Jupyter notebook where we retrieve the magnetic field and the
 particle attributes at the end of the simulation. With a little bit more
@@ -655,7 +1433,7 @@ work, we also plot the trajectories of the particles.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the Jupyter notebook </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" width="100%" height="800" style="border:none;">
 </iframe>
@@ -694,14 +1472,8 @@ We can add it here 😉!</p>
 <div class="callout-inner">
 <h3 class="callout-title">Key Points</h3>
 <div class="callout-content">
-<p>🚀 <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
-is a open-source high-performance particle-in-cell code</p>
-<p>🎯 WarpX is <strong>easy to install via Conda</strong>:
-<code>conda -c conda-forge warpx</code></p>
-<p>🔍 The <a href="https://warpx.readthedocs.io/en/latest/" class="external-link"><strong>documentation</strong></a>
-is the first place to look for answers, otherwise check out our <a href="https://github.com/BLAST-WarpX/warpx/issues" class="external-link"><strong>issues</strong></a>
-and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-link"><strong>discussions</strong></a>
-and ask there.</p>
+<p>💡 The external B field is loaded from an openPMD file, while the
+protons are defined as test particles.</p>
 <p>📷 To analyze and visualize the simulation results in <a href="https://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
 can use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link"><strong>openPMD-viewer</strong></a>
 library for Python or you can open <code>.pmd</code> files directly in
@@ -761,9 +1533,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/instructor/aio.html",
   "identifier": "https://warpx-tutorials.github.io/NA/instructor/aio.html",
-  "dateCreated": "2025-03-20",
-  "dateModified": "2025-04-08",
-  "datePublished": "2025-04-08"
+  "dateCreated": "2025-04-13",
+  "dateModified": "2025-04-13",
+  "datePublished": "2025-04-13"
 }
 
   </script><script>
