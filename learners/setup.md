@@ -2,12 +2,14 @@
 title: Setup
 ---
 
-Throughout this tutorial we will assume that you have a installation of Conda in your machine. If you do not, follow the [instructions at this link](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation). You can install Conda on most operative systems: Windows, macOS, and Linux.   
+## Basic prerequisites 
+
+Throughout the tutorials we will assume that you have a **Conda installation** in your machine. If you do not, follow the [instructions at this link](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html#regular-installation). You can install Conda on most operative systems: Windows, macOS, and Linux.   
 
 
-We will also assume that you have access to a command line interface. This is straightforward in Linux and macOS, just open the `terminal` app. In Windows, you can install [WSL, the Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install). This will provide you with a Linux distribution and command line tools. 
+We will also assume that you have access to a **command line interface**. This is straightforward in Linux and macOS, just open the `terminal` app. In Windows, you can install [WSL, the Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install). This will provide you with a Linux distribution and command line tools. 😎
 
-Lastly, we will assume that you have some familiarity with the basic terminal functionalities, like `cd`, `mkdir`, `ls` and so forth. If you don't, you can check out [this tutorial by Canonical](https://ubuntu.com/tutorials/command-line-for-beginners#1-overview). 
+Lastly, we will assume that you have some familiarity with the **basic terminal functionalities**, like `cd`, `mkdir`, `ls` and so forth. If you don't, you can check out [this tutorial by Canonical](https://ubuntu.com/tutorials/command-line-for-beginners#1-overview). 
 
 
 <!--
