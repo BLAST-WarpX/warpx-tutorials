@@ -90,7 +90,7 @@ You can also you can [define an external field analytically](https://warpx.readt
 Now that we have the results, we can analyze them using Python.  
 We will use the [openPMD-viewer][openpmd-viewer] library to grab the data that the simulation produced in `openPMD` format. 
 Here you can find [a few great tutorials on how to use the viewer](https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html).
-If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api][opepmd-api].
+If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api][openpmd-api].
 
 As an example for the magnetic bottle simulation, we have developed simple Jupyter notebook where we retrieve the magnetic field 
 and the particle attributes at the end of the simulation.

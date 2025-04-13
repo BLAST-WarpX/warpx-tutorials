@@ -22,14 +22,22 @@ Learn how to setup, run, and visualize your own beam-beam ☄️☄️ simulatio
 ## Setup
 
 In this example we will simulate a bunch of electrons colliding against a bunch of positrons.
+We have selected the parameters of the C$^3$ linear collider, arbitrarily. 
 
+Some notable details:
 
+*  Poisson solver 
 
-The protons are initialized with random positions and velocities. 
-The magnetic field is loaded from a `.h5` file.
+*  Resolution
+
+*  Timestep 
+
+*  QED lookup tables
+
+*  Diagnostics
+
 
 Whenever you need to prepare an input file, [this is where you want to go](https://warpx.readthedocs.io/en/latest/usage/parameters.html).
-By the way, analytics tell us that this is the most popular page of the documentation 👠! 
 
 :::::::::::::::::::::::::::::::::::::::::: spoiler
 
@@ -39,11 +47,6 @@ By the way, analytics tell us that this is the most popular page of the document
 cat ./files/inputs_3d_beambeam_C3.txt
 ```
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
-Now that we have an idea of what the input files looks like, let's set up our environment.
-Activate the `warpx` environment if you need to.
-Create a new directory with your own copy of the input file. 
-Also, don't forget to [download the field file](./files/example-femm-3d.h5) and place it in the directory where you will run the input. 
 
 ## Run 
 
@@ -60,7 +63,7 @@ Coming soon. For now, [refer to the main documentation][warpx-readthedocs].
 Now that we have the results, we can analyze them using Python.  
 We will use the [openPMD-viewer][openpmd-viewer] library to grab the data that the simulation produced in `openPMD` format. 
 Here you can find [a few great tutorials on how to use the viewer](https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html).
-If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api][opepmd-api].
+If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api][openpmd-api].
 
 As an example for the magnetic bottle simulation, we have developed simple Jupyter notebook where we retrieve the magnetic field 
 and the particle attributes at the end of the simulation.
@@ -82,17 +85,18 @@ cat('<iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/mai
 
 ::: caution
 
-Coming soon. For now, [refer to the main documentation][warpx-readthedocs].
+Coming soon!
 :::
 
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
+ 💅 There are several details one needs to take care when setting up a beam-beam simulation
+
  🔍 The [**documentation**][warpx-readthedocs] is the first place to look for answers, 
  otherwise check out our [**issues**][warpx-issues] and [**discussions**][warpx-discussions] and ask there.  
 
  📷 To analyze and visualize the simulation results in [**openPMD**][openpmd] format, 
- you can use the [**openPMD-viewer**][openpmd-viewer] library for Python 
- or you can open `.pmd` files directly in [**Paraview**]((https://www.paraview.org/download/)).
+ you can use the [**openPMD-viewer**][openpmd-viewer] library for Python.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
