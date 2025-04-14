@@ -310,7 +310,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>A Beam-Beam Collision</h1>
-        <p>Last updated on 2025-04-13 |
+        <p>Last updated on 2025-04-14 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/a-beam-beam-collision.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -350,13 +350,7 @@ simulation</p>
 against a bunch of positrons. We have selected the parameters of the
 C<span class="math inline">\(^3\)</span> linear collider,
 arbitrarily.</p>
-<p>Some notable details:</p>
-<ul><li><p>Poisson solver</p></li>
-<li><p>Resolution</p></li>
-<li><p>Timestep</p></li>
-<li><p>QED lookup tables</p></li>
-<li><p>Diagnostics</p></li>
-</ul><p>Whenever you need to prepare an input file, <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html" class="external-link">this
+<p>Whenever you need to prepare an input file, <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html" class="external-link">this
 is where you want to go</a>.</p>
 <div id="accordionSpoiler1" class="accordion spoiler-accordion accordion-flush">
 <div class="accordion-item">
@@ -366,7 +360,7 @@ is where you want to go</a>.</p>
   Let’s take a look at the input file
   </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -377,8 +371,8 @@ is where you want to go</a>.</p>
 my_constants.mc2   = m_e*clight*clight
 my_constants.nano  = 1.0e-9
 my_constants.micro = 1.e-6
-my_constants.GeV   = q_e*1.e9
 my_constants.milli = 1.e-3
+my_constants.GeV   = q_e*1.e9
 
 # BEAMS
 my_constants.beam_energy = 125*GeV
@@ -386,8 +380,8 @@ my_constants.beam_gamma  = beam_energy/mc2
 my_constants.beam_npart  = 6.24e9
 my_constants.nmacropart  = 1e5
 my_constants.beam_charge = q_e * beam_npart
-#my_constants.sigmax      = 210.0*nano
-#my_constants.sigmay      = 3.1*nano
+#my_constants.sigmax     = 210.0*nano
+#my_constants.sigmay     = 3.1*nano
 my_constants.sigmaz      = 100.*micro
 my_constants.beam_uth    = 0.3/100*beam_gamma
 my_constants.mux         = 0.*sigmax
@@ -397,19 +391,17 @@ my_constants.emitx       = 900*nano
 my_constants.emity       = 20*nano
 my_constants.dux         = emitx / sigmax
 my_constants.duy         = emity / sigmay
-my_constants.betax = 12*milli
-my_constants.betay = 0.12*milli
+my_constants.betax       = 12*milli
+my_constants.betay       = 0.12*milli
 my_constants.sigmax      = sqrt( emitx * betax / beam_gamma )
 my_constants.sigmay      = sqrt( emity * betay / beam_gamma )
-#my_constants.emitx = sigmax**2 * beam_gamma / beta
-#my_constants.emity = sigmay**2 * beam_gamma / beta
 
 # BOX
 my_constants.Lx = 20*sigmax
 my_constants.Ly = 20*sigmay
 my_constants.Lz = 16*sigmaz
-my_constants.nx = 256
-my_constants.ny = 256
+my_constants.nx = 128
+my_constants.ny = 128
 my_constants.nz = 64
 my_constants.dx = Lx/nx
 my_constants.dy = Ly/ny
@@ -418,24 +410,13 @@ my_constants.dz = Lz/nz
 # TIME
 my_constants.T = 0.5*Lz/clight
 my_constants.dt = T / nz
-
-
 my_constants.nt = floor(T/dt)
-my_constants.coll_time = abs(muz)/clight
-my_constants.coll_step = floor(nt*coll_time/T)
-
-# DIAGS
-my_constants.hundo = floor(nt/100.)
-my_constants.every_full = floor(nt/100.)
-warpx.used_inputs_file = warpx_used_inputs.txt
 
 #################################
 ####### GENERAL PARAMETERS ######
 #################################
 stop_time = T
 amr.n_cell = nx ny nz
-amr.max_grid_size = nz
-amr.blocking_factor = 2
 amr.max_level = 0
 geometry.dims = 3
 geometry.prob_lo = -0.5*Lx -0.5*Ly -0.5*Lz
@@ -458,6 +439,7 @@ warpx.grid_type = collocated
 algo.particle_shape = 3
 algo.particle_pusher = vay
 warpx.poisson_solver = fft
+warpx.use_2d_slices_fft_solver = 1
 
 #################################
 ########### PARTICLES ###########
@@ -554,13 +536,11 @@ pos_nlbw2.do_classical_radiation_reaction = 0
 #################################
 qed_qs.photon_creation_energy_threshold = 0.
 
-qed_qs.lookup_table_mode = load
-qed_qs.load_table_from = /global/cfs/cdirs/m4272/aforment/qed_tables/qs_table_chi_min_1.e-7_chi_max_1.e1_points_1024
+qed_qs.lookup_table_mode = builtin
 qed_qs.chi_min = 1.e-7
 
-qed_bw.lookup_table_mode = load
+qed_bw.lookup_table_mode = builtin
 qed_bw.chi_min = 1.e-2
-qed_bw.load_table_from = /global/cfs/cdirs/m4272/aforment/qed_tables/bw_table_chi_min_1.e-2_chi_max_1.e1_points_1024
 
 warpx.do_qed_schwinger = 0.
 
@@ -634,55 +614,14 @@ pho2.save_particles_at_zhi = 1
 
 trajs.intervals = 1
 trajs.diag_type = Full
-trajs.species = beam1 beam2 pho1 pho2 ele_nlbw1 pos_nlbw1 ele_nlbw2 pos_nlbw2
+trajs.species = beam1 beam2
 trajs.fields_to_plot = none
 trajs.format = openpmd
 trajs.openpmd_backend = h5
 trajs.dump_last_timestep = 1
 
 # REDUCED
-warpx.reduced_diags_names = ParticleEnergy RhoMaximum ParticleNumber CollRel_beam1_beam2 CollRel_beam1_ele2 CollRel_beam1_pos2 CollRel_ele1_beam2 CollRel_ele1_ele2 CollRel_ele1_pos2 CollRel_pos1_beam2 CollRel_pos1_ele2 CollRel_pos1_pos2 DiffLumi_beam1_beam2 DiffLumi_beam1_ele2 DiffLumi_beam1_pos2 DiffLumi_beam1_pho2 DiffLumi_ele1_beam2 DiffLumi_ele1_ele2 DiffLumi_ele1_pos2 DiffLumi_ele1_pho2 DiffLumi_pos1_beam2 DiffLumi_pos1_ele2 DiffLumi_pos1_pos2 DiffLumi_pos1_pho2 DiffLumi_pho1_beam2 DiffLumi_pho1_ele2 DiffLumi_pho1_pos2 DiffLumi_pho1_pho2
-
-
-ParticleEnergy.type = ParticleEnergy
-ParticleEnergy.intervals = 1
-
-RhoMaximum.type = RhoMaximum
-RhoMaximum.intervals = 1
-
-ParticleNumber.type = ParticleNumber
-ParticleNumber.intervals = 1
-
-CollRel_beam1_beam2.type = ColliderRelevant
-CollRel_beam1_ele2.type = ColliderRelevant
-CollRel_beam1_pos2.type = ColliderRelevant
-CollRel_ele1_beam2.type = ColliderRelevant
-CollRel_ele1_ele2.type = ColliderRelevant
-CollRel_ele1_pos2.type = ColliderRelevant
-CollRel_pos1_beam2.type = ColliderRelevant
-CollRel_pos1_ele2.type = ColliderRelevant
-CollRel_pos1_pos2.type = ColliderRelevant
-
-CollRel_beam1_beam2.intervals = 1
-CollRel_beam1_ele2.intervals  = 1
-CollRel_beam1_pos2.intervals  = 1
-CollRel_ele1_beam2.intervals  = 1
-CollRel_ele1_ele2.intervals   = 1
-CollRel_ele1_pos2.intervals   = 1
-CollRel_pos1_beam2.intervals  = 1
-CollRel_pos1_ele2.intervals   = 1
-CollRel_pos1_pos2.intervals   = 1
-
-CollRel_beam1_beam2.species = beam1 beam2
-CollRel_beam1_ele2.species = beam1 ele_nlbw2
-CollRel_beam1_pos2.species = beam1 pos_nlbw2
-CollRel_ele1_beam2.species = ele_nlbw1 beam2
-CollRel_ele1_ele2.species = ele_nlbw1 ele_nlbw2
-CollRel_ele1_pos2.species = ele_nlbw1 pos_nlbw2
-CollRel_pos1_beam2.species = pos_nlbw1 beam2
-CollRel_pos1_ele2.species = pos_nlbw1 ele_nlbw2
-CollRel_pos1_pos2.species = pos_nlbw1 pos_nlbw2
-
+warpx.reduced_diags_names = DiffLumi_beam1_beam2 DiffLumi_beam1_ele2 DiffLumi_beam1_pos2 DiffLumi_beam1_pho2 DiffLumi_ele1_beam2 DiffLumi_ele1_ele2 DiffLumi_ele1_pos2 DiffLumi_ele1_pho2 DiffLumi_pos1_beam2 DiffLumi_pos1_ele2 DiffLumi_pos1_pos2 DiffLumi_pos1_pho2 DiffLumi_pho1_beam2 DiffLumi_pho1_ele2 DiffLumi_pho1_pos2 DiffLumi_pho1_pho2
 
 DiffLumi_beam1_beam2.type = DifferentialLuminosity
 DiffLumi_beam1_ele2.type  = DifferentialLuminosity
@@ -700,7 +639,6 @@ DiffLumi_pho1_beam2.type  = DifferentialLuminosity
 DiffLumi_pho1_ele2.type   = DifferentialLuminosity
 DiffLumi_pho1_pos2.type   = DifferentialLuminosity
 DiffLumi_pho1_pho2.type   = DifferentialLuminosity
-
 
 DiffLumi_beam1_beam2.bin_max = 2.1*beam_energy/q_e
 DiffLumi_beam1_ele2.bin_max  = 2.1*beam_energy/q_e
@@ -793,16 +731,52 @@ DiffLumi_pho1_pho2.intervals = nt  </code></pre>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="run">Run<a class="anchor" aria-label="anchor" href="#run"></a></h2>
-<hr class="half-width"><div id="caution1" class="callout caution">
+<p>Some notable details:</p>
+<ul><li><p>Poisson solver: because the beams are ultra-relativistic (125 GeV
+electrons and positrons) and flat, we use an FFT-based electrostatic
+solver. Specifically, it solves many 2D Poisson equations in the <span class="math inline">\((x,y)\)</span> plane for each <span class="math inline">\(z\)</span>. The full 3D version of this solver is
+also available with
+<code>warpx.use_2d_slices_fft_solver = 0</code>.</p></li>
+<li><p>Resolution: the number of grid cells is reduced to fit in a
+laptop. For production simulations, make sure you increase the
+resolution.</p></li>
+<li><p>Timestep: since the beams travel at the speed of light along
+<span class="math inline">\(z\)</span>, it makes sense to choose $dt =
+However this is not strictly necessary. Sometimes it can be useful to
+save resources by choosing a larger timestep. Just make sure you resolve
+‘’well-enough’’ the shortest timescale that you’re interested
+in.</p></li>
+<li><p>QED lookup tables: here we use the built-in ones for convenience.
+For production runs, make sure to use tables with enough points and set
+the ranges of the <span class="math inline">\(\chi\)</span> parameter to
+what you need.</p></li>
+<li>
+<p>Diagnostics:</p>
+<ul><li>the trajectories of the beam particles. This diagnostic can easily
+take up too much memory. For simulations with many macroparticles,
+consider using a field diagnostic.</li>
+<li>all the particles that exit the domain
+(<code>BoundaryScraping</code>)</li>
+<li>the differential luminosity of every pair of left-ward and
+right-ward moving species</li>
+</ul></li>
+</ul></section><section><h2 class="section-heading" id="run">Run<a class="anchor" aria-label="anchor" href="#run"></a></h2>
+<hr class="half-width"><p>The optimal way to run the simulation depends on your hardware.</p>
+<div id="discussion1" class="callout discussion">
 <div class="callout-square">
-<i class="callout-icon" data-feather="alert-triangle"></i>
+<i class="callout-icon" data-feather="message-circle"></i>
 </div>
 <div class="callout-inner">
-<h3 class="callout-title">Caution</h3>
+<h3 class="callout-title">Challenge</h3>
 <div class="callout-content">
-<p>Coming soon. For now, <a href="https://warpx.readthedocs.io/en/latest/" class="external-link">refer to the main
-documentation</a>.</p>
+<p>I have used this setup on my laptop and the simulation took ~44
+seconds.</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="bu">export</span> <span class="va">OMP_NUM_THREADS</span><span class="op">=</span>2</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">mpirun</span> <span class="at">-np</span> 4 warpx.3d inputs_3d_beambeam_C3.txt </span></code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -828,7 +802,7 @@ work, we also plot the trajectories of the particles.</p>
   Let’s take a look at the Jupyter notebook
   </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" width="100%" height="800" style="border:none;">
 </iframe>
@@ -839,7 +813,7 @@ work, we also plot the trajectories of the particles.</p>
 </div>
 <div class="section level3">
 <h3 id="with-paraview">With Paraview<a class="anchor" aria-label="anchor" href="#with-paraview"></a></h3>
-<div id="caution2" class="callout caution">
+<div id="caution1" class="callout caution">
 <div class="callout-square">
 <i class="callout-icon" data-feather="alert-triangle"></i>
 </div>
@@ -931,9 +905,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/a-beam-beam-collision.html",
   "identifier": "https://warpx-tutorials.github.io/NA/a-beam-beam-collision.html",
-  "dateCreated": "2025-04-13",
-  "dateModified": "2025-04-13",
-  "datePublished": "2025-04-13"
+  "dateCreated": "2025-04-14",
+  "dateModified": "2025-04-14",
+  "datePublished": "2025-04-14"
 }
 
   </script><script>
