@@ -180,7 +180,7 @@ With a little bit more work, we also plot the trajectories of the particles.
 
 ## Let's take a look at the Jupyter notebook
 
-<iframe src="https://nbviewer.org/github/aeriforme/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" 
+<iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" 
            width="100%" height="800" style="border:none;">
      </iframe>
 ::::::::::::::::::::::::::::::::::::::::::::::::::
