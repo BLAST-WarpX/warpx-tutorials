@@ -24,19 +24,6 @@ Learn how to setup, run, and visualize your own beam-beam ☄️☄️ simulatio
 In this example we will simulate a bunch of electrons colliding against a bunch of positrons.
 We have selected the parameters of the C$^3$ linear collider, arbitrarily. 
 
-Some notable details:
-
-*  Poisson solver 
-
-*  Resolution
-
-*  Timestep 
-
-*  QED lookup tables
-
-*  Diagnostics
-
-
 Whenever you need to prepare an input file, [this is where you want to go](https://warpx.readthedocs.io/en/latest/usage/parameters.html).
 
 :::::::::::::::::::::::::::::::::::::::::: spoiler
@@ -48,11 +35,43 @@ cat ./files/inputs_3d_beambeam_C3.txt
 ```
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
+
+Some notable details:
+
+*  Poisson solver: because the beams are ultra-relativistic (125 GeV electrons and positrons) and flat, 
+we use an FFT-based electrostatic solver. 
+Specifically, it solves many 2D Poisson equations in the $(x,y)$ plane for each $z$.
+The full 3D version of this solver is also available with `warpx.use_2d_slices_fft_solver = 0`. 
+
+*  Resolution: the number of grid cells is reduced to fit in a laptop. For production simulations, make sure you increase the resolution.
+
+*  Timestep: since the beams travel at the speed of light along $z$, it makes sense to choose $dt = 
+However this is not strictly necessary. Sometimes it can be useful to save resources by choosing a larger timestep.
+Just make sure you resolve ''well-enough'' the shortest timescale that you're interested in. 
+
+*  QED lookup tables: here we use the built-in ones for convenience. For production runs, make sure to use tables with enough points and set the 
+ranges of the $\chi$ parameter to what you need. 
+
+*  Diagnostics:
+    * the trajectories of the beam particles. This diagnostic can easily take up too much memory. 
+    For simulations with many macroparticles, consider using a field diagnostic. 
+    * all the particles that exit the domain (`BoundaryScraping`)
+    * the differential luminosity of every pair of left-ward and right-ward moving species 
+    
+
 ## Run 
 
-::: caution
+The optimal way to run the simulation depends on your hardware. 
 
-Coming soon. For now, [refer to the main documentation][warpx-readthedocs].
+::: challenge
+
+I have used this setup on my laptop and the simulation took ~44 seconds.
+
+```bash
+export OMP_NUM_THREADS=2
+mpirun -np 4 warpx.3d inputs_3d_beambeam_C3.txt 
+```
+
 :::
 
 
