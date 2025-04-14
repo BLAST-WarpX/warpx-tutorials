@@ -58,6 +58,13 @@ To check this, run:
 ```bash
 which warpx.1d warpx.2d warpx.3d warpx.rz
 ```
+
+::: caution
+
+Conda's WarpX is serial! To get a parallel WarpX version, install it from source.
+
+:::
+
 If you get 3 different paths that look something like:
 ```bash
 /home/<username>/anaconda3/envs/warpx/bin/warpx.xd
