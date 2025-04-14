@@ -22,7 +22,7 @@ Learn how to setup, run, and visualize your own beam-beam ☄️☄️ simulatio
 ## Setup
 
 In this example we will simulate a bunch of electrons colliding against a bunch of positrons.
-We have selected the parameters of the C$^3$ linear collider, arbitrarily. 
+We have selected the parameters of the C$^3$ linear collider. 
 
 Whenever you need to prepare an input file, [this is where you want to go](https://warpx.readthedocs.io/en/latest/usage/parameters.html).
 
@@ -406,8 +406,8 @@ The full 3D version of this solver is also available with `warpx.use_2d_slices_f
 
 *  Resolution: the number of grid cells is reduced to fit in a laptop. For production simulations, make sure you increase the resolution.
 
-*  Timestep: since the beams travel at the speed of light along $z$, it makes sense to choose $dt = 
-However this is not strictly necessary. Sometimes it can be useful to save resources by choosing a larger timestep.
+*  Timestep: since the beams travel at the speed of light along $z$ and the simulation frame is the center of mass frame, 
+it makes sense to choose $dt = dz / ( 2 c )  $. However this is not strictly necessary. Sometimes it can be useful to save resources by choosing a larger timestep.
 Just make sure you resolve ''well-enough'' the shortest timescale that you're interested in. 
 
 *  QED lookup tables: here we use the built-in ones for convenience. For production runs, make sure to use tables with enough points and set the 
@@ -468,7 +468,6 @@ On my laptop's CPU (12th Gen Intel® Core™ i9-12900H × 20) the serial simulat
 
 
 ### With Python 🐍
-12th Gen Intel® Core™ i9-12900H × 20
 Now that we have the results, we can analyze them using Python.  
 We will use the [openPMD-viewer][openpmd-viewer] library to grab the data that the simulation produced in `openPMD` format. 
 Here you can find [a few great tutorials on how to use the viewer](https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html).
