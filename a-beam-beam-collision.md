@@ -422,32 +422,60 @@ ranges of the $\chi$ parameter to what you need.
 
 ## Run 
 
-The optimal way to run the simulation depends on your hardware. 
+First things first. 
+Create a new folder where you copy the [input file](./files/inputs_3d_beambeam_C3.txt). 
+The simulation in small enough that you should be able to run it in serial with the Conda installation of WarpX.
 
-::: challenge
+::: spoiler
 
-I have used this setup on my laptop and the simulation took ~44 seconds.
+## Let's run in serial
+
+```bash
+warpx.3d inputs_3d_beambeam_C3.txt
+```
+
+Just like that! 💃
+Note that with Conda's WarpX you can run this anywhere in your filesystem (provided that you copied there the input of course)
+because WarpX's executable are in your `$PATH`.
+:::
+
+
+
+If you want to make the simulation faster and/or bigger, then you should run with the parallel version of WarpX.
+The optimal setup to run the simulation depends on your hardware. 
+This is an example that should work on many common laptops, even though it might not be ideal.
+
+
+::: spoiler
+
+## Let's run in parallel
+
+This is just one way of doing it!
 
 ```bash
 export OMP_NUM_THREADS=2
-mpirun -np 4 warpx.3d inputs_3d_beambeam_C3.txt 
+mpirun -np 4 <path/to/your/build/bin/warpx.3d> inputs_3d_beambeam_C3.txt 
 ```
+:::
+
+::: testimonial
+On my laptop's CPU (12th Gen Intel® Core™ i9-12900H × 20) the serial simulation took ~195 seconds, while the parallel one ~44 seconds on 4 cores!
 
 :::
 
 
 ## Visualize
 
-### With Python 🐍
 
+### With Python 🐍
+12th Gen Intel® Core™ i9-12900H × 20
 Now that we have the results, we can analyze them using Python.  
 We will use the [openPMD-viewer][openpmd-viewer] library to grab the data that the simulation produced in `openPMD` format. 
 Here you can find [a few great tutorials on how to use the viewer](https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html).
 If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api][openpmd-api].
 
-As an example for the magnetic bottle simulation, we have developed simple Jupyter notebook where we retrieve the magnetic field 
-and the particle attributes at the end of the simulation.
-With a little bit more work, we also plot the trajectories of the particles.
+As an example for the beam-beam simulation, we have developed simple Jupyter notebook where we retrieve 
+the beams' particles positions and project them on the $(z,x)$ and $(z,y)$ planes.
 
 :::::::::::::::::::::::::::::::::::::::::: spoiler
 
@@ -457,6 +485,9 @@ With a little bit more work, we also plot the trajectories of the particles.
            width="100%" height="800" style="border:none;">
      </iframe>
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
+You can [download the notebook](./files/analysis_3d_beambeam.ipynb) and try it yourself.
+Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook.
 
 
 ### With Paraview
