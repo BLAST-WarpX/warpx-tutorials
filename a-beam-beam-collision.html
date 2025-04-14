@@ -348,8 +348,7 @@ simulation</p>
 </figure><section><h2 class="section-heading" id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a></h2>
 <hr class="half-width"><p>In this example we will simulate a bunch of electrons colliding
 against a bunch of positrons. We have selected the parameters of the
-C<span class="math inline">\(^3\)</span> linear collider,
-arbitrarily.</p>
+C<span class="math inline">\(^3\)</span> linear collider.</p>
 <p>Whenever you need to prepare an input file, <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html" class="external-link">this
 is where you want to go</a>.</p>
 <div id="accordionSpoiler1" class="accordion spoiler-accordion accordion-flush">
@@ -741,7 +740,8 @@ also available with
 laptop. For production simulations, make sure you increase the
 resolution.</p></li>
 <li><p>Timestep: since the beams travel at the speed of light along
-<span class="math inline">\(z\)</span>, it makes sense to choose $dt =
+<span class="math inline">\(z\)</span> and the simulation frame is the
+center of mass frame, it makes sense to choose $dt = dz / ( 2 c ) $.
 However this is not strictly necessary. Sometimes it can be useful to
 save resources by choosing a larger timestep. Just make sure you resolve
 ‘’well-enough’’ the shortest timescale that you’re interested
@@ -827,8 +827,7 @@ cores!</p>
 </section><section><h2 class="section-heading" id="visualize">Visualize<a class="anchor" aria-label="anchor" href="#visualize"></a></h2>
 <hr class="half-width"><div class="section level3">
 <h3 id="with-python">With Python 🐍<a class="anchor" aria-label="anchor" href="#with-python"></a></h3>
-<p>12th Gen Intel® Core™ i9-12900H × 20 Now that we have the results, we
-can analyze them using Python.<br>
+<p>Now that we have the results, we can analyze them using Python.<br>
 We will use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link">openPMD-viewer</a> library
 to grab the data that the simulation produced in <code>openPMD</code>
 format. Here you can find <a href="https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html" class="external-link">a
