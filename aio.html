@@ -344,7 +344,7 @@
         
 <section id="aio-introduction"><p>Content from <a href="introduction.html">Introduction to WarpX</a></p>
 <hr>
-<p>Last updated on 2025-07-01 |
+<p>Last updated on 2025-11-11 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/introduction.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -497,7 +497,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-install"><p>Content from <a href="install.html">Install</a></p>
 <hr>
-<p>Last updated on 2025-07-01 |
+<p>Last updated on 2025-11-11 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/install.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -651,7 +651,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-a-beam-beam-collision"><p>Content from <a href="a-beam-beam-collision.html">A Beam-Beam Collision</a></p>
 <hr>
-<p>Last updated on 2025-07-01 |
+<p>Last updated on 2025-11-11 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/a-beam-beam-collision.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -748,6 +748,15 @@ my_constants.T = 0.5*Lz/clight
 my_constants.dt = T / nz
 my_constants.nt = floor(T/dt)
 
+# LUMI DIAG
+my_constants.bin_num_1d = 2048
+my_constants.bin_center_min_1d = 0.
+my_constants.bin_center_max_1d = 2*beam_energy/q_e
+my_constants.bin_size_1d = (bin_center_max_1d - bin_center_min_1d) / bin_num_1d
+my_constants.bin_edge_min_1d = bin_center_min_1d - 0.5 * bin_size_1d
+my_constants.bin_edge_max_1d = bin_center_max_1d + 0.5 * bin_size_1d
+my_constants.bin_num_1d_eff = bin_num_1d + 1
+
 #################################
 ####### GENERAL PARAMETERS ######
 #################################
@@ -780,92 +789,80 @@ warpx.use_2d_slices_fft_solver = 1
 #################################
 ########### PARTICLES ###########
 #################################
-particles.species_names = beam1 beam2 pho1 pho2 ele_nlbw1 pos_nlbw1 ele_nlbw2 pos_nlbw2
+particles.species_names = ele1 pos2 pho1 pho2 ele2 pos1
 particles.photon_species = pho1 pho2
 
-beam1.species_type = electron
-beam1.injection_style = gaussian_beam
-beam1.x_rms = sigmax
-beam1.y_rms = sigmay
-beam1.z_rms = sigmaz
-beam1.x_m = - mux
-beam1.y_m = - muy
-beam1.z_m = - muz
-beam1.npart = nmacropart
-beam1.q_tot = -beam_charge
-beam1.z_cut = 4
-beam1.focal_distance = muz
-beam1.momentum_distribution_type = gaussian
-beam1.uz_m = beam_gamma
-beam1.uy_m = 0.0
-beam1.ux_m = 0.0
-beam1.ux_th = dux
-beam1.uy_th = duy
-beam1.uz_th = beam_uth
-beam1.initialize_self_fields = 1
-beam1.do_qed_quantum_sync = 1
-beam1.qed_quantum_sync_phot_product_species = pho1
-beam1.do_classical_radiation_reaction = 0
+ele1.species_type = electron
+ele1.injection_style = gaussian_beam
+ele1.x_rms = sigmax
+ele1.y_rms = sigmay
+ele1.z_rms = sigmaz
+ele1.x_m = - mux
+ele1.y_m = - muy
+ele1.z_m = - muz
+ele1.npart = nmacropart
+ele1.q_tot = -beam_charge
+ele1.z_cut = 4
+ele1.focal_distance = muz
+ele1.momentum_distribution_type = gaussian
+ele1.uz_m = beam_gamma
+ele1.uy_m = 0.0
+ele1.ux_m = 0.0
+ele1.ux_th = dux
+ele1.uy_th = duy
+ele1.uz_th = beam_uth
+ele1.initialize_self_fields = 1
+ele1.do_qed_quantum_sync = 1
+ele1.qed_quantum_sync_phot_product_species = pho1
+ele1.do_classical_radiation_reaction = 0
 
-beam2.species_type = positron
-beam2.injection_style = gaussian_beam
-beam2.x_rms = sigmax
-beam2.y_rms = sigmay
-beam2.z_rms = sigmaz
-beam2.x_m = mux
-beam2.y_m = muy
-beam2.z_m = muz
-beam2.npart = nmacropart
-beam2.q_tot = beam_charge
-beam2.z_cut = 4
-beam2.focal_distance = muz
-beam2.momentum_distribution_type = gaussian
-beam2.uz_m = -beam_gamma
-beam2.uy_m = 0.0
-beam2.ux_m = 0.0
-beam2.ux_th = dux
-beam2.uy_th = duy
-beam2.uz_th = beam_uth
-beam2.initialize_self_fields = 1
-beam2.do_qed_quantum_sync = 1
-beam2.qed_quantum_sync_phot_product_species = pho2
-beam2.do_classical_radiation_reaction = 0
+pos2.species_type = positron
+pos2.injection_style = gaussian_beam
+pos2.x_rms = sigmax
+pos2.y_rms = sigmay
+pos2.z_rms = sigmaz
+pos2.x_m = mux
+pos2.y_m = muy
+pos2.z_m = muz
+pos2.npart = nmacropart
+pos2.q_tot = beam_charge
+pos2.z_cut = 4
+pos2.focal_distance = muz
+pos2.momentum_distribution_type = gaussian
+pos2.uz_m = -beam_gamma
+pos2.uy_m = 0.0
+pos2.ux_m = 0.0
+pos2.ux_th = dux
+pos2.uy_th = duy
+pos2.uz_th = beam_uth
+pos2.initialize_self_fields = 1
+pos2.do_qed_quantum_sync = 1
+pos2.qed_quantum_sync_phot_product_species = pho2
+pos2.do_classical_radiation_reaction = 0
 
 pho1.species_type = photon
 pho1.injection_style = none
 pho1.do_qed_breit_wheeler = 1
-pho1.qed_breit_wheeler_ele_product_species = ele_nlbw1
-pho1.qed_breit_wheeler_pos_product_species = pos_nlbw1
+pho1.qed_breit_wheeler_ele_product_species = ele1
+pho1.qed_breit_wheeler_pos_product_species = pos1
 
 pho2.species_type = photon
 pho2.injection_style = none
 pho2.do_qed_breit_wheeler = 1
-pho2.qed_breit_wheeler_ele_product_species = ele_nlbw2
-pho2.qed_breit_wheeler_pos_product_species = pos_nlbw2
+pho2.qed_breit_wheeler_ele_product_species = ele2
+pho2.qed_breit_wheeler_pos_product_species = pos2
 
-ele_nlbw1.species_type = electron
-ele_nlbw1.injection_style = none
-ele_nlbw1.do_qed_quantum_sync = 1
-ele_nlbw1.qed_quantum_sync_phot_product_species = pho1
-ele_nlbw1.do_classical_radiation_reaction = 0
+ele2.species_type = electron
+ele2.injection_style = none
+ele2.do_qed_quantum_sync = 1
+ele2.qed_quantum_sync_phot_product_species = pho2
+ele2.do_classical_radiation_reaction = 0
 
-pos_nlbw1.species_type = positron
-pos_nlbw1.injection_style = none
-pos_nlbw1.do_qed_quantum_sync = 1
-pos_nlbw1.qed_quantum_sync_phot_product_species = pho1
-pos_nlbw1.do_classical_radiation_reaction = 0
-
-ele_nlbw2.species_type = electron
-ele_nlbw2.injection_style = none
-ele_nlbw2.do_qed_quantum_sync = 1
-ele_nlbw2.qed_quantum_sync_phot_product_species = pho2
-ele_nlbw2.do_classical_radiation_reaction = 0
-
-pos_nlbw2.species_type = positron
-pos_nlbw2.injection_style = none
-pos_nlbw2.do_qed_quantum_sync = 1
-pos_nlbw2.qed_quantum_sync_phot_product_species = pho2
-pos_nlbw2.do_classical_radiation_reaction = 0
+pos1.species_type = positron
+pos1.injection_style = none
+pos1.do_qed_quantum_sync = 1
+pos1.qed_quantum_sync_phot_product_species = pho1
+pos1.do_classical_radiation_reaction = 0
 
 #################################
 ############# QED ###############
@@ -884,55 +881,28 @@ warpx.do_qed_schwinger = 0.
 ######### DIAGNOSTICS ###########
 #################################
 # FULL
-diagnostics.diags_names = bound trajs
+diagnostics.diags_names = particles_out particles_in
 
-bound.dump_last_timestep = 1
-bound.diag_type = BoundaryScraping
-bound.format = openpmd
-bound.openpmd_backend = h5
-bound.intervals = 1
+# particles that exit the simulation domain at any given time
+particles_out.dump_last_timestep = 1
+particles_out.diag_type = BoundaryScraping
+particles_out.format = openpmd
+particles_out.openpmd_backend = h5
+particles_out.intervals = -1
 
-beam1.save_particles_at_xlo = 1
-beam1.save_particles_at_ylo = 1
-beam1.save_particles_at_zlo = 1
-beam1.save_particles_at_xhi = 1
-beam1.save_particles_at_yhi = 1
-beam1.save_particles_at_zhi = 1
+ele1.save_particles_at_xlo = 1
+ele1.save_particles_at_ylo = 1
+ele1.save_particles_at_zlo = 1
+ele1.save_particles_at_xhi = 1
+ele1.save_particles_at_yhi = 1
+ele1.save_particles_at_zhi = 1
 
-beam2.save_particles_at_xlo = 1
-beam2.save_particles_at_ylo = 1
-beam2.save_particles_at_zlo = 1
-beam2.save_particles_at_xhi = 1
-beam2.save_particles_at_yhi = 1
-beam2.save_particles_at_zhi = 1
-
-ele_nlbw1.save_particles_at_xlo = 1
-ele_nlbw1.save_particles_at_ylo = 1
-ele_nlbw1.save_particles_at_zlo = 1
-ele_nlbw1.save_particles_at_xhi = 1
-ele_nlbw1.save_particles_at_yhi = 1
-ele_nlbw1.save_particles_at_zhi = 1
-
-ele_nlbw2.save_particles_at_xlo = 1
-ele_nlbw2.save_particles_at_ylo = 1
-ele_nlbw2.save_particles_at_zlo = 1
-ele_nlbw2.save_particles_at_xhi = 1
-ele_nlbw2.save_particles_at_yhi = 1
-ele_nlbw2.save_particles_at_zhi = 1
-
-pos_nlbw1.save_particles_at_xlo = 1
-pos_nlbw1.save_particles_at_ylo = 1
-pos_nlbw1.save_particles_at_zlo = 1
-pos_nlbw1.save_particles_at_xhi = 1
-pos_nlbw1.save_particles_at_yhi = 1
-pos_nlbw1.save_particles_at_zhi = 1
-
-pos_nlbw2.save_particles_at_xlo = 1
-pos_nlbw2.save_particles_at_ylo = 1
-pos_nlbw2.save_particles_at_zlo = 1
-pos_nlbw2.save_particles_at_xhi = 1
-pos_nlbw2.save_particles_at_yhi = 1
-pos_nlbw2.save_particles_at_zhi = 1
+pos2.save_particles_at_xlo = 1
+pos2.save_particles_at_ylo = 1
+pos2.save_particles_at_zlo = 1
+pos2.save_particles_at_xhi = 1
+pos2.save_particles_at_yhi = 1
+pos2.save_particles_at_zhi = 1
 
 pho1.save_particles_at_xlo = 1
 pho1.save_particles_at_ylo = 1
@@ -948,120 +918,98 @@ pho2.save_particles_at_xhi = 1
 pho2.save_particles_at_yhi = 1
 pho2.save_particles_at_zhi = 1
 
-trajs.intervals = 1
-trajs.diag_type = Full
-trajs.species = beam1 beam2
-trajs.fields_to_plot = none
-trajs.format = openpmd
-trajs.openpmd_backend = h5
-trajs.dump_last_timestep = 1
+ele2.save_particles_at_xlo = 1
+ele2.save_particles_at_ylo = 1
+ele2.save_particles_at_zlo = 1
+ele2.save_particles_at_xhi = 1
+ele2.save_particles_at_yhi = 1
+ele2.save_particles_at_zhi = 1
+
+pos1.save_particles_at_xlo = 1
+pos1.save_particles_at_ylo = 1
+pos1.save_particles_at_zlo = 1
+pos1.save_particles_at_xhi = 1
+pos1.save_particles_at_yhi = 1
+pos1.save_particles_at_zhi = 1
+
+# particles inside the simulation domain
+particles_in.intervals = 1
+particles_in.diag_type = Full
+particles_in.species = ele1 pos2
+particles_in.fields_to_plot = none
+particles_in.format = openpmd
+particles_in.openpmd_backend = h5
+particles_in.dump_last_timestep = 1
 
 # REDUCED
-warpx.reduced_diags_names = DiffLumi_beam1_beam2 DiffLumi_beam1_ele2 DiffLumi_beam1_pos2 DiffLumi_beam1_pho2 DiffLumi_ele1_beam2 DiffLumi_ele1_ele2 DiffLumi_ele1_pos2 DiffLumi_ele1_pho2 DiffLumi_pos1_beam2 DiffLumi_pos1_ele2 DiffLumi_pos1_pos2 DiffLumi_pos1_pho2 DiffLumi_pho1_beam2 DiffLumi_pho1_ele2 DiffLumi_pho1_pos2 DiffLumi_pho1_pho2
+warpx.reduced_diags_names = DiffLumi_ele1_pos2 DiffLumi_ele1_ele2 DiffLumi_pos1_pos2 DiffLumi_pos1_ele2 DiffLumi_pos1_pho2 DiffLumi_ele1_pho2 DiffLumi_pho1_pos2 DiffLumi_pho1_ele2 DiffLumi_pho1_pho2 CollRel_ele1_pos2
 
-DiffLumi_beam1_beam2.type = DifferentialLuminosity
-DiffLumi_beam1_ele2.type  = DifferentialLuminosity
-DiffLumi_beam1_pos2.type  = DifferentialLuminosity
-DiffLumi_beam1_pho2.type  = DifferentialLuminosity
-DiffLumi_ele1_beam2.type  = DifferentialLuminosity
-DiffLumi_ele1_ele2.type   = DifferentialLuminosity
-DiffLumi_ele1_pos2.type   = DifferentialLuminosity
-DiffLumi_ele1_pho2.type   = DifferentialLuminosity
-DiffLumi_pos1_beam2.type  = DifferentialLuminosity
-DiffLumi_pos1_ele2.type   = DifferentialLuminosity
-DiffLumi_pos1_pos2.type   = DifferentialLuminosity
-DiffLumi_pos1_pho2.type   = DifferentialLuminosity
-DiffLumi_pho1_beam2.type  = DifferentialLuminosity
-DiffLumi_pho1_ele2.type   = DifferentialLuminosity
-DiffLumi_pho1_pos2.type   = DifferentialLuminosity
-DiffLumi_pho1_pho2.type   = DifferentialLuminosity
+CollRel_ele1_pos2.type = ColliderRelevant
+CollRel_ele1_pos2.species = ele1 pos2
+CollRel_ele1_pos2.intervals = 1
 
-DiffLumi_beam1_beam2.bin_max = 2.1*beam_energy/q_e
-DiffLumi_beam1_ele2.bin_max  = 2.1*beam_energy/q_e
-DiffLumi_beam1_pos2.bin_max  = 2.1*beam_energy/q_e
-DiffLumi_beam1_pho2.bin_max  = 2.1*beam_energy/q_e
-DiffLumi_ele1_beam2.bin_max  = 2.1*beam_energy/q_e
-DiffLumi_ele1_ele2.bin_max   = 2.1*beam_energy/q_e
-DiffLumi_ele1_pos2.bin_max   = 2.1*beam_energy/q_e
-DiffLumi_ele1_pho2.bin_max   = 2.1*beam_energy/q_e
-DiffLumi_pos1_beam2.bin_max  = 2.1*beam_energy/q_e
-DiffLumi_pos1_ele2.bin_max   = 2.1*beam_energy/q_e
-DiffLumi_pos1_pos2.bin_max   = 2.1*beam_energy/q_e
-DiffLumi_pos1_pho2.bin_max   = 2.1*beam_energy/q_e
-DiffLumi_pho1_beam2.bin_max  = 2.1*beam_energy/q_e
-DiffLumi_pho1_ele2.bin_max   = 2.1*beam_energy/q_e
-DiffLumi_pho1_pos2.bin_max   = 2.1*beam_energy/q_e
-DiffLumi_pho1_pho2.bin_max   = 2.1*beam_energy/q_e
-
-DiffLumi_beam1_beam2.bin_min = 0.
-DiffLumi_beam1_ele2.bin_min = 0.
-DiffLumi_beam1_pos2.bin_min = 0.
-DiffLumi_beam1_pho2.bin_min = 0.
-DiffLumi_ele1_beam2.bin_min = 0.
-DiffLumi_ele1_ele2.bin_min = 0.
-DiffLumi_ele1_pos2.bin_min = 0.
-DiffLumi_ele1_pho2.bin_min = 0.
-DiffLumi_pos1_beam2.bin_min = 0.
-DiffLumi_pos1_ele2.bin_min = 0.
-DiffLumi_pos1_pos2.bin_min = 0.
-DiffLumi_pos1_pho2.bin_min = 0.
-DiffLumi_pho1_beam2.bin_min = 0.
-DiffLumi_pho1_ele2.bin_min = 0.
-DiffLumi_pho1_pos2.bin_min = 0.
-DiffLumi_pho1_pho2.bin_min = 0.
-
-DiffLumi_beam1_beam2.species = beam1 beam2
-DiffLumi_beam1_ele2.species = beam1 ele_nlbw2
-DiffLumi_beam1_pos2.species = beam1 pos_nlbw2
-DiffLumi_beam1_pho2.species = beam1 pho2
-DiffLumi_ele1_beam2.species = ele_nlbw1 beam2
-DiffLumi_ele1_ele2.species= ele_nlbw1 ele_nlbw2
-DiffLumi_ele1_pos2.species= ele_nlbw1 pos_nlbw2
-DiffLumi_ele1_pho2.species= ele_nlbw1 pho2
-DiffLumi_pos1_beam2.species = pos_nlbw1 beam2
-DiffLumi_pos1_ele2.species= pos_nlbw1 ele_nlbw2
-DiffLumi_pos1_pos2.species= pos_nlbw1 pos_nlbw2
-DiffLumi_pos1_pho2.species= pos_nlbw1 pho2
-DiffLumi_pho1_beam2.species = pho1 beam2
-DiffLumi_pho1_ele2.species= pho1 ele_nlbw2
-DiffLumi_pho1_pos2.species= pho1 pos_nlbw2
-DiffLumi_pho1_pho2.species= pho1 pho2
-
-
-DiffLumi_beam1_beam2.bin_number = 256
-DiffLumi_beam1_ele2.bin_number = 256
-DiffLumi_beam1_pos2.bin_number = 256
-DiffLumi_beam1_pho2.bin_number = 256
-DiffLumi_ele1_beam2.bin_number = 256
-DiffLumi_ele1_ele2.bin_number = 256
-DiffLumi_ele1_pos2.bin_number = 256
-DiffLumi_ele1_pho2.bin_number = 256
-DiffLumi_pos1_beam2.bin_number = 256
-DiffLumi_pos1_ele2.bin_number = 256
-DiffLumi_pos1_pos2.bin_number = 256
-DiffLumi_pos1_pho2.bin_number = 256
-DiffLumi_pho1_beam2.bin_number = 256
-DiffLumi_pho1_ele2.bin_number = 256
-DiffLumi_pho1_pos2.bin_number = 256
-DiffLumi_pho1_pho2.bin_number = 256
-
-
-DiffLumi_beam1_beam2.intervals = nt
-DiffLumi_beam1_ele2.intervals = nt
-DiffLumi_beam1_pos2.intervals = nt
-DiffLumi_beam1_pho2.intervals = nt
-DiffLumi_ele1_beam2.intervals = nt
-DiffLumi_ele1_ele2.intervals = nt
+DiffLumi_ele1_pos2.type = DifferentialLuminosity
 DiffLumi_ele1_pos2.intervals = nt
-DiffLumi_ele1_pho2.intervals = nt
-DiffLumi_pos1_beam2.intervals = nt
-DiffLumi_pos1_ele2.intervals = nt
+DiffLumi_ele1_pos2.species = ele1 pos2
+DiffLumi_ele1_pos2.bin_number = bin_num_1d_eff
+DiffLumi_ele1_pos2.bin_max = bin_edge_max_1d
+DiffLumi_ele1_pos2.bin_min = bin_edge_min_1d
+
+DiffLumi_ele1_ele2.type = DifferentialLuminosity
+DiffLumi_ele1_ele2.intervals = nt
+DiffLumi_ele1_ele2.species = ele1 ele2
+DiffLumi_ele1_ele2.bin_number = bin_num_1d_eff
+DiffLumi_ele1_ele2.bin_max = bin_edge_max_1d
+DiffLumi_ele1_ele2.bin_min = bin_edge_min_1d
+
+DiffLumi_pos1_pos2.type = DifferentialLuminosity
 DiffLumi_pos1_pos2.intervals = nt
+DiffLumi_pos1_pos2.species = pos1 pos2
+DiffLumi_pos1_pos2.bin_number = bin_num_1d_eff
+DiffLumi_pos1_pos2.bin_max = bin_edge_max_1d
+DiffLumi_pos1_pos2.bin_min = bin_edge_min_1d
+
+DiffLumi_pos1_ele2.type = DifferentialLuminosity
+DiffLumi_pos1_ele2.intervals = nt
+DiffLumi_pos1_ele2.species = pos1 ele2
+DiffLumi_pos1_ele2.bin_number = bin_num_1d_eff
+DiffLumi_pos1_ele2.bin_max = bin_edge_max_1d
+DiffLumi_pos1_ele2.bin_min = bin_edge_min_1d
+
+DiffLumi_ele1_pho2.type = DifferentialLuminosity
+DiffLumi_ele1_pho2.intervals = nt
+DiffLumi_ele1_pho2.species = ele1 pho2
+DiffLumi_ele1_pho2.bin_number = bin_num_1d_eff
+DiffLumi_ele1_pho2.bin_max = bin_edge_max_1d
+DiffLumi_ele1_pho2.bin_min = bin_edge_min_1d
+
+DiffLumi_pos1_pho2.type = DifferentialLuminosity
 DiffLumi_pos1_pho2.intervals = nt
-DiffLumi_pho1_beam2.intervals = nt
-DiffLumi_pho1_ele2.intervals = nt
+DiffLumi_pos1_pho2.species = pos1 pho2
+DiffLumi_pos1_pho2.bin_number = bin_num_1d_eff
+DiffLumi_pos1_pho2.bin_max = bin_edge_max_1d
+DiffLumi_pos1_pho2.bin_min = bin_edge_min_1d
+
+DiffLumi_pho1_pos2.type = DifferentialLuminosity
 DiffLumi_pho1_pos2.intervals = nt
-DiffLumi_pho1_pho2.intervals = nt  </code></pre>
+DiffLumi_pho1_pos2.species = pho1 pos2
+DiffLumi_pho1_pos2.bin_number = bin_num_1d_eff
+DiffLumi_pho1_pos2.bin_max = bin_edge_max_1d
+DiffLumi_pho1_pos2.bin_min = bin_edge_min_1d
+
+DiffLumi_pho1_ele2.type = DifferentialLuminosity
+DiffLumi_pho1_ele2.intervals = nt
+DiffLumi_pho1_ele2.species = pho1 ele2
+DiffLumi_pho1_ele2.bin_number = bin_num_1d_eff
+DiffLumi_pho1_ele2.bin_max = bin_edge_max_1d
+DiffLumi_pho1_ele2.bin_min = bin_edge_min_1d
+
+DiffLumi_pho1_pho2.type = DifferentialLuminosity
+DiffLumi_pho1_pho2.intervals = nt
+DiffLumi_pho1_pho2.species = pho1 pho2
+DiffLumi_pho1_pho2.bin_number = bin_num_1d_eff
+DiffLumi_pho1_pho2.bin_max = bin_edge_max_1d
+DiffLumi_pho1_pho2.bin_min = bin_edge_min_1d</code></pre>
 </div>
 </div>
 </div>
@@ -1243,7 +1191,7 @@ any links that you are not going to use.
 </div>
 </section></section><section id="aio-a-magnetic-mirror"><p>Content from <a href="a-magnetic-mirror.html">A Magnetic Mirror</a></p>
 <hr>
-<p>Last updated on 2025-07-01 |
+<p>Last updated on 2025-11-11 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/a-magnetic-mirror.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -1286,7 +1234,7 @@ the most popular page of the documentation 👠!</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the input file </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1412,7 +1360,7 @@ it in the directory where you will run the input.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1462,7 +1410,7 @@ work, we also plot the trajectories of the particles.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the Jupyter notebook </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
 <iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_3d_magnetic_mirror.ipynb" width="100%" height="800" style="border:none;">
 </iframe>
@@ -1563,8 +1511,8 @@ any links that you are not going to use.
   "url": "https://warpx-tutorials.github.io/NA/aio.html",
   "identifier": "https://warpx-tutorials.github.io/NA/aio.html",
   "dateCreated": "2025-09-22",
-  "dateModified": "2025-11-04",
-  "datePublished": "2025-11-04"
+  "dateModified": "2025-11-11",
+  "datePublished": "2025-11-11"
 }
 
   </script><script>
