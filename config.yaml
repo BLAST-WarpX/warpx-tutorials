@@ -69,6 +69,7 @@ episodes:
 - install.Rmd
 - a-beam-beam-collision.Rmd
 - a-magnetic-mirror.Rmd
+- a-fodo-cell.Rmd
 #- walkthrough.Rmd
 
 # Information for Learners
