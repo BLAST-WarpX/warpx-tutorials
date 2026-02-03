@@ -1,0 +1,121 @@
+####################
+### MY CONSTANTS ###
+####################
+# BEAM
+my_constants.mass          = m_p                              # kg
+my_constants.current       = 0.5                              # A
+my_constants.energy        = 6.7e6 * q_e                      # J 
+my_constants.velocity      = sqrt(2 * energy / mass)          # m/s 
+my_constants.gamma         = energy / (mass * clight**2) + 1. # - 
+my_constants.beta          = velocity / clight                # - 
+my_constants.beta_x        = 0.737881                         # m 
+my_constants.beta_y        = 0.737881                         # m 
+my_constants.beta_t        = 0.25                             # m
+my_constants.alpha_x       = +2.4685083                       # -
+my_constants.alpha_y       = -2.4685083                       # -
+my_constants.alpha_t       = 0.                               # -
+my_constants.gamma_x       = (1+alpha_x**2)/beta_x            # m^-1 
+my_constants.gamma_y       = (1+alpha_y**2)/beta_y            # m^-1
+my_constants.gamma_t       = (1+alpha_t**2)/beta_t            # m^-1
+my_constants.emitt_x       = 1.0e-6                           # m
+my_constants.emitt_y       = 1.0e-6                           # m
+my_constants.emitt_t       = 1.0e-6                           # m
+my_constants.sigma_x       = sqrt(emitt_x * beta_x)           # m
+my_constants.sigma_y       = sqrt(emitt_y * beta_y)           # m
+my_constants.sigma_z       = sqrt(emitt_t * beta_t)           # m
+my_constants.sigma_ux      = beta * sqrt(emitt_x * gamma_x)   # -
+my_constants.sigma_uy      = beta * sqrt(emitt_y * gamma_y)   # -
+my_constants.sigma_uz      = beta * sqrt(emitt_t * gamma_t)   # -
+my_constants.sigma_t       = sigma_z / velocity               # s
+my_constants.charge        = current *sigma_t                 # C 
+# BOX
+my_constants.Lx   = 20*sigma_x  # m
+my_constants.Ly   = 20*sigma_y  # m
+my_constants.zmin = -20*sigma_z # m
+my_constants.zmax = 0
+# LATTICE
+my_constants.L_drift1      =  7.44e-2 # m 
+my_constants.L_drift2      = 14.88e-2 # m
+my_constants.L_drift3      =  7.44e-2 # m
+my_constants.quad_gradient = 38.64    # T/m 
+my_constants.L_quad        = 6.10e-2  # m
+# TIME
+my_constants.T = (L_drift1+L_drift2+L_drift3+2*L_quad)/velocity # s
+my_constants.dt = sigma_t/10                                    # s
+my_constants.nt = floor(T/dt)                                   # -
+
+##########################
+### GENERAL PARAMETERS ###
+##########################
+stop_time                = T
+geometry.dims            = 3
+geometry.prob_lo         = -0.5*Lx -0.5*Ly zmin 
+geometry.prob_hi         = +0.5*Lx +0.5*Ly zmax
+amr.n_cell               = 64 64 128
+amr.max_level            = 0
+warpx.limit_verbose_step = 1
+warpx.const_dt           = dt
+warpx.do_electrostatic   = labframe
+warpx.poisson_solver     = fft
+warpx.do_moving_window   = 1
+warpx.moving_window_dir  = z
+warpx.moving_window_v    = beta  # in units of c
+algo.particle_shape      = 3
+boundary.field_lo        = open open open 
+boundary.field_hi        = open open open 
+
+#################
+### PARTICLES ###
+#################
+particles.species_names         = beam
+beam.species_type               = proton 
+beam.injection_style            = gaussian_beam 
+beam.x_rms                      = sigma_x
+beam.y_rms                      = sigma_y
+beam.z_rms                      = sigma_z 
+beam.x_m                        = 0
+beam.y_m                        = 0
+beam.z_m                        = 0.5*zmin
+beam.npart                      = 1e3
+beam.q_tot                      = charge
+beam.momentum_distribution_type = gaussian
+beam.uz_m                       = beta*gamma  
+beam.uy_m                       = 0.0
+beam.ux_m                       = 0.0
+beam.ux_th                      = sigma_ux
+beam.uy_th                      = sigma_uy
+beam.uz_th                      = sigma_uz
+
+###############
+### LATTICE ###
+###############
+lattice.elements = drift1 quad1 drift2 quad2 drift3
+drift1.type = drift
+drift1.ds   = L_drift1
+quad1.type  = quad
+quad1.ds    = L_quad
+quad1.dBdx  = -quad_gradient
+drift2.type = drift
+drift2.ds   = L_drift2
+quad2.type  = quad
+quad2.ds    = L_quad
+quad2.dBdx  = quad_gradient
+drift3.type = drift
+drift3.ds   = L_drift3
+
+###################
+### DIAGNOSTICS ###
+###################
+warpx.reduced_diags_names = beam_stats
+beam_stats.type = BeamRelevant
+beam_stats.species = beam
+beam_stats.intervals = 1
+
+diagnostics.diags_names = particles_in 
+particles_in.intervals = floor(nt/20)
+particles_in.diag_type = Full
+particles_in.species = beam
+particles_in.fields_to_plot = none
+particles_in.format = openpmd
+particles_in.openpmd_backend = bp
+particles_in.dump_last_timestep = 1

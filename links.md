@@ -13,3 +13,7 @@ any links that you are not going to use.
 [warpx-issues]: https://github.com/BLAST-WarpX/warpx/issues
 [warpx-discussions]: https://github.com/BLAST-WarpX/warpx/discussions 
 [hpsf]: https://hpsf.io/
+[impactx]: https://impactx.readthedocs.io/en/latest/
+[impactx-github]: https://github.com/ECP-WarpX/impactx
+[impactx-fodo-example]: https://impactx.readthedocs.io/en/latest/usage/examples/fodo_space_charge/README.html#fodo-cell-with-2d-space-charge-using-envelope-tracking
+[blast]: https://blast.lbl.gov/
