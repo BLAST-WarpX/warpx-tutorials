@@ -305,7 +305,6 @@ the beam particle positions and analyze the beam dynamics through the cell.
 You can [download the notebook](./files/analysis_3d_fodo_cell.ipynb) and try it yourself.
 Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook.
 
-
 ::::::::::::::::::::::::::::::::::::: keypoints 
  🎯 Particle tracking follows individual particles, while envelope tracking follows the beam envelope - particle tracking is more detailed but computationally expensive.
 
