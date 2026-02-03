@@ -212,7 +212,9 @@ particles_in.dump_last_timestep = 1
 
 Some notable details:
 
-* **Space charge effects**: Space charge is computed self-consistently by solving the Poisson equation at each timestep using the updated charge density from the particle distribution. This allows the beam's own fields to affect its dynamics.
+* **Space charge effects**: 
+Space charge is computed self-consistently by solving the Poisson equation at each timestep using the updated charge density from the particle distribution. 
+This allows the beam's own fields to affect its dynamics.
 
 * **Turning off space charge**: To turn off space charge effects, set `algo.maxwell_solver = none` and comment out the following inputs:
   ```bash
@@ -223,7 +225,8 @@ Some notable details:
   # boundary.field_hi        = open open open 
   ```
 
-* **External fields**: To initialize an arbitrary external field (such as the quadrupole magnets in a FODO cell), check out the [external fields documentation](https://warpx.readthedocs.io/en/latest/usage/parameters.html#external-fields) for details on how to define fields analytically or load them from files.
+* **External fields**: To initialize an arbitrary external field (such as the quadrupole magnets in a FODO cell), 
+check out the [external fields documentation](https://warpx.readthedocs.io/en/latest/usage/parameters.html#external-fields) for details on how to define fields analytically or load them from files.
 
 ## Run 
 
@@ -243,8 +246,6 @@ Just like that! 💃
 Note that with Conda's WarpX you can run this anywhere in your filesystem (provided that you copied there the input of course)
 because WarpX's executables are in your `$PATH`.
 :::
-
-
 
 If you want to make the simulation faster and/or bigger, then you should run with the parallel version of WarpX.
 The optimal setup to run the simulation depends on your hardware. 
@@ -277,11 +278,11 @@ My experiments: 35 seconds on an NVIDIA A100 GPU, more than 1 hour on 4 cores of
 ### With Python 🐍
 Now that we have the results, we can analyze them using Python.  
 We will use the [openPMD-viewer][openpmd-viewer] library to grab the data that the simulation produced in `openPMD` format. 
-Here you can find [a few great tutorials on how to use the viewer](https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html).
+Here you can find [a few tutorials on how to use the viewer](https://openpmd-viewer.readthedocs.io/en/latest/tutorials/tutorials.html).
 If you feel nerdy and/or you need to deal with the data in parallel workflows, you can use the [openPMD-api][openpmd-api].
 
 As an example for the FODO cell simulation, we have developed a simple Jupyter notebook where we retrieve 
-the beam particle positions and analyze the beam dynamics through the cell.
+the beam variables and analyze the beam dynamics through the cell.
 
 Here is a video of the beam travelling through the FODO cell:
 
@@ -293,13 +294,11 @@ Your browser does not support the video tag.
 
 ## Let's take a look at the Jupyter notebook
 
-<iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_3d_fodo_cell.ipynb" 
-           width="100%" height="800" style="border:none;">
-     </iframe>
-::::::::::::::::::::::::::::::::::::::::::::::::::
+Nbviewer does not load this notebook; you can [view it on GitHub](https://github.com/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_3d_fodo_cell.ipynb) (GitHub renders it in the browser) or [download the notebook](./files/analysis_3d_fodo_cell.ipynb) and try it yourself.
+Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook. 
+If the simulation is too expensive,
 
-You can [download the notebook](./files/analysis_3d_fodo_cell.ipynb) and try it yourself.
-Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook.
+::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
  🎯 Particle tracking follows individual particles, while envelope tracking follows the beam envelope - particle tracking is more detailed but computationally expensive.
