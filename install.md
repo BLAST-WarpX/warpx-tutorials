@@ -51,6 +51,11 @@ conda create -n warpx -c conda-forge warpx
 conda activate warpx 
 ```
 
+::: note
+The first `warpx` (after `-n`) is the name of the conda environment; 
+the second `warpx` is the name of the package to be installed from the conda-forge channel.
+:::
+
 Now you should have 4 different WarpX binaries in your `PATH` called `warpx.1d`, `warpx.2d`, `warpx.3d`, `warpx.rz`.  
 Each binary for a different dimensionality.  
 

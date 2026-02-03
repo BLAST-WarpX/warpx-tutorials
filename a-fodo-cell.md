@@ -6,23 +6,26 @@ exercises: 20
 
 :::::::::::::::::::::::::::::::::::::: questions 
 
-How to simulate a particle beam travelling through a FODO cell 🧲?
+How to simulate a particle beam travelling through a FODO cell 🧲🛝🧲?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: objectives
 
 Learn how to setup, run, and visualize a particle 
-beam simulation through a FODO (Focusing-Defocusing) cell with WarpX
+beam simulation through a FODO (Focusing-Defocusing) cell with WarpX 🎢
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Setup
 
 In this example we will simulate a particle beam travelling through a FODO cell.
-A **FODO cell** is a periodic focusing structure used in particle accelerators, consisting of alternating **F**ocusing (F) and **D**efocusing (D) quadrupole magnets, with **O** (drift) sections in between.
-The FODO cell is one of the most fundamental building blocks in accelerator physics, providing transverse focusing to keep particle beams confined as they travel through the accelerator.
-The alternating focusing and defocusing quadrupoles create a net focusing effect in both transverse planes, allowing the beam to be transported over long distances while maintaining its size.
+A **FODO cell** is a periodic focusing structure used in particle accelerators, 
+consisting of alternating **F**ocusing (F) and **D**efocusing (D) quadrupole magnets, with **O** (drift) sections in between.
+The FODO cell is one of the most fundamental building blocks in accelerator physics, 
+providing transverse focusing to keep particle beams confined as they travel through the accelerator.
+The alternating focusing and defocusing quadrupoles create a net focusing effect in both transverse planes, 
+allowing the beam to be transported over long distances while maintaining its size.
 
 ### WarpX for Beam Dynamics
 
@@ -31,7 +34,7 @@ Two important features are:
 
 * **Space charge effects**: 
 You can turn space charge effects on or off using the appropriate input parameters. 
-When enabled, WarpX solves the electromagnetic/static fields self-consistently from the particle distributions, 
+When enabled, WarpX solves the electromagnetic (or electrostatic) fields self-consistently from the particle distributions, 
 allowing you to study how the beam's own fields affect its dynamics.
 
 * **Arbitrary external fields**: 
@@ -42,41 +45,28 @@ This makes it possible to model complex accelerator elements like quadrupoles, d
 ::: caution
 
 **WarpX is not necessarily the best tool for all beam dynamics simulations**. 
-If space charge effects are negligible and you're primarily interested in the linear beam optics, 
+If space charge effects are negligible and you're primarily interested in linear beam optics, 
 there are more specialized and computationally efficient tools available, such as ImpactX.
 
 :::
 
 ### WarpX vs ImpactX
 
-**ImpactX** is another code from the same ecosystem, the Beam, Plasma & Accelerator Simulation Toolkit ([**BLAST**][blast]), that is specifically designed for beam dynamics simulations. 
-You can find the [ImpactX documentation][impactx] and [repository][impactx-github] for more information.
-Here are the key differences:
+**ImpactX** is another code from the same ecosystem, the Beam, Plasma & Accelerator Simulation Toolkit ([**BLAST**][blast]), 
+designed for beam dynamics. See the [ImpactX documentation][impactx] and [repository][impactx-github].
+Key differences:
 
-* **ImpactX** is optimized for beam dynamics applications and uses envelope tracking or symplectic particle tracking methods. 
-It is typically much faster than WarpX for cases where space charge effects are weak or can be approximated.
+* **WarpX** — **t-based** (time-based): solves Maxwell/Poisson on a grid, advances particles and fields in time. Best for:
+  - Strong space charge, wakefields, full EM solutions
+  - Plasma–beam and other collective effects
+  - When time evolution of fields matters
 
-A fundamental distinction between these codes is their evolution variable:
+* **ImpactX** — **z-based** (position-based): tracks particles along the beamline through lattice elements. Best for:
+  - Weak or approximated space charge
+  - Optics design, linear dynamics, envelope tracking
+  - Fast runs when detailed field evolution is not needed
 
-* **WarpX** is a **t-based** (time-based) code: 
-It evolves the system in time by solving Maxwell's or Poisson's equations on a spatial grid and advancing particles and fields self-consistently in time steps. 
-This makes it suitable for:
-  - Strong space charge effects that require self-consistent field solutions
-  - Wakefield effects that need to be captured
-  - Full electromagnetic field solutions
-  - Plasma-beam interactions or other complex collective effects
-  - Cases where the full time evolution of fields is important
-
-* **ImpactX** is a **z-based** (position-based) code: 
-It tracks particles along the beamline (z-direction) through accelerator elements, advancing the beam's state as it propagates through the lattice. 
-This approach is more efficient for:
-  - Space charge effects that are negligible or can be approximated
-  - Fast simulations for optics design and optimization
-  - Linear beam dynamics studies
-  - Envelope models for rapid prototyping
-  - Cases where you're primarily interested in the beam's evolution through the accelerator structure rather than detailed time-dependent field evolution
-
-For this FODO cell tutorial, we'll use WarpX to demonstrate how to set up a beam dynamics simulation with the option to include or exclude space charge effects.
+For this tutorial we use WarpX to set up a FODO simulation with optional space charge.
 
 ::: callout
 ## Equivalent ImpactX Example
@@ -138,7 +128,7 @@ my_constants.quad_gradient = 38.64    # T/m
 my_constants.L_quad        = 6.10e-2  # m
 # TIME
 my_constants.T = (L_drift1+L_drift2+L_drift3+2*L_quad)/velocity # s
-my_constants.dt = sigma_t/10                                    # s
+my_constants.dt = sigma_t/4                                     # s
 my_constants.nt = floor(T/dt)                                   # -
 
 ##########################
@@ -292,6 +282,12 @@ If you feel nerdy and/or you need to deal with the data in parallel workflows, y
 
 As an example for the FODO cell simulation, we have developed a simple Jupyter notebook where we retrieve 
 the beam particle positions and analyze the beam dynamics through the cell.
+
+Here is a video of the beam travelling through the FODO cell:
+
+<video src="https://gist.github.com/user-attachments/assets/59ad6448-a679-4d2a-b0c3-dd4ccf48662b" controls width="100%">
+Your browser does not support the video tag.
+</video>
 
 :::::::::::::::::::::::::::::::::::::::::: spoiler
 
