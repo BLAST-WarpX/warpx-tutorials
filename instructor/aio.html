@@ -513,7 +513,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-install"><p>Content from <a href="install.html">Install</a></p>
 <hr>
-<p>Last updated on 2025-11-11 |
+<p>Last updated on 2026-02-03 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/install.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 10 minutes</p>
@@ -600,6 +600,11 @@ a new <strong>environment</strong>.</p>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> warpx <span class="at">-c</span> conda-forge warpx </span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">conda</span> activate warpx </span></code></pre>
+</div>
+<div class="note">
+<p>The first <code>warpx</code> (after <code>-n</code>) is the name of
+the conda environment; the second <code>warpx</code> is the name of the
+package to be installed from the conda-forge channel.</p>
 </div>
 <p>Now you should have 4 different WarpX binaries in your
 <code>PATH</code> called <code>warpx.1d</code>, <code>warpx.2d</code>,
@@ -714,7 +719,7 @@ is where you want to go</a>.</p>
   Let’s take a look at the input file
   </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1080,7 +1085,7 @@ Conda installation of WarpX.</p>
   Let’s run in serial
   </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1106,7 +1111,7 @@ work on many common laptops, even though it might not be ideal.</p>
   Let’s run in parallel
   </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
 <div class="accordion-body">
 <p>This is just one way of doing it!</p>
 <div class="codewrapper sourceCode" id="cb3">
@@ -1156,7 +1161,7 @@ project them on the <span class="math inline">\((z,x)\)</span> and <span class="
   Let’s take a look at the Jupyter notebook
   </h3>
 </button>
-<div id="collapseSpoiler4" class="accordion-collapse collapse" aria-labelledby="headingSpoiler4" data-bs-parent="#accordionSpoiler4">
+<div id="collapseSpoiler4" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler4" aria-labelledby="headingSpoiler4">
 <div class="accordion-body">
 <iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_3d_beambeam.ipynb" width="100%" height="800" style="border:none;">
 </iframe>
@@ -1499,7 +1504,7 @@ any links that you are not going to use.
 <div class="inner">
 <h3 class="card-title">Questions</h3>
 <p>How to simulate a particle beam travelling through a FODO cell
-🧲?</p>
+🧲🛝🧲?</p>
 </div>
 </div>
 </div>
@@ -1508,7 +1513,7 @@ any links that you are not going to use.
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <p>Learn how to setup, run, and visualize a particle beam simulation
-through a FODO (Focusing-Defocusing) cell with WarpX</p>
+through a FODO (Focusing-Defocusing) cell with WarpX 🎢</p>
 </div>
 </div>
 </div>
@@ -1536,9 +1541,9 @@ embedded in external fields. Two important features are:</p>
 <ul>
 <li><p><strong>Space charge effects</strong>: You can turn space charge
 effects on or off using the appropriate input parameters. When enabled,
-WarpX solves the electromagnetic/static fields self-consistently from
-the particle distributions, allowing you to study how the beam’s own
-fields affect its dynamics.</p></li>
+WarpX solves the electromagnetic (or electrostatic) fields
+self-consistently from the particle distributions, allowing you to study
+how the beam’s own fields affect its dynamics.</p></li>
 <li><p><strong>Arbitrary external fields</strong>: WarpX allows you to
 define arbitrary external electromagnetic fields, either analytically or
 by loading them from files. This makes it possible to model complex
@@ -1554,9 +1559,8 @@ magnets.</p></li>
 <div class="callout-content">
 <p><strong>WarpX is not necessarily the best tool for all beam dynamics
 simulations</strong>. If space charge effects are negligible and you’re
-primarily interested in the linear beam optics, there are more
-specialized and computationally efficient tools available, such as
-ImpactX.</p>
+primarily interested in linear beam optics, there are more specialized
+and computationally efficient tools available, such as ImpactX.</p>
 </div>
 </div>
 </div>
@@ -1565,54 +1569,34 @@ ImpactX.</p>
 <h3 id="warpx-vs-impactx">WarpX vs ImpactX<a class="anchor" aria-label="anchor" href="#warpx-vs-impactx"></a>
 </h3>
 <p><strong>ImpactX</strong> is another code from the same ecosystem, the
-Beam, Plasma &amp; Accelerator Simulation Toolkit (<a href="https://blast.lbl.gov/" class="external-link"><strong>BLAST</strong></a>), that is
-specifically designed for beam dynamics simulations. You can find the <a href="https://impactx.readthedocs.io/en/latest/" class="external-link">ImpactX
-documentation</a> and <a href="https://github.com/ECP-WarpX/impactx" class="external-link">repository</a> for more
-information. Here are the key differences:</p>
+Beam, Plasma &amp; Accelerator Simulation Toolkit (<a href="https://blast.lbl.gov/" class="external-link"><strong>BLAST</strong></a>), designed for
+beam dynamics. See the <a href="https://impactx.readthedocs.io/en/latest/" class="external-link">ImpactX
+documentation</a> and <a href="https://github.com/ECP-WarpX/impactx" class="external-link">repository</a>. Key
+differences:</p>
 <ul>
 <li>
-<strong>ImpactX</strong> is optimized for beam dynamics applications
-and uses envelope tracking or symplectic particle tracking methods. It
-is typically much faster than WarpX for cases where space charge effects
-are weak or can be approximated.</li>
-</ul>
-<p>A fundamental distinction between these codes is their evolution
-variable:</p>
+<strong>WarpX</strong> — <strong>t-based</strong> (time-based):
+solves Maxwell/Poisson on a grid, advances particles and fields in time.
+Best for:
 <ul>
-<li>
-<strong>WarpX</strong> is a <strong>t-based</strong> (time-based)
-code: It evolves the system in time by solving Maxwell’s or Poisson’s
-equations on a spatial grid and advancing particles and fields
-self-consistently in time steps. This makes it suitable for:
-<ul>
-<li>Strong space charge effects that require self-consistent field
-solutions</li>
-<li>Wakefield effects that need to be captured</li>
-<li>Full electromagnetic field solutions</li>
-<li>Plasma-beam interactions or other complex collective effects</li>
-<li>Cases where the full time evolution of fields is important</li>
+<li>Strong space charge, wakefields, full EM solutions</li>
+<li>Plasma–beam and other collective effects</li>
+<li>When time evolution of fields matters</li>
 </ul>
 </li>
 <li>
-<strong>ImpactX</strong> is a <strong>z-based</strong>
-(position-based) code: It tracks particles along the beamline
-(z-direction) through accelerator elements, advancing the beam’s state
-as it propagates through the lattice. This approach is more efficient
-for:
+<strong>ImpactX</strong> — <strong>z-based</strong>
+(position-based): tracks particles along the beamline through lattice
+elements. Best for:
 <ul>
-<li>Space charge effects that are negligible or can be approximated</li>
-<li>Fast simulations for optics design and optimization</li>
-<li>Linear beam dynamics studies</li>
-<li>Envelope models for rapid prototyping</li>
-<li>Cases where you’re primarily interested in the beam’s evolution
-through the accelerator structure rather than detailed time-dependent
-field evolution</li>
+<li>Weak or approximated space charge</li>
+<li>Optics design, linear dynamics, envelope tracking</li>
+<li>Fast runs when detailed field evolution is not needed</li>
 </ul>
 </li>
 </ul>
-<p>For this FODO cell tutorial, we’ll use WarpX to demonstrate how to
-set up a beam dynamics simulation with the option to include or exclude
-space charge effects.</p>
+<p>For this tutorial we use WarpX to set up a FODO simulation with
+optional space charge.</p>
 <div id="equivalent-impactx-example" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -1638,7 +1622,7 @@ is where you want to go</a>.</p>
   Let’s take a look at the input file
   </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1686,7 +1670,7 @@ my_constants.quad_gradient = 38.64    # T/m
 my_constants.L_quad        = 6.10e-2  # m
 # TIME
 my_constants.T = (L_drift1+L_drift2+L_drift3+2*L_quad)/velocity # s
-my_constants.dt = sigma_t/10                                    # s
+my_constants.dt = sigma_t/4                                     # s
 my_constants.nt = floor(T/dt)                                   # -
 
 ##########################
@@ -1810,7 +1794,7 @@ installation of WarpX.</p>
   Let’s run in serial
   </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1836,7 +1820,7 @@ work on many common laptops, even though it might not be ideal.</p>
   Let’s run in parallel
   </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
 <div class="accordion-body">
 <p>This is just one way of doing it!</p>
 <div class="codewrapper sourceCode" id="cb4">
@@ -1879,7 +1863,10 @@ the <a href="https://openpmd-api.readthedocs.io/en/latest/" class="external-link
 <p>As an example for the FODO cell simulation, we have developed a
 simple Jupyter notebook where we retrieve the beam particle positions
 and analyze the beam dynamics through the cell.</p>
-<div id="accordionSpoiler4" class="accordion spoiler-accordion accordion-flush">
+<p>Here is a video of the beam travelling through the FODO cell:</p>
+<video src="https://gist.github.com/user-attachments/assets/59ad6448-a679-4d2a-b0c3-dd4ccf48662b" controls width="100%">
+Your browser does not support the video tag.
+</video><div id="accordionSpoiler4" class="accordion spoiler-accordion accordion-flush">
 <div class="accordion-item">
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler4" aria-expanded="false" aria-controls="collapseSpoiler4">
   <h3 class="accordion-header" id="headingSpoiler4">
@@ -1887,7 +1874,7 @@ and analyze the beam dynamics through the cell.</p>
   Let’s take a look at the Jupyter notebook
   </h3>
 </button>
-<div id="collapseSpoiler4" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler4" aria-labelledby="headingSpoiler4">
+<div id="collapseSpoiler4" class="accordion-collapse collapse" aria-labelledby="headingSpoiler4" data-bs-parent="#accordionSpoiler4">
 <div class="accordion-body">
 <iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_3d_fodo_cell.ipynb" width="100%" height="800" style="border:none;">
 </iframe>

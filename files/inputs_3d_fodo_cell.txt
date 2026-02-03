@@ -41,7 +41,7 @@ my_constants.quad_gradient = 38.64    # T/m
 my_constants.L_quad        = 6.10e-2  # m
 # TIME
 my_constants.T = (L_drift1+L_drift2+L_drift3+2*L_quad)/velocity # s
-my_constants.dt = sigma_t/10                                    # s
+my_constants.dt = sigma_t/4                                     # s
 my_constants.nt = floor(T/dt)                                   # -
 
 ##########################
