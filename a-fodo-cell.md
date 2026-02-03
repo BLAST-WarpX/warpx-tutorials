@@ -222,13 +222,18 @@ particles_in.dump_last_timestep = 1
 
 Some notable details:
 
-*  [Details about the simulation setup will be added here]
+* **Space charge effects**: Space charge is computed self-consistently by solving the Poisson equation at each timestep using the updated charge density from the particle distribution. This allows the beam's own fields to affect its dynamics.
 
-*  [Information about particle initialization will be added here]
+* **Turning off space charge**: To turn off space charge effects, set `algo.maxwell_solver = none` and comment out the following inputs:
+  ```bash
+  # warpx.const_dt           = dt
+  # warpx.do_electrostatic   = labframe
+  # warpx.poisson_solver     = fft
+  # boundary.field_lo        = open open open 
+  # boundary.field_hi        = open open open 
+  ```
 
-*  [Details about the magnetic field configuration will be added here]
-
-*  [Information about diagnostics will be added here]
+* **External fields**: To initialize an arbitrary external field (such as the quadrupole magnets in a FODO cell), check out the [external fields documentation](https://warpx.readthedocs.io/en/latest/usage/parameters.html#external-fields) for details on how to define fields analytically or load them from files.
 
 ## Run 
 
