@@ -275,6 +275,15 @@ Here are some things you can visualize:
 
 3. **Filament spacing**: from the 2D field maps, estimate the characteristic spacing of the current filaments and compare it to the skin depth $c/\omega_{pe}$.
 
+### With a Jupyter notebook 📓
+
+If you'd like a ready-made notebook with plots and analysis for this simulation, 
+you can download it here:
+
+- [analysis_2d_weibel.ipynb](./files/analysis_2d_weibel.ipynb)
+
+The notebook includes a magnetic field map ($B_x$) and the evolution of the electric and magnetic field energy on a semi-log scale.
+
 
 ::::::::::::::::::::::::::::::::::::: challenge
 

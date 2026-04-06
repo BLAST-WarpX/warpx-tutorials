@@ -351,6 +351,15 @@ Here are some things you can visualize:
 
 4. **Field energy vs time**: use `FieldEnergy.txt` to track how the electromagnetic energy in the box evolves as the laser enters, interacts, and exits.
 
+### With a Jupyter notebook 📓
+
+If you'd like a ready-made notebook with plots and analysis for this simulation, 
+you can download it here:
+
+- [analysis_2d_tnsa.ipynb](./files/analysis_2d_tnsa.ipynb)
+
+The notebook includes a field map with the laser electric field overlaid on the target electron density, and a phase-space plot of the accelerated contaminant protons.
+
 
 ::::::::::::::::::::::::::::::::::::: challenge
 

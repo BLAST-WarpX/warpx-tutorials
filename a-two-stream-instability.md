@@ -250,6 +250,15 @@ Here are some things you can visualize:
 
 3. **Growth rate**: from the slope of $\ln(E_{\mathrm{field}})$ during the linear phase, extract the growth rate and compare it to the theoretical prediction $\gamma \sim \omega_{pe}$.
 
+### With a Jupyter notebook 📓
+
+If you'd like a ready-made notebook with plots and analysis for this simulation, 
+you can download it here:
+
+- [analysis_1d_twostream.ipynb](./files/analysis_1d_twostream.ipynb)
+
+The notebook includes a phase-space plot $(z, u_z)$ and the evolution of the electric and magnetic field energy on a semi-log scale.
+
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
