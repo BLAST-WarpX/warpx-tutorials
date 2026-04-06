@@ -70,6 +70,9 @@ episodes:
 - a-beam-beam-collision.Rmd
 - a-magnetic-mirror.Rmd
 - a-fodo-cell.Rmd
+- a-two-stream-instability.Rmd
+- a-weibel-instability.Rmd
+- a-laser-driven-ion-accelerator.Rmd
 #- walkthrough.Rmd
 
 # Information for Learners
