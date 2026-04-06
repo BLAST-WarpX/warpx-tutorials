@@ -294,11 +294,13 @@ Your browser does not support the video tag.
 
 ## Let's take a look at the Jupyter notebook
 
-Nbviewer does not load this notebook; you can [view it on GitHub](https://github.com/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_3d_fodo_cell.ipynb) (GitHub renders it in the browser) or [download the notebook](./files/analysis_3d_fodo_cell.ipynb) and try it yourself.
-Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook. 
-If the simulation is too expensive,
+<iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_3d_fodo_cell.ipynb" 
+           width="100%" height="800" style="border:none;">
+     </iframe>
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
-::::::::::::::::::::::::::::::::::::::::::::::
+You can [download the notebook](./files/analysis_3d_fodo_cell.ipynb) and try it yourself.
+Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook.
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
  🎯 Particle tracking follows individual particles, while envelope tracking follows the beam envelope - particle tracking is more detailed but computationally expensive.

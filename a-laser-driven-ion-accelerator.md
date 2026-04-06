@@ -353,12 +353,19 @@ Here are some things you can visualize:
 
 ### With a Jupyter notebook 📓
 
-If you'd like a ready-made notebook with plots and analysis for this simulation, 
-you can download it here:
-
-- [analysis_2d_tnsa.ipynb](./files/analysis_2d_tnsa.ipynb)
-
 The notebook includes a field map with the laser electric field overlaid on the target electron density, and a phase-space plot of the accelerated contaminant protons.
+
+:::::::::::::::::::::::::::::::::::::::::: spoiler
+
+## Let's take a look at the Jupyter notebook
+
+<iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_2d_tnsa.ipynb" 
+           width="100%" height="800" style="border:none;">
+     </iframe>
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+You can [download the notebook](./files/analysis_2d_tnsa.ipynb) and try it yourself.
+Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook.
 
 
 ::::::::::::::::::::::::::::::::::::: challenge

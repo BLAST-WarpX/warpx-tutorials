@@ -252,12 +252,19 @@ Here are some things you can visualize:
 
 ### With a Jupyter notebook 📓
 
-If you'd like a ready-made notebook with plots and analysis for this simulation, 
-you can download it here:
-
-- [analysis_1d_twostream.ipynb](./files/analysis_1d_twostream.ipynb)
-
 The notebook includes a phase-space plot $(z, u_z)$ and the evolution of the electric and magnetic field energy on a semi-log scale.
+
+:::::::::::::::::::::::::::::::::::::::::: spoiler
+
+## Let's take a look at the Jupyter notebook
+
+<iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_1d_twostream.ipynb" 
+           width="100%" height="800" style="border:none;">
+     </iframe>
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+You can [download the notebook](./files/analysis_1d_twostream.ipynb) and try it yourself.
+Remember to either run the notebook from the simulation directory or change the corresponding path in the notebook.
 
 
 ::::::::::::::::::::::::::::::::::::: challenge
