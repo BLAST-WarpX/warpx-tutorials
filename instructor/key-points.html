@@ -302,6 +302,42 @@
 </div>
 <!--/div.accordion-flush-->
 
+<div class="accordion accordion-flush" id="accordionFlush7">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading7">
+        <a href="a-two-stream-instability.html">6. A Two-stream Instability</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush8">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading8">
+        <a href="a-weibel-instability.html">7. A Weibel Instability</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush9">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading9">
+        <a href="a-laser-driven-ion-accelerator.html">8. A Laser-Driven Ion Accelerator</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
                 </div>
               </div>
             </div>
@@ -407,6 +443,61 @@ and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-l
 and ask there.</p>
 <p>📷 To analyze and visualize the simulation results in <a href="https://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
 can use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link"><strong>openPMD-viewer</strong></a>
+library for Python.</p></section><section id="a-two-stream-instability"><h2 class="section-heading"><a href="a-two-stream-instability.html">A Two-stream Instability</a></h2>
+<hr class="half-width">
+<p>💡 The two-stream instability converts the kinetic energy of
+counter-streaming beams into electrostatic wave energy.</p>
+<p>🔬 The instability growth rate depends on the ratio of drift velocity
+to thermal velocity: <span class="math inline">\(v_d / v_{\mathrm{th}}
+\gg 1\)</span> is needed for the instability to develop.</p>
+<p>📊 Reduced diagnostics (<code>FieldEnergy</code>,
+<code>FieldMaximum</code>) let you track the instability growth in real
+time without post-processing full datasets.</p>
+<p>🔍 The <a href="https://warpx.readthedocs.io/en/latest/" class="external-link"><strong>documentation</strong></a>
+is the first place to look for answers, otherwise check out our <a href="https://github.com/BLAST-WarpX/warpx/issues" class="external-link"><strong>issues</strong></a>
+and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-link"><strong>discussions</strong></a>
+and ask there.</p>
+<p>📷 To analyze and visualize the simulation results in <a href="https://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
+can use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link"><strong>openPMD-viewer</strong></a>
+library for Python.</p></section><section id="a-weibel-instability"><h2 class="section-heading"><a href="a-weibel-instability.html">A Weibel Instability</a></h2>
+<hr class="half-width">
+<p>💡 The Weibel instability generates <strong>magnetic fields</strong>
+from a momentum anisotropy – unlike the two-stream instability, which
+generates electrostatic fields.</p>
+<p>🔬 The instability produces current filaments with a characteristic
+size of order the plasma skin depth <span class="math inline">\(c/\omega_{pe}\)</span>.</p>
+<p>📊 Reduced diagnostics (<code>FieldEnergy</code>,
+<code>FieldMaximum</code>) are an efficient way to monitor the
+instability growth without storing large field dumps.</p>
+<p>⚡ Choosing parameters wisely (<span class="math inline">\(v_d \gg
+v_{\mathrm{th}}\)</span>, sufficient resolution and box size) is
+essential for observing the instability clearly.</p>
+<p>🔍 The <a href="https://warpx.readthedocs.io/en/latest/" class="external-link"><strong>documentation</strong></a>
+is the first place to look for answers, otherwise check out our <a href="https://github.com/BLAST-WarpX/warpx/issues" class="external-link"><strong>issues</strong></a>
+and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-link"><strong>discussions</strong></a>
+and ask there.</p>
+<p>📷 To analyze and visualize the simulation results in <a href="https://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
+can use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link"><strong>openPMD-viewer</strong></a>
+library for Python.</p></section><section id="a-laser-driven-ion-accelerator"><h2 class="section-heading"><a href="a-laser-driven-ion-accelerator.html">A Laser-Driven Ion Accelerator</a></h2>
+<hr class="half-width">
+<p>💡 TNSA accelerates ions via a strong electrostatic sheath field
+created by hot electrons escaping the rear surface of a laser-irradiated
+thin target.</p>
+<p>🔬 Key parameters controlling the maximum ion energy are the laser
+intensity (<span class="math inline">\(a_0\)</span>), the target
+thickness, and the target density.</p>
+<p>⚙️ Charge-conserving current deposition (<code>esirkepov</code>) and
+proper boundary conditions (PML, absorbing) are essential for this type
+of simulation.</p>
+<p>⚡ This is a computationally expensive simulation – be prepared to
+iterate on resolution and target density to find a balance between
+physical fidelity and computational cost.</p>
+<p>🔍 The <a href="https://warpx.readthedocs.io/en/latest/" class="external-link"><strong>documentation</strong></a>
+is the first place to look for answers, otherwise check out our <a href="https://github.com/BLAST-WarpX/warpx/issues" class="external-link"><strong>issues</strong></a>
+and <a href="https://github.com/BLAST-WarpX/warpx/discussions" class="external-link"><strong>discussions</strong></a>
+and ask there.</p>
+<p>📷 To analyze and visualize the simulation results in <a href="https://www.openpmd.org/" class="external-link"><strong>openPMD</strong></a> format, you
+can use the <a href="https://openpmd-viewer.readthedocs.io/" class="external-link"><strong>openPMD-viewer</strong></a>
 library for Python.</p></section>
 </div>
     </main>
@@ -456,9 +547,9 @@ library for Python.</p></section>
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/instructor/key-points.html",
   "identifier": "https://warpx-tutorials.github.io/NA/instructor/key-points.html",
-  "dateCreated": "2026-02-03",
-  "dateModified": "2026-03-24",
-  "datePublished": "2026-03-24"
+  "dateCreated": "2026-04-06",
+  "dateModified": "2026-04-06",
+  "datePublished": "2026-04-06"
 }
 
   </script><script>
