@@ -1,0 +1,144 @@
+####################
+### MY CONSTANTS ###
+####################
+my_constants.micro = 1e-6
+my_constants.femto = 1e-15
+my_constants.eV = q_e 
+# LASER 
+my_constants.FWHM_I = ...*femto # [s]
+my_constants.laser_tpeak = 2*FWHM_I # [s]
+my_constants.laser_waist = ...*micro # [m] 
+my_constants.laser_wavelength = ...*micro # [m]
+my_constants.a0 = ... # [-]
+# PLASMA 
+my_constants.n_c = epsilon0 * m_e * (2*pi*clight)**2 /(laser_wavelength*q_e)**2 # [m^-3] 
+my_constants.ne0 = ...*n_c # [m^-3] 
+my_constants.Te0 = ...*eV # [J]
+my_constants.zmin_targ = 2*FWHM_I*clight # [m]
+my_constants.thick_targ = ...*micro # [m]
+my_constants.thick_cont = ...*micro # [m]
+# BOX
+my_constants.Lz = 4*FWHM_I*clight
+my_constants.Lx = 10*laser_waist
+my_constants.nz = ...
+my_constants.nx = ...
+my_constants.dx = Lx / nx 
+my_constants.dz = Lz / nz
+# TIME
+my_constants.cfl = ...
+my_constants.T = 2*Lz/clight
+my_constants.dt = cfl*dx/(sqrt(2)*clight)
+my_constants.nt = floor(T/dt) 
+
+##########################
+### GENERAL PARAMETERS ###
+##########################
+stop_time = T
+amr.n_cell = nx nz 
+amr.max_level = 0
+geometry.dims = 2
+geometry.prob_lo = -0.5*Lx  0
+geometry.prob_hi =  0.5*Lx  Lz
+
+##########################
+### BOUNDARY CONDITION ###
+##########################
+boundary.field_lo = pml pml
+boundary.field_hi = pml pml
+boundary.particle_lo = absorbing absorbing absorbing
+boundary.particle_hi = absorbing absorbing absorbing
+
+###############
+### NUMERICS ###
+################
+algo.particle_shape = 3
+algo.maxwell_solver = yee
+algo.particle_pusher = boris
+algo.current_deposition = esirkepov 
+warpx.cfl = cfl
+warpx.use_filter = 1
+
+#################
+### PARTICLES ###
+#################
+particles.species_names = ion_targ ele_targ ion_cont ele_cont
+
+ion_targ.species_type = boron
+ion_targ.injection_style = NRandomPerCell
+ion_targ.num_particles_per_cell = 20
+ion_targ.momentum_distribution_type = maxwell_boltzmann
+ion_targ.theta = Te0 / (10*m_p*clight**2)
+ion_targ.zmin = zmin_targ
+ion_targ.zmax = zmin_targ + thick_targ 
+ion_targ.profile = constant
+ion_targ.density = ne0/5
+
+ele_targ.species_type = electron
+ele_targ.injection_style = NRandomPerCell
+ele_targ.num_particles_per_cell = 40 
+ele_targ.momentum_distribution_type = maxwell_boltzmann
+ele_targ.theta = Te0 / (m_e*clight**2)
+ele_targ.zmin = zmin_targ
+ele_targ.zmax = zmin_targ + thick_targ 
+ele_targ.profile = constant
+ele_targ.density = ne0
+
+ion_cont.species_type = proton
+ion_cont.injection_style = NRandomPerCell
+ion_cont.num_particles_per_cell = 100
+ion_cont.momentum_distribution_type = maxwell_boltzmann
+ion_cont.theta = Te0 / (m_p*clight**2)
+ion_cont.zmin = zmin_targ + thick_targ 
+ion_cont.zmax =  zmin_targ + thick_targ + thick_cont
+ion_cont.profile = constant
+ion_cont.density = 5*n_c
+
+ele_cont.species_type = electron
+ele_cont.injection_style = NRandomPerCell
+ele_cont.num_particles_per_cell = 50
+ele_cont.momentum_distribution_type = maxwell_boltzmann
+ele_cont.theta = Te0 / (m_e*clight**2)
+ele_cont.zmin = zmin_targ + thick_targ 
+ele_cont.zmax = zmin_targ + thick_targ + thick_cont
+ele_cont.profile = constant
+ele_cont.density = 5*n_c
+
+#############
+### LASER ###
+#############
+lasers.names        = laser1
+laser1.position     = 0 0 dz
+laser1.direction    = 0. 0. 1.         
+laser1.polarization = 1. 0. 0.         
+laser1.a0           = a0 
+laser1.wavelength   = laser_wavelength 
+laser1.profile      = Gaussian
+laser1.profile_waist = laser_waist 
+laser1.profile_duration = FWHM_I/1.17741
+laser1.profile_t_peak = laser_tpeak 
+laser1.profile_focal_distance = zmin_targ
+
+################
+#### DIAGNOSTICS
+################
+# FULL
+diagnostics.diags_names = fields particles
+fields.diag_type = Full
+fields.fields_to_plot = Ex Ez rho_ele_targ rho_ion_targ rho_ele_cont rho_ion_cont 
+fields.format = openpmd
+fields.intervals = floor(nt/200) 
+fields.openpmd_backend = bp
+fields.write_species = 0
+particles.diag_type = Full
+particles.format = openpmd
+particles.openpmd_backend = bp
+particles.species = ele_targ ion_cont 
+particles.fields_to_plot = none
+particles.intervals = floor(nt/200) 
+
+# REDUCED
+warpx.reduced_diags_names = FieldEnergy FieldMaximum
+FieldEnergy.type = FieldEnergy
+FieldEnergy.intervals = 1 
+FieldMaximum.type = FieldMaximum
+FieldMaximum.intervals = 1 
