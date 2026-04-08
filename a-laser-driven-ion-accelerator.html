@@ -348,7 +348,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>A Laser-Driven Ion Accelerator</h1>
-        <p>Last updated on 2026-04-06 |
+        <p>Last updated on 2026-04-08 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/a-laser-driven-ion-accelerator.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -587,11 +587,11 @@ FieldMaximum.intervals = 1 </code></pre>
 choose! This is the most complex input of the tutorial, and the
 parameter choices will determine whether you get meaningful physics out
 of the simulation.</p>
-<div id="choose-the-laser-parameters" class="callout discussion">
+<div id="choose-the-laser-parameters" class="callout challenge">
 <div class="callout-square">
-<i class="callout-icon" data-feather="message-circle"></i>
+<i class="callout-icon" data-feather="zap"></i>
 </div>
-<span class="callout-header">Discussion</span>
+<span class="callout-header">Challenge</span>
 <div id="choose-the-laser-parameters" class="callout-inner">
 <h3 class="callout-title">Choose the laser parameters</h3>
 <div class="callout-content">
@@ -613,7 +613,16 @@ of the simulation.</p>
 </tr><tr class="even"><td><code>a0</code></td>
 <td><span class="math inline">\(a_0\)</span></td>
 <td>Normalized vector potential (dimensionless laser amplitude)</td>
-</tr></tbody></table><p>Some hints:</p>
+</tr></tbody></table></div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Hints </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div class="accordion-body">
 <ul><li>A Ti:Sapphire laser has <span class="math inline">\(\lambda \approx
 0.8\,\mu\mathrm{m}\)</span>. This is the most common choice.</li>
 <li>Typical ultrashort pulses have durations <span class="math inline">\(\tau_{\mathrm{FWHM}} \sim 20\)</span>–<span class="math inline">\(100\)</span> fs.</li>
@@ -627,11 +636,12 @@ typically a few micrometers (<span class="math inline">\(\sim
 </ul></div>
 </div>
 </div>
-<div id="choose-the-target-parameters" class="callout discussion">
-<div class="callout-square">
-<i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<span class="callout-header">Discussion</span>
+<div id="choose-the-target-parameters" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
 <div id="choose-the-target-parameters" class="callout-inner">
 <h3 class="callout-title">Choose the target parameters</h3>
 <div class="callout-content">
@@ -655,7 +665,16 @@ density <span class="math inline">\(n_c\)</span>
 <td></td>
 <td>Thickness of the hydrogen contaminant layer <span class="math inline">\([\mathrm{m}]\)</span>
 </td>
-</tr></tbody></table><p>Some hints:</p>
+</tr></tbody></table></div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Hints </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div class="accordion-body">
 <ul><li>Solid-density targets have <span class="math inline">\(n_e \sim
 100\)</span>–<span class="math inline">\(500\, n_c\)</span>, where <span class="math inline">\(n_c\)</span> is the critical density for the
 chosen wavelength. However, running at full solid density is very
@@ -671,11 +690,12 @@ to higher maximum proton energies (up to a point).</li>
 </ul></div>
 </div>
 </div>
-<div id="choose-the-numerical-parameters" class="callout discussion">
-<div class="callout-square">
-<i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<span class="callout-header">Discussion</span>
+<div id="choose-the-numerical-parameters" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
 <div id="choose-the-numerical-parameters" class="callout-inner">
 <h3 class="callout-title">Choose the numerical parameters</h3>
 <div class="callout-content">
@@ -688,17 +708,27 @@ to higher maximum proton energies (up to a point).</li>
 </tr><tr class="odd"><td><code>cfl</code></td>
 <td>CFL number (must be <span class="math inline">\(&lt;
 1/\sqrt{2}\)</span> in 2D)</td>
-</tr></tbody></table><p>Some hints:</p>
+</tr></tbody></table></div>
+</div>
+</div>
+<div id="accordionSolution3" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
+  <h4 class="accordion-header" id="headingSolution3"> Hints </h4>
+</button>
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div class="accordion-body">
 <ul><li>You need to resolve the laser wavelength: <span class="math inline">\(\Delta z \lesssim \lambda / 20\)</span> is a
 common rule of thumb, with <span class="math inline">\(\lambda /
 30\)</span> or finer being safer.</li>
 <li>The transverse resolution can be somewhat coarser than the
-longitudinal, but should still resolve the plasma skin depth <span class="math inline">\(c/\omega_{pe}\)</span> for the target
+longitudinal, but should still resolve <span class="math inline">\(c/\omega_{pe}\)</span> for the target
 density.</li>
 <li>A CFL of <span class="math inline">\(\sim 0.7\)</span> (i.e. <span class="math inline">\(1/\sqrt{2}\)</span>) is the maximum allowed.</li>
 <li>For a first test, use a coarser grid to make sure the simulation
 runs correctly, and then refine.</li>
 </ul></div>
+</div>
 </div>
 </div>
 </div>
@@ -777,12 +807,13 @@ time. Consider running in parallel or on a GPU.</p>
 </div>
 <p>You should see a standard output flashing out a lot of info.<br>
 At the end, you should find in your folder:</p>
-<ul><li>a subfolder called <code>diags</code>: here is where the code stored
-the diagnostics<br></li>
-<li>a file called <code>warpx_used_inputs</code>: this is a summary of
-the inputs that were used to run the simulation<br></li>
+<ul><li>a subfolder <code>diags/</code> with the full field and particle
+diagnostics<br></li>
 <li>files <code>FieldEnergy.txt</code> and <code>FieldMaximum.txt</code>
-with the reduced diagnostics</li>
+with the reduced diagnostics, inside
+<code>diags/reducedfiles/</code><br></li>
+<li>a file called <code>warpx_used_inputs</code>: a summary of the
+inputs that were used to run the simulation</li>
 </ul><p>If that’s the case, yey! 💯</p>
 <p>If the run went wrong, you may find a <code>Backtrace.0.0</code> file
 which can be useful for debugging purposes. Let me know if the code
@@ -841,7 +872,10 @@ notebook.</p>
 <div id="questions-for-analysis" class="callout-inner">
 <h3 class="callout-title">Questions for analysis</h3>
 <div class="callout-content">
-<ol style="list-style-type: decimal"><li><p>What is the maximum proton energy you observe? How does it
+<ol style="list-style-type: decimal"><li><p>Describe what you observe in the field maps and charge density
+plots at different times. Can you identify the laser entering, the
+electron heating, and the proton acceleration?</p></li>
+<li><p>What is the maximum proton energy you observe? How does it
 compare to the theoretical TNSA scaling with laser intensity <span class="math inline">\(a_0\)</span>?</p></li>
 <li><p>How does the sheath field <span class="math inline">\(E_z\)</span> at the target rear surface evolve in
 time? Can you identify the moment when the sheath field is
@@ -858,12 +892,12 @@ heavier (e.g., carbon)?</p></li>
 </ol></div>
 </div>
 </div>
-<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div id="accordionSolution4" class="accordion challenge-accordion accordion-flush">
 <div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
-  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
+  <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
 <div class="accordion-body">
 <p>These are open-ended questions meant to guide your exploration. A
 classical TNSA scaling predicts the maximum proton energy <span class="math inline">\(E_{\max} \propto a_0\)</span> (or <span class="math inline">\(\propto \sqrt{I}\)</span>), though the exact
@@ -874,15 +908,23 @@ electrons recirculate more efficiently.</p>
 </div>
 </div>
 </div>
-</div>
-<div class="section level3">
-<h3 id="gallery">Gallery<a class="anchor" aria-label="anchor" href="#gallery"></a></h3>
+<div id="accordionSpoiler5" class="accordion spoiler-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler5" aria-expanded="false" aria-controls="collapseSpoiler5">
+  <h3 class="accordion-header" id="headingSpoiler5">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Gallery </h3>
+</button>
+<div id="collapseSpoiler5" class="accordion-collapse collapse" aria-labelledby="headingSpoiler5" data-bs-parent="#accordionSpoiler5">
+<div class="accordion-body">
 <figure><img src="https://gist.github.com/user-attachments/assets/ecc369e1-58c0-4885-ae29-ac6d51998092" alt="2D map showing the laser electric field interacting with the solid-density target and accelerated protons" class="figure mx-auto d-block"><div class="figcaption">Laser interacting with a solid target in a TNSA
 simulation and accelerating a layer of contaminants.</div>
 </figure><figure><img src="https://gist.github.com/user-attachments/assets/7e3bd05f-e9ab-40c9-b663-78db7576d283" alt="2D map showing the phase space of the accelerated protons at the end of the simulation" class="figure mx-auto d-block"><div class="figcaption">Phase space of the accelerated protons at the
 end of the simulation.</div>
 </figure><iframe src="https://drive.google.com/file/d/19DrJUt7RDr14YqU83sfdWNP7zQk3-bEf/preview" width="100%" height="500" allow="autoplay">
 </iframe>
+</div>
+</div>
+</div>
+</div>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -976,9 +1018,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/a-laser-driven-ion-accelerator.html",
   "identifier": "https://warpx-tutorials.github.io/NA/a-laser-driven-ion-accelerator.html",
-  "dateCreated": "2026-04-06",
-  "dateModified": "2026-04-06",
-  "datePublished": "2026-04-07"
+  "dateCreated": "2026-04-08",
+  "dateModified": "2026-04-08",
+  "datePublished": "2026-04-08"
 }
 
   </script><script>

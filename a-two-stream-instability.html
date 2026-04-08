@@ -348,7 +348,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>A Two-stream Instability</h1>
-        <p>Last updated on 2026-04-06 |
+        <p>Last updated on 2026-04-08 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/a-two-stream-instability.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -367,8 +367,7 @@
 <div class="card-body">
 <div class="inner">
 <h3 class="card-title">Questions</h3>
-<p>How do two counter-streaming electron beams become unstable and
-generate electrostatic waves?</p>
+<p>🤼 How do two counter-streaming electron beams become unstable?</p>
 </div>
 </div>
 </div>
@@ -393,8 +392,7 @@ density can grow exponentially. The free energy stored in the relative
 drift is converted into electrostatic wave energy until the beams
 thermalize and the instability saturates.</p>
 <p>This example uses a 1D periodic box with two counter-streaming
-electron populations, making it an ideal starting point for studying
-kinetic plasma instabilities with a PIC code.</p>
+electron populations on a neutralizing ion background.</p>
 </section><section><h2 class="section-heading" id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a></h2>
 <hr class="half-width"><p>Make sure to download the <a href="./files/input_1d_two_stream_instability.txt">input file</a>.</p>
 <p>Whenever you need to prepare an input file, <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html" class="external-link">this
@@ -513,19 +511,19 @@ FieldMaximum.intervals = 1 </code></pre>
 <div class="section level3">
 <h3 id="choosing-the-parameters">Choosing the parameters<a class="anchor" aria-label="anchor" href="#choosing-the-parameters"></a></h3>
 <p>You will notice that some parameters in the input file are set to
-<code>...</code> (ellipsis). These are left for <strong>you</strong> to
-choose! Picking sensible physical and numerical parameters is an
-important part of setting up a simulation. Here is some guidance.</p>
-<div id="choose-the-physical-parameters" class="callout discussion">
+<code>...</code> (ellipsis). These are left for you to choose 🗳️!
+Picking sensible physical and numerical parameters is an important part
+of setting up a simulation. Here is some guidance.</p>
+<div id="choose-the-physical-parameters" class="callout challenge">
 <div class="callout-square">
-<i class="callout-icon" data-feather="message-circle"></i>
+<i class="callout-icon" data-feather="zap"></i>
 </div>
-<span class="callout-header">Discussion</span>
+<span class="callout-header">Challenge</span>
 <div id="choose-the-physical-parameters" class="callout-inner">
 <h3 class="callout-title">Choose the physical parameters</h3>
 <div class="callout-content">
 <p>The physical parameters you need to set are:</p>
-<table class="table"><colgroup><col width="34%"><col width="25%"><col width="40%"></colgroup><thead><tr class="header"><th>Parameter</th>
+<table class="table"><colgroup><col width="12%"><col width="31%"><col width="56%"></colgroup><thead><tr class="header"><th>Parameter</th>
 <th>Symbol</th>
 <th>Description</th>
 </tr></thead><tbody><tr class="odd"><td><code>n0</code></td>
@@ -540,8 +538,19 @@ important part of setting up a simulation. Here is some guidance.</p>
 <td><span class="math inline">\(\beta_0 = v_d/c\)</span></td>
 <td>Drift velocity of each beam normalized to <span class="math inline">\(c\)</span>
 </td>
-</tr></tbody></table><p>Think about the following:</p>
-<ul><li>A typical laboratory plasma density is in the range <span class="math inline">\(10^{18}\)</span>–<span class="math inline">\(10^{24}\)</span> m<span class="math inline">\(^{-3}\)</span>.</li>
+</tr></tbody></table></div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Hints </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div class="accordion-body">
+<ul><li>A typical plasma prototype is an ionized gas. What is the number
+density of an ionized gas at standard conditions? Think of a fluorescent
+lamp, a tokamak, or the solar wind.</li>
 <li>The temperature should be low enough that the thermal spread does
 not wash out the instability: the drift velocity should be larger than
 the thermal velocity, i.e. <span class="math inline">\(v_d \gg
@@ -552,19 +561,21 @@ point.</li>
 </ul></div>
 </div>
 </div>
-<div id="choose-the-numerical-parameters" class="callout discussion">
-<div class="callout-square">
-<i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<span class="callout-header">Discussion</span>
+
+<div id="choose-the-numerical-parameters" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
 <div id="choose-the-numerical-parameters" class="callout-inner">
 <h3 class="callout-title">Choose the numerical parameters</h3>
 <div class="callout-content">
 <p>The numerical parameters you need to set are:</p>
-<table class="table"><colgroup><col width="45%"><col width="54%"></colgroup><thead><tr class="header"><th>Parameter</th>
+<table class="table"><colgroup><col width="21%"><col width="78%"></colgroup><thead><tr class="header"><th>Parameter</th>
 <th>Description</th>
 </tr></thead><tbody><tr class="odd"><td><code>Lx</code></td>
-<td>Box length, expressed in units of the skin depth <span class="math inline">\(c/\omega_{pe}\)</span>
+<td>Box length, expressed in units of <span class="math inline">\(c/\omega_{pe}\)</span>
 </td>
 </tr><tr class="even"><td><code>nx</code></td>
 <td>Number of grid cells</td>
@@ -574,14 +585,22 @@ point.</li>
 </tr><tr class="even"><td><code>T</code></td>
 <td>Total simulation time, expressed in units of <span class="math inline">\(\omega_{pe}^{-1}\)</span>
 </td>
-</tr></tbody></table><p>Think about the following:</p>
-<ul><li>The box must be large enough to fit several wavelengths of the most
-unstable mode. A box of <span class="math inline">\(\sim
-10\)</span>–<span class="math inline">\(50\)</span> skin depths is a
-reasonable choice.</li>
-<li>The grid must resolve the skin depth, i.e. <span class="math inline">\(\Delta x \lesssim c/\omega_{pe}\)</span>. So
+</tr></tbody></table></div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Hints </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div class="accordion-body">
+<ul><li>The most unstable wavelength is <span class="math inline">\(\lambda
+\sim 2\pi\,\beta_0\,(c/\omega_{pe})\)</span>. The box must be large
+enough to fit several of these wavelengths.</li>
+<li>The grid must resolve the shortest relevant scale, i.e. <span class="math inline">\(\Delta x \lesssim c/\omega_{pe}\)</span>. So
 <code>nx</code> should be at least comparable to <code>Lx</code> (in
-skin depth units).</li>
+units of <span class="math inline">\(c/\omega_{pe}\)</span>).</li>
 <li>The CFL should be <span class="math inline">\(\lesssim 1\)</span>
 for stability of the Yee solver.</li>
 <li>The simulation must run long enough for the instability to develop
@@ -591,14 +610,17 @@ range.</li>
 </div>
 </div>
 </div>
+</div>
 <div class="section level3">
 <h3 id="notable-details">Notable details<a class="anchor" aria-label="anchor" href="#notable-details"></a></h3>
 <ul><li><p>Two electron species (<code>ele1</code>, <code>ele2</code>) are
 initialized with equal density <code>n0</code> and temperature
 <code>T0</code>, but with opposite drift velocities <span class="math inline">\(\pm \beta_0 c\)</span> along the <span class="math inline">\(z\)</span>-axis.</p></li>
-<li><p>There is <strong>no ion background</strong> in this input; the
-simulation relies on the periodic boundary conditions and the two
-equal-density beams to maintain charge neutrality on average.</p></li>
+<li><p>There is <strong>no ion background</strong> in this input.
+Because we do not ask WarpX to solve Poisson’s equation at
+initialization, the fields start at zero and the uniform charge density
+of the electrons never sources a DC field, effectively acting as if a
+neutralizing background were present.</p></li>
 <li><p>The diagnostics write out particle data (<code>z</code>,
 <code>uz</code>) for both species, which lets you construct the phase
 space <span class="math inline">\((z, u_z)\)</span> at each
@@ -609,7 +631,7 @@ field value at every timestep, so you can track the exponential growth
 of the instability without post-processing the full data.</p></li>
 </ul></div>
 </section><section><h2 class="section-heading" id="run">Run<a class="anchor" aria-label="anchor" href="#run"></a></h2>
-<hr class="half-width"><p>Create a new folder and copy the input file there, after filling in
+<hr class="half-width"><p>Create a new folder and copy the input file there. Then fill it with
 your chosen parameters. This is a 1D simulation, so it should run very
 quickly even in serial.</p>
 <div id="accordionSpoiler2" class="accordion spoiler-accordion accordion-flush">
@@ -631,16 +653,16 @@ quickly even in serial.</p>
 </div>
 <p>You should see a standard output flashing out a lot of info.<br>
 At the end, you should find in your folder:</p>
-<ul><li>a subfolder called <code>diags</code>: here is where the code stored
-the diagnostics<br></li>
-<li>a file called <code>warpx_used_inputs</code>: this is a summary of
-the inputs that were used to run the simulation<br></li>
+<ul><li>a subfolder <code>diags/particles/</code> with the full particle
+diagnostics<br></li>
 <li>files <code>FieldEnergy.txt</code> and <code>FieldMaximum.txt</code>
-with the reduced diagnostics</li>
+with the reduced diagnostics, inside
+<code>diags/reducedfiles/</code><br></li>
+<li>a file called <code>warpx_used_inputs</code>: a summary of the
+inputs that were used to run the simulation</li>
 </ul><p>If that’s the case, yey! 💯</p>
 <p>If the run went wrong, you may find a <code>Backtrace.0.0</code> file
-which can be useful for debugging purposes. Let me know if the code
-fails in any way!</p>
+which can be useful for debugging purposes.</p>
 </section><section><h2 class="section-heading" id="visualize">Visualize<a class="anchor" aria-label="anchor" href="#visualize"></a></h2>
 <hr class="half-width"><div class="section level3">
 <h3 id="with-python">With Python 🐍<a class="anchor" aria-label="anchor" href="#with-python"></a></h3>
@@ -692,7 +714,9 @@ notebook.</p>
 <div id="questions-for-analysis" class="callout-inner">
 <h3 class="callout-title">Questions for analysis</h3>
 <div class="callout-content">
-<ol style="list-style-type: decimal"><li><p>How does the growth rate of the field energy depend on the drift
+<ol style="list-style-type: decimal"><li><p>Describe what you observe in the phase space <span class="math inline">\((z, u_z)\)</span> at different times and in the
+field energy evolution. Can you identify distinct stages?</p></li>
+<li><p>How does the growth rate of the field energy depend on the drift
 velocity <span class="math inline">\(\beta_0\)</span>? Try running with
 two different values and compare.</p></li>
 <li><p>What happens to the phase space after saturation? Can you
@@ -705,12 +729,12 @@ and the onset of the instability?</p></li>
 </ol></div>
 </div>
 </div>
-<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div id="accordionSolution3" class="accordion challenge-accordion accordion-flush">
 <div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
-  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
+  <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>These are open-ended questions meant to guide your exploration. The
 key insight is that the instability requires <span class="math inline">\(v_d &gt; v_{\mathrm{th}}\)</span>; when thermal
@@ -719,14 +743,22 @@ effects dominate, Landau damping stabilizes the modes.</p>
 </div>
 </div>
 </div>
-</div>
-<div class="section level3">
-<h3 id="gallery">Gallery<a class="anchor" aria-label="anchor" href="#gallery"></a></h3>
+<div id="accordionSpoiler4" class="accordion spoiler-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler4" aria-expanded="false" aria-controls="collapseSpoiler4">
+  <h3 class="accordion-header" id="headingSpoiler4">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Gallery </h3>
+</button>
+<div id="collapseSpoiler4" class="accordion-collapse collapse" aria-labelledby="headingSpoiler4" data-bs-parent="#accordionSpoiler4">
+<div class="accordion-body">
 <figure><img src="https://gist.github.com/user-attachments/assets/0160a10a-9a08-443c-84a3-610a9a5eeb73" alt="Phase space plot showing the two counter-streaming electron beams forming vortex structures at saturation" class="figure mx-auto d-block"><div class="figcaption">Phase space of the two-stream instability at
 saturation.</div>
 </figure><figure><img src="https://gist.github.com/user-attachments/assets/907e36d9-a91e-4939-899a-22b78519b81a" alt="Evolution of the field energy." class="figure mx-auto d-block"><div class="figcaption">Evolution of the field energy.</div>
-</figure><iframe src="https://drive.google.com/file/d/1yjdWnaUYPqJCj5I1TRYQC2olIiunS30C/preview" width="100%" height="500" allow="autoplay">
+</figure><iframe src="https://drive.google.com/file/d/17_CKWVxKYjx0XPaUb2o1Z4cfkPAkPecB/preview" width="100%" height="500" allow="autoplay">
 </iframe>
+</div>
+</div>
+</div>
+</div>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -816,9 +848,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/a-two-stream-instability.html",
   "identifier": "https://warpx-tutorials.github.io/NA/a-two-stream-instability.html",
-  "dateCreated": "2026-04-06",
-  "dateModified": "2026-04-06",
-  "datePublished": "2026-04-07"
+  "dateCreated": "2026-04-08",
+  "dateModified": "2026-04-08",
+  "datePublished": "2026-04-08"
 }
 
   </script><script>

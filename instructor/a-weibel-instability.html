@@ -348,7 +348,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>A Weibel Instability</h1>
-        <p>Last updated on 2026-04-06 |
+        <p>Last updated on 2026-04-08 |
 
         <a href="https://blast-warpx.github.io/warpx-tutorials/edit/main/episodes/a-weibel-instability.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -413,7 +413,7 @@ is where you want to go</a>.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the input file </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -523,11 +523,11 @@ FieldMaximum.intervals = 1 </code></pre>
 choose! Designing a good simulation requires making physical and
 numerical choices –<br>
 this is part of the exercise.</p>
-<div id="choose-the-physical-parameters" class="callout discussion">
+<div id="choose-the-physical-parameters" class="callout challenge">
 <div class="callout-square">
-<i class="callout-icon" data-feather="message-circle"></i>
+<i class="callout-icon" data-feather="zap"></i>
 </div>
-<span class="callout-header">Discussion</span>
+<span class="callout-header">Challenge</span>
 <div id="choose-the-physical-parameters" class="callout-inner">
 <h3 class="callout-title">Choose the physical parameters</h3>
 <div class="callout-content">
@@ -547,24 +547,35 @@ this is part of the exercise.</p>
 <td><span class="math inline">\(\beta_0 = v_d/c\)</span></td>
 <td>Drift velocity of each beam normalized to <span class="math inline">\(c\)</span>
 </td>
-</tr></tbody></table><p>Some hints:</p>
+</tr></tbody></table></div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Hints </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div class="accordion-body">
 <ul><li>The Weibel instability requires an anisotropy in the momentum space.
 Here, the anisotropy comes from the relative drift between the two
 beams. A mildly relativistic drift (e.g. <span class="math inline">\(\beta_0 \sim 0.1\)</span>–<span class="math inline">\(0.5\)</span>) will produce a clear
 instability.</li>
 <li>The temperature should be small enough that the thermal spread does
 not wash out the anisotropy. As a rule of thumb, <span class="math inline">\(v_d \gg v_{\mathrm{th}}\)</span> where <span class="math inline">\(v_{\mathrm{th}} = \sqrt{T_0/m_e}\)</span>.</li>
-<li>A density in the range <span class="math inline">\(10^{20}\)</span>–<span class="math inline">\(10^{24}\)</span> m<span class="math inline">\(^{-3}\)</span> works well; what matters is that
-lengths and times are measured in skin depths and inverse plasma
-frequencies.</li>
+<li>A typical plasma prototype is an ionized gas. What is the number
+density of an ionized gas at standard conditions? Think of a fluorescent
+lamp, a tokamak, or the solar wind. What matters is that lengths and
+times are measured in units of <span class="math inline">\(c/\omega_{pe}\)</span> and <span class="math inline">\(\omega_{pe}^{-1}\)</span>.</li>
 </ul></div>
 </div>
 </div>
-<div id="choose-the-numerical-parameters" class="callout discussion">
-<div class="callout-square">
-<i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<span class="callout-header">Discussion</span>
+<div id="choose-the-numerical-parameters" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
 <div id="choose-the-numerical-parameters" class="callout-inner">
 <h3 class="callout-title">Choose the numerical parameters</h3>
 <div class="callout-content">
@@ -572,8 +583,7 @@ frequencies.</li>
 <table class="table"><colgroup><col width="45%"><col width="54%"></colgroup><thead><tr class="header"><th>Parameter</th>
 <th>Description</th>
 </tr></thead><tbody><tr class="odd"><td><code>Lx</code></td>
-<td>Box length (in each direction), expressed in units of the skin depth
-<span class="math inline">\(c/\omega_{pe}\)</span>
+<td>Box length (in each direction), expressed in units of <span class="math inline">\(c/\omega_{pe}\)</span>
 </td>
 </tr><tr class="even"><td><code>nx</code></td>
 <td>Number of grid cells per direction</td>
@@ -583,12 +593,19 @@ frequencies.</li>
 </tr><tr class="even"><td><code>T</code></td>
 <td>Total simulation time, expressed in units of <span class="math inline">\(\omega_{pe}^{-1}\)</span>
 </td>
-</tr></tbody></table><p>Some hints:</p>
-<ul><li>The Weibel filaments have a characteristic size of a few skin
-depths. The box should be large enough to contain several filaments:
-<span class="math inline">\(\sim 10\)</span>–<span class="math inline">\(30\)</span> skin depths per direction is a good
-starting point.</li>
-<li>You need to resolve the skin depth on the grid: <span class="math inline">\(\Delta x \lesssim c/\omega_{pe}\)</span>.</li>
+</tr></tbody></table></div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Hints </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div class="accordion-body">
+<ul><li>The Weibel filaments have a characteristic size of a few <span class="math inline">\(c/\omega_{pe}\)</span>. The box should be large
+enough to contain several filaments.</li>
+<li>You need to resolve <span class="math inline">\(c/\omega_{pe}\)</span> on the grid: <span class="math inline">\(\Delta x \lesssim c/\omega_{pe}\)</span>.</li>
 <li>In 2D, the Yee solver CFL condition is <span class="math inline">\(\mathrm{cfl} &lt; 1/\sqrt{2} \approx 0.7\)</span>.
 Note how the input file already accounts for this in the <code>dt</code>
 formula.</li>
@@ -596,6 +613,7 @@ formula.</li>
 You will need a longer simulation: <span class="math inline">\(\sim
 100\)</span>–<span class="math inline">\(500\,\omega_{pe}^{-1}\)</span>.</li>
 </ul></div>
+</div>
 </div>
 </div>
 </div>
@@ -626,7 +644,7 @@ your chosen parameters.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s run in serial </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -644,7 +662,7 @@ your chosen parameters.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler3" aria-expanded="false" aria-controls="collapseSpoiler3">
   <h3 class="accordion-header" id="headingSpoiler3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s run in parallel </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -671,12 +689,13 @@ reducing <code>nx</code> or <code>T</code>.</p>
 </div>
 <p>You should see a standard output flashing out a lot of info.<br>
 At the end, you should find in your folder:</p>
-<ul><li>a subfolder called <code>diags</code>: here is where the code stored
-the diagnostics<br></li>
-<li>a file called <code>warpx_used_inputs</code>: this is a summary of
-the inputs that were used to run the simulation<br></li>
+<ul><li>a subfolder <code>diags/</code> with the full field and particle
+diagnostics<br></li>
 <li>files <code>FieldEnergy.txt</code> and <code>FieldMaximum.txt</code>
-with the reduced diagnostics</li>
+with the reduced diagnostics, inside
+<code>diags/reducedfiles/</code><br></li>
+<li>a file called <code>warpx_used_inputs</code>: a summary of the
+inputs that were used to run the simulation</li>
 </ul><p>If that’s the case, yey! 💯</p>
 <p>If the run went wrong, you may find a <code>Backtrace.0.0</code> file
 which can be useful for debugging purposes. Let me know if the code
@@ -711,7 +730,7 @@ and magnetic field energy on a semi-log scale.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler4" aria-expanded="false" aria-controls="collapseSpoiler4">
   <h3 class="accordion-header" id="headingSpoiler4">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the Jupyter notebook </h3>
 </button>
-<div id="collapseSpoiler4" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler4" aria-labelledby="headingSpoiler4">
+<div id="collapseSpoiler4" class="accordion-collapse collapse" aria-labelledby="headingSpoiler4" data-bs-parent="#accordionSpoiler4">
 <div class="accordion-body">
 <iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_2d_weibel.ipynb" width="100%" height="800" style="border:none;">
 </iframe>
@@ -731,12 +750,14 @@ notebook.</p>
 <div id="questions-for-analysis" class="callout-inner">
 <h3 class="callout-title">Questions for analysis</h3>
 <div class="callout-content">
-<ol style="list-style-type: decimal"><li><p>How does the magnetic field energy grow in time? Can you identify
+<ol style="list-style-type: decimal"><li><p>Describe what you observe in the magnetic field maps and in the
+field energy evolution. Can you identify distinct stages?</p></li>
+<li><p>How does the magnetic field energy grow in time? Can you identify
 a linear (exponential) growth phase on a semi-log plot? Estimate the
 growth rate <span class="math inline">\(\gamma\)</span> from the
 slope.</p></li>
 <li><p>What is the characteristic size of the filaments at saturation?
-How does it compare to the plasma skin depth?</p></li>
+How does it compare to <span class="math inline">\(c/\omega_{pe}\)</span>?</p></li>
 <li><p>How does the growth rate depend on <span class="math inline">\(\beta_0\)</span>? Try at least two different drift
 velocities and compare the field energy time histories.</p></li>
 <li><p>What happens if you increase the temperature <span class="math inline">\(T_0\)</span> while keeping <span class="math inline">\(\beta_0\)</span> fixed? At what point does the
@@ -747,12 +768,12 @@ What are the key differences in the fields that are generated
 </ol></div>
 </div>
 </div>
-<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div id="accordionSolution3" class="accordion challenge-accordion accordion-flush">
 <div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
-  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
+  <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>These are open-ended questions meant to guide your exploration. The
 Weibel growth rate in the cold limit scales as <span class="math inline">\(\gamma \sim \omega_{pe}\,\beta_0\)</span>, and the
@@ -762,15 +783,23 @@ temperature tends to stabilize short-wavelength modes.</p>
 </div>
 </div>
 </div>
-</div>
-<div class="section level3">
-<h3 id="gallery">Gallery<a class="anchor" aria-label="anchor" href="#gallery"></a></h3>
+<div id="accordionSpoiler5" class="accordion spoiler-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler5" aria-expanded="false" aria-controls="collapseSpoiler5">
+  <h3 class="accordion-header" id="headingSpoiler5">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Gallery </h3>
+</button>
+<div id="collapseSpoiler5" class="accordion-collapse collapse" aria-labelledby="headingSpoiler5" data-bs-parent="#accordionSpoiler5">
+<div class="accordion-body">
 <figure><img src="https://gist.github.com/user-attachments/assets/06318207-831b-4aa3-99bc-e4ca267fc8bc" alt="Magnetic field structures induced by the Weibel instability." class="figure mx-auto d-block"><div class="figcaption">Magnetic field structures induced by the Weibel
 instability.</div>
 </figure><figure><img src="https://gist.github.com/user-attachments/assets/216dd776-ab5f-4fa0-a2b0-e5aecdaa0ae4" alt="Evolution of the energy stored in the electric and magnetic fields." class="figure mx-auto d-block"><div class="figcaption">Evolution of the energy stored in the electric
 and magnetic fields.</div>
 </figure><iframe src="https://drive.google.com/file/d/1qWE7rHhq-UadaUbXK9gwWAPEeqd9e__3/preview" width="100%" height="500" allow="autoplay">
 </iframe>
+</div>
+</div>
+</div>
+</div>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -863,9 +892,9 @@ any links that you are not going to use.
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/instructor/a-weibel-instability.html",
   "identifier": "https://warpx-tutorials.github.io/NA/instructor/a-weibel-instability.html",
-  "dateCreated": "2026-04-06",
-  "dateModified": "2026-04-06",
-  "datePublished": "2026-04-07"
+  "dateCreated": "2026-04-08",
+  "dateModified": "2026-04-08",
+  "datePublished": "2026-04-08"
 }
 
   </script><script>
