@@ -220,12 +220,16 @@ whether you get meaningful physics out of the simulation.
 | `laser_wavelength` | $\lambda$ | Laser wavelength $[\mathrm{m}]$ |
 | `a0` | $a_0$ | Normalized vector potential (dimensionless laser amplitude) |
 
-Some hints:
+:::::::::::::::::::: solution
+
+## Hints
 
 - A Ti:Sapphire laser has $\lambda \approx 0.8\,\mu\mathrm{m}$. This is the most common choice.
 - Typical ultrashort pulses have durations $\tau_{\mathrm{FWHM}} \sim 20$--$100$ fs.
 - The normalized vector potential $a_0$ controls the laser intensity: $I \approx 1.37 \times 10^{18}\, (a_0 / \lambda[\mu\mathrm{m}])^2$ W/cm$^2$. For TNSA, $a_0 \gtrsim 1$ (i.e. relativistic intensity) is required. Values of $a_0 \sim 1$--$10$ are typical.
 - The laser waist $w_0$ is typically a few micrometers ($\sim 2$--$10\,\mu\mathrm{m}$).
+
+::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -240,12 +244,16 @@ Some hints:
 | `thick_targ` | | Thickness of the main (boron) target $[\mathrm{m}]$ |
 | `thick_cont` | | Thickness of the hydrogen contaminant layer $[\mathrm{m}]$ |
 
-Some hints:
+:::::::::::::::::::: solution
+
+## Hints
 
 - Solid-density targets have $n_e \sim 100$--$500\, n_c$, where $n_c$ is the critical density for the chosen wavelength. However, running at full solid density is very expensive. You may want to start with a reduced density $\sim 10$--$50\, n_c$ to keep the cost manageable.
 - The initial temperature is typically a few eV (room temperature ionized material), but the exact value does not matter much since the laser will heat the electrons far beyond this.
 - The target thickness is usually a few micrometers ($\sim 1$--$10\,\mu\mathrm{m}$). Thinner targets lead to higher maximum proton energies (up to a point).
 - The contaminant layer is very thin ($\sim 0.1$--$1\,\mu\mathrm{m}$).
+
+::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -259,12 +267,16 @@ Some hints:
 | `nx` | Number of grid cells in the transverse direction |
 | `cfl` | CFL number (must be $< 1/\sqrt{2}$ in 2D) |
 
-Some hints:
+:::::::::::::::::::: solution
+
+## Hints
 
 - You need to resolve the laser wavelength: $\Delta z \lesssim \lambda / 20$ is a common rule of thumb, with $\lambda / 30$ or finer being safer.
-- The transverse resolution can be somewhat coarser than the longitudinal, but should still resolve the plasma skin depth $c/\omega_{pe}$ for the target density.
+- The transverse resolution can be somewhat coarser than the longitudinal, but should still resolve $c/\omega_{pe}$ for the target density.
 - A CFL of $\sim 0.7$ (i.e. $1/\sqrt{2}$) is the maximum allowed.
 - For a first test, use a coarser grid to make sure the simulation runs correctly, and then refine.
+
+::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -322,9 +334,9 @@ mpirun -np 4 <path/to/your/build/bin/warpx.2d> input_2d_tnsa.txt
 You should see a standard output flashing out a lot of info.  
 At the end, you should find in your folder:
 
-  * a subfolder called `diags`: here is where the code stored the diagnostics  
-  * a file called `warpx_used_inputs`: this is a summary of the inputs that were used to run the simulation  
-  * files `FieldEnergy.txt` and `FieldMaximum.txt` with the reduced diagnostics
+  * a subfolder `diags/` with the full field and particle diagnostics  
+  * files `FieldEnergy.txt` and `FieldMaximum.txt` with the reduced diagnostics, inside `diags/reducedfiles/`  
+  * a file called `warpx_used_inputs`: a summary of the inputs that were used to run the simulation
 
 If that's the case, yey! 💯  
 
@@ -372,17 +384,19 @@ Remember to either run the notebook from the simulation directory or change the 
 
 ## Questions for analysis
 
-1. What is the maximum proton energy you observe? How does it compare to the theoretical TNSA scaling with laser intensity $a_0$?
+1. Describe what you observe in the field maps and charge density plots at different times. Can you identify the laser entering, the electron heating, and the proton acceleration?
 
-2. How does the sheath field $E_z$ at the target rear surface evolve in time? Can you identify the moment when the sheath field is strongest?
+2. What is the maximum proton energy you observe? How does it compare to the theoretical TNSA scaling with laser intensity $a_0$?
 
-3. Try running the simulation with a thinner (or thicker) target. How does the maximum proton energy change? Why?
+3. How does the sheath field $E_z$ at the target rear surface evolve in time? Can you identify the moment when the sheath field is strongest?
 
-4. What happens if you increase $a_0$ (i.e., increase the laser intensity)? How does the proton energy spectrum change?
+4. Try running the simulation with a thinner (or thicker) target. How does the maximum proton energy change? Why?
 
-5. Look at the electron density behind the target. Can you see the hot electron population that escapes and creates the sheath?
+5. What happens if you increase $a_0$ (i.e., increase the laser intensity)? How does the proton energy spectrum change?
 
-6. What role does the contaminant layer play? What would happen if you made it thicker, or changed the contaminant species to something heavier (e.g., carbon)?
+6. Look at the electron density behind the target. Can you see the hot electron population that escapes and creates the sheath?
+
+7. What role does the contaminant layer play? What would happen if you made it thicker, or changed the contaminant species to something heavier (e.g., carbon)?
 
 :::::::::::::::: solution
 
@@ -395,6 +409,8 @@ Thinner targets generally yield higher maximum energies because the hot electron
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
 
+:::::::::::::::::::::::::::::::::::::::::: spoiler
+
 ### Gallery
 
 ![Laser interacting with a solid target in a TNSA simulation and accelerating a layer of contaminants.](https://gist.github.com/user-attachments/assets/ecc369e1-58c0-4885-ae29-ac6d51998092){alt="2D map showing the laser electric field interacting with the solid-density target and accelerated protons"}
@@ -404,6 +420,7 @@ Thinner targets generally yield higher maximum energies because the hot electron
 
 <iframe src="https://drive.google.com/file/d/19DrJUt7RDr14YqU83sfdWNP7zQk3-bEf/preview" width="100%" height="500" allow="autoplay"></iframe>
 
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 

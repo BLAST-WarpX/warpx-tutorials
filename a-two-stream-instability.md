@@ -6,7 +6,7 @@ exercises: 20
 
 :::::::::::::::::::::::::::::::::::::: questions 
 
-How do two counter-streaming electron beams become unstable and generate electrostatic waves?
+🤼 How do two counter-streaming electron beams become unstable?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -25,8 +25,8 @@ with a relative drift velocity, small perturbations in the charge density can gr
 The free energy stored in the relative drift is converted into electrostatic wave energy 
 until the beams thermalize and the instability saturates.
 
-This example uses a 1D periodic box with two counter-streaming electron populations, 
-making it an ideal starting point for studying kinetic plasma instabilities with a PIC code.
+This example uses a 1D periodic box with two counter-streaming electron populations 
+on a neutralizing ion background. 
 
 ## Setup
 
@@ -143,7 +143,7 @@ FieldMaximum.intervals = 1
 ### Choosing the parameters
 
 You will notice that some parameters in the input file are set to `...` (ellipsis).
-These are left for **you** to choose! 
+These are left for you to choose 🗳️! 
 Picking sensible physical and numerical parameters is an important part of setting up a simulation.
 Here is some guidance.
 
@@ -154,16 +154,36 @@ Here is some guidance.
 The physical parameters you need to set are:
 
 | Parameter | Symbol | Description |
-|-----------|--------|-------------|
+| --        | -----   | ---------   |
 | `n0` | $n_0$ | Electron density of each beam $[\mathrm{m^{-3}}]$ |
 | `T0` | $T_0$ | Thermal temperature of each beam $[\mathrm{eV}]$ |
 | `beta0` | $\beta_0 = v_d/c$ | Drift velocity of each beam normalized to $c$ |
 
-Think about the following:
+::::::::::::::::::: solution
 
-- A typical laboratory plasma density is in the range $10^{18}$--$10^{24}$ m$^{-3}$.
+## Hints
+
+- A typical plasma prototype is an ionized gas. What is the number density of an ionized gas at standard conditions? Think of a fluorescent lamp, a tokamak, or the solar wind.
 - The temperature should be low enough that the thermal spread does not wash out the instability: the drift velocity should be larger than the thermal velocity, i.e. $v_d \gg v_{\mathrm{th}}$.
 - The drift velocity $\beta_0$ controls how fast the instability grows. Non-relativistic drifts ($\beta_0 \ll 1$) are a good starting point.
+
+::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: instructor
+
+An ideal gas at standard temperature and pressure ($T = 300\,\mathrm{K}$, $p = 1\,\mathrm{atm}$) has a number density
+$n = p/(k_B T) \approx 2.5 \times 10^{25}\,\mathrm{m^{-3}}$.
+Typical plasma densities span many orders of magnitude depending on the degree of ionization and the environment:
+
+| Example | Density $[\mathrm{m^{-3}}]$ |
+|---------|-----------------------------|
+| Solar wind | $\sim 10^{6}$--$10^{7}$ |
+| Fluorescent lamp | $\sim 10^{17}$--$10^{18}$ |
+| Tokamak core | $\sim 10^{19}$--$10^{20}$ |
+
+Any value in a sensible range will work for this exercise.
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -174,18 +194,22 @@ Think about the following:
 The numerical parameters you need to set are:
 
 | Parameter | Description |
-|-----------|-------------|
-| `Lx` | Box length, expressed in units of the skin depth $c/\omega_{pe}$ |
+| ---       | ----------- |
+| `Lx` | Box length, expressed in units of $c/\omega_{pe}$ |
 | `nx` | Number of grid cells |
 | `cfl` | CFL number (must be $< 1$) |
 | `T`  | Total simulation time, expressed in units of $\omega_{pe}^{-1}$ |
 
-Think about the following:
+::::::::::::::::::: solution
 
-- The box must be large enough to fit several wavelengths of the most unstable mode. A box of $\sim 10$--$50$ skin depths is a reasonable choice.
-- The grid must resolve the skin depth, i.e. $\Delta x \lesssim c/\omega_{pe}$. So `nx` should be at least comparable to `Lx` (in skin depth units).
+## Hints
+
+- The most unstable wavelength is $\lambda \sim 2\pi\,\beta_0\,(c/\omega_{pe})$. The box must be large enough to fit several of these wavelengths.
+- The grid must resolve the shortest relevant scale, i.e. $\Delta x \lesssim c/\omega_{pe}$. So `nx` should be at least comparable to `Lx` (in units of $c/\omega_{pe}$).
 - The CFL should be $\lesssim 1$ for stability of the Yee solver.
 - The simulation must run long enough for the instability to develop and saturate: $\sim 50$--$200\,\omega_{pe}^{-1}$ is a typical range.
+
+::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -194,8 +218,10 @@ Think about the following:
 *  Two electron species (`ele1`, `ele2`) are initialized with equal density `n0` and temperature `T0`, 
 but with opposite drift velocities $\pm \beta_0 c$ along the $z$-axis.
 
-*  There is **no ion background** in this input; the simulation relies on the periodic boundary conditions 
-and the two equal-density beams to maintain charge neutrality on average.
+*  There is **no ion background** in this input. 
+Because we do not ask WarpX to solve Poisson's equation at initialization, 
+the fields start at zero and the uniform charge density of the electrons never sources a DC field, 
+effectively acting as if a neutralizing background were present.
 
 *  The diagnostics write out particle data (`z`, `uz`) for both species, 
 which lets you construct the phase space $(z, u_z)$ at each snapshot.
@@ -206,7 +232,7 @@ so you can track the exponential growth of the instability without post-processi
 
 ## Run 
 
-Create a new folder and copy the input file there, after filling in your chosen parameters.
+Create a new folder and copy the input file there. Then fill it with your chosen parameters.
 This is a 1D simulation, so it should run very quickly even in serial.
 
 ::: spoiler
@@ -223,14 +249,13 @@ Just like that! 💃
 You should see a standard output flashing out a lot of info.  
 At the end, you should find in your folder:
 
-  * a subfolder called `diags`: here is where the code stored the diagnostics  
-  * a file called `warpx_used_inputs`: this is a summary of the inputs that were used to run the simulation  
-  * files `FieldEnergy.txt` and `FieldMaximum.txt` with the reduced diagnostics
+  * a subfolder `diags/particles/` with the full particle diagnostics  
+  * files `FieldEnergy.txt` and `FieldMaximum.txt` with the reduced diagnostics, inside `diags/reducedfiles/`  
+  * a file called `warpx_used_inputs`: a summary of the inputs that were used to run the simulation
 
 If that's the case, yey! 💯  
 
 If the run went wrong, you may find a `Backtrace.0.0` file which can be useful for debugging purposes. 
-Let me know if the code fails in any way! 
 
 
 ## Visualize
@@ -271,13 +296,15 @@ Remember to either run the notebook from the simulation directory or change the 
 
 ## Questions for analysis
 
-1. How does the growth rate of the field energy depend on the drift velocity $\beta_0$? Try running with two different values and compare.
+1. Describe what you observe in the phase space $(z, u_z)$ at different times and in the field energy evolution. Can you identify distinct stages?
 
-2. What happens to the phase space after saturation? Can you identify particle trapping in the electrostatic potential wells?
+2. How does the growth rate of the field energy depend on the drift velocity $\beta_0$? Try running with two different values and compare.
 
-3. If you increase the temperature (decrease the ratio $v_d / v_{\mathrm{th}}$), does the instability still develop? At what point is it suppressed?
+3. What happens to the phase space after saturation? Can you identify particle trapping in the electrostatic potential wells?
 
-4. How does the number of particles per cell affect the noise level and the onset of the instability?
+4. If you increase the temperature (decrease the ratio $v_d / v_{\mathrm{th}}$), does the instability still develop? At what point is it suppressed?
+
+5. How does the number of particles per cell affect the noise level and the onset of the instability?
 
 :::::::::::::::: solution
 
@@ -289,13 +316,17 @@ when thermal effects dominate, Landau damping stabilizes the modes.
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
 
+:::::::::::::::::::::::::::::::::::::::::: spoiler
+
 ### Gallery
 
 ![Phase space of the two-stream instability at saturation.](https://gist.github.com/user-attachments/assets/0160a10a-9a08-443c-84a3-610a9a5eeb73){alt="Phase space plot showing the two counter-streaming electron beams forming vortex structures at saturation"}
 
 ![Evolution of the field energy.](https://gist.github.com/user-attachments/assets/907e36d9-a91e-4939-899a-22b78519b81a){alt="Evolution of the field energy."}
 
-<iframe src="https://drive.google.com/file/d/1yjdWnaUYPqJCj5I1TRYQC2olIiunS30C/preview" width="100%" height="500" allow="autoplay"></iframe>
+<iframe src="https://drive.google.com/file/d/17_CKWVxKYjx0XPaUb2o1Z4cfkPAkPecB/preview" width="100%" height="500" allow="autoplay"></iframe>
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
 ::::::::::::::::::::::::::::::::::::: keypoints 

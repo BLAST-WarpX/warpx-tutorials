@@ -164,11 +164,15 @@ The physical parameters you need to set are:
 | `T0` | $T_0$ | Thermal temperature of each beam $[\mathrm{eV}]$ |
 | `beta0` | $\beta_0 = v_d/c$ | Drift velocity of each beam normalized to $c$ |
 
-Some hints:
+::::::::::::::::::: solution
+
+## Hints
 
 - The Weibel instability requires an anisotropy in the momentum space. Here, the anisotropy comes from the relative drift between the two beams. A mildly relativistic drift (e.g. $\beta_0 \sim 0.1$--$0.5$) will produce a clear instability.
 - The temperature should be small enough that the thermal spread does not wash out the anisotropy. As a rule of thumb, $v_d \gg v_{\mathrm{th}}$ where $v_{\mathrm{th}} = \sqrt{T_0/m_e}$.
-- A density in the range $10^{20}$--$10^{24}$ m$^{-3}$ works well; what matters is that lengths and times are measured in skin depths and inverse plasma frequencies.
+- A typical plasma prototype is an ionized gas. What is the number density of an ionized gas at standard conditions? Think of a fluorescent lamp, a tokamak, or the solar wind. What matters is that lengths and times are measured in units of $c/\omega_{pe}$ and $\omega_{pe}^{-1}$.
+
+::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -180,17 +184,21 @@ The numerical parameters you need to set are:
 
 | Parameter | Description |
 |-----------|-------------|
-| `Lx` | Box length (in each direction), expressed in units of the skin depth $c/\omega_{pe}$ |
+| `Lx` | Box length (in each direction), expressed in units of $c/\omega_{pe}$ |
 | `nx` | Number of grid cells per direction |
 | `cfl` | CFL number (must be $< 1/\sqrt{2}$ in 2D for the Yee solver) |
 | `T`  | Total simulation time, expressed in units of $\omega_{pe}^{-1}$ |
 
-Some hints:
+:::::::::::::::::::: solution
 
-- The Weibel filaments have a characteristic size of a few skin depths. The box should be large enough to contain several filaments: $\sim 10$--$30$ skin depths per direction is a good starting point.
-- You need to resolve the skin depth on the grid: $\Delta x \lesssim c/\omega_{pe}$.
+## Hints
+
+- The Weibel filaments have a characteristic size of a few $c/\omega_{pe}$. The box should be large enough to contain several filaments.
+- You need to resolve $c/\omega_{pe}$ on the grid: $\Delta x \lesssim c/\omega_{pe}$.
 - In 2D, the Yee solver CFL condition is $\mathrm{cfl} < 1/\sqrt{2} \approx 0.7$. Note how the input file already accounts for this in the `dt` formula.
 - The Weibel instability grows slower than the two-stream instability. You will need a longer simulation: $\sim 100$--$500\,\omega_{pe}^{-1}$.
+
+::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -248,9 +256,9 @@ If it takes too long, try reducing `nx` or `T`.
 You should see a standard output flashing out a lot of info.  
 At the end, you should find in your folder:
 
-  * a subfolder called `diags`: here is where the code stored the diagnostics  
-  * a file called `warpx_used_inputs`: this is a summary of the inputs that were used to run the simulation  
-  * files `FieldEnergy.txt` and `FieldMaximum.txt` with the reduced diagnostics
+  * a subfolder `diags/` with the full field and particle diagnostics  
+  * files `FieldEnergy.txt` and `FieldMaximum.txt` with the reduced diagnostics, inside `diags/reducedfiles/`  
+  * a file called `warpx_used_inputs`: a summary of the inputs that were used to run the simulation
 
 If that's the case, yey! 💯  
 
@@ -296,15 +304,17 @@ Remember to either run the notebook from the simulation directory or change the 
 
 ## Questions for analysis
 
-1. How does the magnetic field energy grow in time? Can you identify a linear (exponential) growth phase on a semi-log plot? Estimate the growth rate $\gamma$ from the slope.
+1. Describe what you observe in the magnetic field maps and in the field energy evolution. Can you identify distinct stages?
 
-2. What is the characteristic size of the filaments at saturation? How does it compare to the plasma skin depth?
+2. How does the magnetic field energy grow in time? Can you identify a linear (exponential) growth phase on a semi-log plot? Estimate the growth rate $\gamma$ from the slope.
 
-3. How does the growth rate depend on $\beta_0$? Try at least two different drift velocities and compare the field energy time histories.
+3. What is the characteristic size of the filaments at saturation? How does it compare to $c/\omega_{pe}$?
 
-4. What happens if you increase the temperature $T_0$ while keeping $\beta_0$ fixed? At what point does the instability shut off?
+4. How does the growth rate depend on $\beta_0$? Try at least two different drift velocities and compare the field energy time histories.
 
-5. Compare this simulation to the [two-stream instability episode](a-two-stream-instability.Rmd). What are the key differences in the fields that are generated (electrostatic vs electromagnetic)?
+5. What happens if you increase the temperature $T_0$ while keeping $\beta_0$ fixed? At what point does the instability shut off?
+
+6. Compare this simulation to the [two-stream instability episode](a-two-stream-instability.Rmd). What are the key differences in the fields that are generated (electrostatic vs electromagnetic)?
 
 :::::::::::::::: solution
 
@@ -317,6 +327,8 @@ Finite temperature tends to stabilize short-wavelength modes.
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
 
+:::::::::::::::::::::::::::::::::::::::::: spoiler
+
 ### Gallery
 
 ![Magnetic field structures induced by the Weibel instability.](https://gist.github.com/user-attachments/assets/06318207-831b-4aa3-99bc-e4ca267fc8bc)
@@ -326,6 +338,8 @@ Finite temperature tends to stabilize short-wavelength modes.
 
 
 <iframe src="https://drive.google.com/file/d/1qWE7rHhq-UadaUbXK9gwWAPEeqd9e__3/preview" width="100%" height="500" allow="autoplay"></iframe>
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
