@@ -268,7 +268,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="a-beam-beam-collision.html">3. A Beam-Beam Collision</a>
+        <a href="set-up-a-simulation-from-scratch.html">3. Set Up a Simulation from Scratch</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -280,7 +280,7 @@
 <div class="accordion accordion-flush" id="accordionFlush5">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading5">
-        <a href="a-magnetic-mirror.html">4. A Magnetic Mirror</a>
+        <a href="a-two-stream-instability.html">4. A Two-stream Instability</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -292,7 +292,7 @@
 <div class="accordion accordion-flush" id="accordionFlush6">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading6">
-        <a href="a-fodo-cell.html">5. A FODO Cell</a>
+        <a href="a-weibel-instability.html">5. A Weibel Instability</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -304,7 +304,7 @@
 <div class="accordion accordion-flush" id="accordionFlush7">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading7">
-        <a href="a-two-stream-instability.html">6. A Two-stream Instability</a>
+        <a href="a-magnetic-mirror.html">6. A Magnetic Mirror</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -316,7 +316,7 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="a-weibel-instability.html">7. A Weibel Instability</a>
+        <a href="a-fodo-cell.html">7. A FODO Cell</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -329,6 +329,42 @@
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading9">
         <a href="a-laser-driven-ion-accelerator.html">8. A Laser-Driven Ion Accelerator</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush10">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading10">
+        <a href="a-beam-beam-collision.html">9. A Beam-Beam Collision</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush11">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading11">
+        <a href="ossfe2025.html">10. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush12">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading12">
+        <a href="ucb-2026-twostream.html">11. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -391,6 +427,7 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Instructor Notes</h1>
         
+
 <div class="section level3">
 <h3 id="discussions-at-ossfe-2025">Discussions at OSSFE 2025<a class="anchor" aria-label="anchor" href="#discussions-at-ossfe-2025"></a>
 </h3>
@@ -415,12 +452,46 @@ user-define mass and charge. Beware that not all the additional physics
 modules (ionization, QED, …) may work for arbitrary species!</p></li>
 <li><p>Does WarpX support mixed kinetic and fluid descriptions? Yes,
 check out the <a href="https://warpx.readthedocs.io/en/latest/theory/kinetic_fluid_hybrid_model.html" class="external-link">hybrid
-solver</a>! <!--
-Place links that you need to refer to multiple times across pages here. Delete
-any links that you are not going to use.
- --></p></li>
+solver</a>!</p></li>
 </ul>
 </div>
+<div class="section level3">
+<h3 id="two-stream-instability-exploratory-vs--recipe-approach">Two-stream instability: exploratory vs. recipe approach<a class="anchor" aria-label="anchor" href="#two-stream-instability-exploratory-vs--recipe-approach"></a>
+</h3>
+<p>The two-stream instability can be taught in two complementary
+ways:</p>
+<p><strong>Recipe approach</strong> (the <a href="a-two-stream-instability.html">Two-Stream Instability</a>
+episode): hand students a prepared input file with blanks to fill in.
+Good for focusing on parameter selection and physics understanding.</p>
+<p><strong>Exploratory approach</strong> (the <a href="set-up-a-simulation-from-scratch.html">Set Up a Simulation from
+Scratch</a> episode): start from the WarpX uniform plasma example,
+browse the repo together, modify it live. Good for teaching the
+<em>workflow</em> of setting up a new simulation.</p>
+<p>The exploratory approach was used in a live session at UCB (April
+2026). Key observations from that session:</p>
+<ul>
+<li>Students found it very instructive to start from the “wrong” example
+and iterate. The first run (2D, 10 timesteps, warm beams) shows nothing
+– and that’s the point.</li>
+<li>The most common stumbling blocks: too few timesteps, thermal
+velocity washing out the instability, and running in 2D/3D when 1D
+suffices.</li>
+<li>A good sequence of iterations: (1) increase timesteps, (2) set
+temperature to zero (cold beams),
+<ol start="3" style="list-style-type: decimal">
+<li>switch to 1D, (4) increase resolution and particles per cell.</li>
+</ol>
+</li>
+<li>Making a video of the phase-space evolution at the end is very
+rewarding and helps students connect the physics to the numerical
+experiment. <!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</li>
+</ul>
+</div>
+
 
       <section id="aggregate-instructor-notes"></section>
 </div>

@@ -67,13 +67,17 @@ contact: 'ariannaformenti@lbl.gov'
 episodes: 
 - introduction.Rmd
 - install.Rmd
-- a-beam-beam-collision.Rmd
-- a-magnetic-mirror.Rmd
-- a-fodo-cell.Rmd
+- set-up-a-simulation-from-scratch.Rmd
 - a-two-stream-instability.Rmd
 - a-weibel-instability.Rmd
+- a-magnetic-mirror.Rmd
+- a-fodo-cell.Rmd
 - a-laser-driven-ion-accelerator.Rmd
-#- walkthrough.Rmd
+- a-beam-beam-collision.Rmd
+# --- Events and workshops ---
+- ossfe2025.Rmd
+- ucb-2026-twostream.Rmd
+#- us-hf-fcc.Rmd
 
 # Information for Learners
 learners: 
