@@ -83,6 +83,7 @@ episodes:
 learners: 
 - setup.md
 - reference.md
+- events.md
 
 # Information for Instructors
 instructors: 
