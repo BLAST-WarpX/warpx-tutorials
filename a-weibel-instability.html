@@ -434,7 +434,7 @@ is where you want to go</a>.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the input file </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -553,18 +553,18 @@ this is part of the exercise.</p>
 <h3 class="callout-title">Choose the physical parameters</h3>
 <div class="callout-content">
 <p>The physical parameters you need to set are:</p>
-<table class="table"><colgroup><col width="34%"><col width="25%"><col width="40%"></colgroup><thead><tr class="header"><th>Parameter</th>
+<table class="table"><colgroup><col width="34%"><col width="25%"><col width="40%"></colgroup><thead><tr><th>Parameter</th>
 <th>Symbol</th>
 <th>Description</th>
-</tr></thead><tbody><tr class="odd"><td><code>n0</code></td>
+</tr></thead><tbody><tr><td><code>n0</code></td>
 <td><span class="math inline">\(n_0\)</span></td>
 <td>Electron density of each beam <span class="math inline">\([\mathrm{m^{-3}}]\)</span>
 </td>
-</tr><tr class="even"><td><code>T0</code></td>
+</tr><tr><td><code>T0</code></td>
 <td><span class="math inline">\(T_0\)</span></td>
 <td>Thermal temperature of each beam <span class="math inline">\([\mathrm{eV}]\)</span>
 </td>
-</tr><tr class="odd"><td><code>beta0</code></td>
+</tr><tr><td><code>beta0</code></td>
 <td><span class="math inline">\(\beta_0 = v_d/c\)</span></td>
 <td>Drift velocity of each beam normalized to <span class="math inline">\(c\)</span>
 </td>
@@ -576,7 +576,7 @@ this is part of the exercise.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Hints </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ul><li>The Weibel instability requires an anisotropy in the momentum space.
 Here, the anisotropy comes from the relative drift between the two
@@ -601,17 +601,17 @@ times are measured in units of <span class="math inline">\(c/\omega_{pe}\)</span
 <h3 class="callout-title">Choose the numerical parameters</h3>
 <div class="callout-content">
 <p>The numerical parameters you need to set are:</p>
-<table class="table"><colgroup><col width="45%"><col width="54%"></colgroup><thead><tr class="header"><th>Parameter</th>
+<table class="table"><colgroup><col width="45%"><col width="54%"></colgroup><thead><tr><th>Parameter</th>
 <th>Description</th>
-</tr></thead><tbody><tr class="odd"><td><code>Lx</code></td>
+</tr></thead><tbody><tr><td><code>Lx</code></td>
 <td>Box length (in each direction), expressed in units of <span class="math inline">\(c/\omega_{pe}\)</span>
 </td>
-</tr><tr class="even"><td><code>nx</code></td>
+</tr><tr><td><code>nx</code></td>
 <td>Number of grid cells per direction</td>
-</tr><tr class="odd"><td><code>cfl</code></td>
+</tr><tr><td><code>cfl</code></td>
 <td>CFL number (must be <span class="math inline">\(&lt;
 1/\sqrt{2}\)</span> in 2D for the Yee solver)</td>
-</tr><tr class="even"><td><code>T</code></td>
+</tr><tr><td><code>T</code></td>
 <td>Total simulation time, expressed in units of <span class="math inline">\(\omega_{pe}^{-1}\)</span>
 </td>
 </tr></tbody></table></div>
@@ -622,7 +622,7 @@ times are measured in units of <span class="math inline">\(c/\omega_{pe}\)</span
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Hints </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ul><li>The Weibel filaments have a characteristic size of a few <span class="math inline">\(c/\omega_{pe}\)</span>. The box should be large
 enough to contain several filaments.</li>
@@ -665,7 +665,7 @@ your chosen parameters.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s run in serial </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -683,7 +683,7 @@ your chosen parameters.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler3" aria-expanded="false" aria-controls="collapseSpoiler3">
   <h3 class="accordion-header" id="headingSpoiler3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s run in parallel </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -751,7 +751,7 @@ and magnetic field energy on a semi-log scale.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler4" aria-expanded="false" aria-controls="collapseSpoiler4">
   <h3 class="accordion-header" id="headingSpoiler4">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Let’s take a look at the Jupyter notebook </h3>
 </button>
-<div id="collapseSpoiler4" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler4" aria-labelledby="headingSpoiler4">
+<div id="collapseSpoiler4" class="accordion-collapse collapse" aria-labelledby="headingSpoiler4" data-bs-parent="#accordionSpoiler4">
 <div class="accordion-body">
 <iframe src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/analysis_2d_weibel.ipynb" width="100%" height="800" style="border:none;">
 </iframe>
@@ -794,7 +794,7 @@ What are the key differences in the fields that are generated
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>These are open-ended questions meant to guide your exploration. The
 Weibel growth rate in the cold limit scales as <span class="math inline">\(\gamma \sim \omega_{pe}\,\beta_0\)</span>, and the
@@ -809,7 +809,7 @@ temperature tends to stabilize short-wavelength modes.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler5" aria-expanded="false" aria-controls="collapseSpoiler5">
   <h3 class="accordion-header" id="headingSpoiler5">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Gallery </h3>
 </button>
-<div id="collapseSpoiler5" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler5" aria-labelledby="headingSpoiler5">
+<div id="collapseSpoiler5" class="accordion-collapse collapse" aria-labelledby="headingSpoiler5" data-bs-parent="#accordionSpoiler5">
 <div class="accordion-body">
 <figure><img src="https://gist.github.com/user-attachments/assets/06318207-831b-4aa3-99bc-e4ca267fc8bc" alt="Magnetic field structures induced by the Weibel instability." class="figure mx-auto d-block"><div class="figcaption">Magnetic field structures induced by the Weibel
 instability.</div>
@@ -915,7 +915,7 @@ any links that you are not going to use.
   "identifier": "https://warpx-tutorials.github.io/NA/a-weibel-instability.html",
   "dateCreated": "2026-04-09",
   "dateModified": "2026-04-08",
-  "datePublished": "2026-04-28"
+  "datePublished": "2026-05-05"
 }
 
   </script><script>
