@@ -768,6 +768,26 @@ Create a Tutorial 3 directory containing:
 Keep the six files together. The driver renders a run-specific WarpX input in
 the job directory; it never edits the downloaded template.
 
+### Before running the coupling
+
+Tutorial 3 needs `numpy`, `scipy`, `pandas`, `matplotlib`, `xobjects`,
+`xpart`, `xtrack`, `openpmd-api`, `openpmd-viewer`, and a Python WarpX build
+with openPMD, FFT, and QED support. The QED capability is only exercised by
+the `--beamstrahlung` case, but the supplied input declares the photon product
+species and quantum-synchrotron table.
+
+Run the driver from the directory containing the six downloaded files. You
+can inspect all command-line options with
+
+```bash
+python exec_tutorial_003.py --help
+```
+
+The `--device gpu` option selects an Xsuite `ContextCupy`; WarpX itself uses
+the backend of the installed WarpX package. The default direct launcher and
+one rank are intentional. The current adapter can only audit its fallback
+particle-ID mapping in a single-rank collision.
+
 ### Simplified FCC-ee model
 
 The reference momentum is 182.5 GeV/$c$, corresponding to the FCC-ee ttbar
@@ -905,7 +925,17 @@ alone.
 
 ### Run the reference and coupled cases
 
-First generate an inexpensive arc-only reference:
+Run the cases below separately. Giving them the same initial seed makes their
+initial bunches identical, while the driver assigns a new deterministic WarpX
+seed to each collision.
+
+| Case | Important option | Output directory | Purpose |
+|:---|:---|:---|:---|
+| Xsuite arc only | `--no-warpx` | `outputs_without_warpx` | Verify the linear map and unperturbed tunes |
+| Classical collision | none | `outputs_with_warpx` | Test the coordinate handoff and collective beam-beam kick |
+| Collision with beamstrahlung | `--beamstrahlung` | `outputs_with_warpx_beamstrahlung` | Add stochastic photon emission and longitudinal energy loss |
+
+First generate the inexpensive arc-only reference:
 
 ```bash
 python exec_tutorial_003.py --no-warpx --macroparticles 10000 --iterations 256
@@ -946,6 +976,22 @@ package. `--launcher srun` is available for an appropriately compiled HPC
 installation, but this teaching adapter currently enforces one WarpX rank so
 that its fallback particle-ID mapping remains auditable.
 
+The run-specific working files are placed under `--job-dir`, which defaults
+to the current directory:
+
+| Path | Contents |
+|:---|:---|
+| `outputs_*/moments_b1.csv`, `moments_b2.csv` | One row of bunch moments after each superperiod and collision |
+| `outputs_*/handoff_checks.csv` | Before/after WarpX comparisons for every primary particle |
+| `warpx_read/beam1.bp`, `beam2.bp` | Simultaneous openPMD snapshots written by the adapter |
+| `warpx_runtime_input.txt` | Rendered input used for the most recent collision |
+| `warpx_used_inputs_tutorial_003.txt` | Parameters reported by WarpX for the most recent collision |
+| `warpx_dump/diags` | Primary particles from the most recent WarpX call |
+
+By default the previous collision diagnostic is removed before the next call.
+Use `--keep-diags` only when the individual openPMD outputs are needed; it can
+consume substantial storage in a long run.
+
 ### Coupling checks
 
 Every coupled run writes `handoff_checks.csv`. For each bunch and collision it
@@ -977,6 +1023,34 @@ or boundary diagnostic. With beamstrahlung on,
 $\langle\Delta\delta\rangle<0$ and an increase in energy spread are expected;
 a large instantaneous $\zeta$ jump during the short WarpX call is more
 suspicious.
+
+The three runs should have distinguishable signatures:
+
+- In the arc-only run, a distribution matched to `bets` should preserve its
+  longitudinal rms emittance and approximately preserve $\sigma_z$ and
+  $\sigma_\delta$. Its centroid spectrum locates the unperturbed map tune.
+- In the classical WarpX run, the transverse moments and coherent spectrum can
+  change, but there should be no systematic radiative decrease in
+  $\langle\delta\rangle$. This is the most sensitive end-to-end handoff test.
+- In the beamstrahlung run, the collision should first change
+  $\langle\delta\rangle$, $\sigma_\delta$, and possibly
+  $\varepsilon_\zeta$. A later change in $\sigma_z$ during Xsuite transport is
+  the expected response of a longitudinally mismatched bunch.
+
+If a run does not follow this pattern, use the following checks before
+interpreting the physics:
+
+1. Confirm that `n_returned == n_sent` for both beams. A difference means that
+   the final and boundary diagnostics did not recover every primary.
+2. Inspect both algebraic round-trip errors. They test the adapter itself and
+   should not depend on whether beamstrahlung is enabled.
+3. Compare `zeta_std_before_m` and `zeta_std_after_m`. A large change here
+   occurs inside the WarpX call; a change only in the following row occurs in
+   the Xsuite arc.
+4. Compare runs with different `--seed` values. A feature that changes phase
+   or disappears can be a finite-macroparticle or Monte Carlo fluctuation.
+5. Repeat with more longitudinal cells and macroparticles before drawing a
+   quantitative conclusion from the size of the effect.
 
 ### Why beamstrahlung can produce a real bunch-length oscillation
 

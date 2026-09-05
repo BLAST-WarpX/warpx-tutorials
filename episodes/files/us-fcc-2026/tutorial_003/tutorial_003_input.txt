@@ -1,0 +1,112 @@
+####################################
+### RENDERED BY THE PYTHON DRIVER ###
+####################################
+
+# Strings in braces are replaced by exec_tutorial_003.py. Do not run this
+# template directly with warpx.3d.
+
+beam1.injection_style = external_file
+beam1.injection_file = "{BEAM1_FILE}"
+beam2.injection_style = external_file
+beam2.injection_file = "{BEAM2_FILE}"
+
+my_constants.sigmax = 3.987480407475377e-05
+my_constants.sigmay = 3.987480407475377e-05
+my_constants.sigmaz = 2.17e-3
+my_constants.focal_distance = 4.0*sigmaz
+
+# p0/(m*c) for a 182.5 GeV/c electron or positron reference particle.
+my_constants.beta_gamma0 = 182.5e9/0.511e6
+my_constants.gamma0 = sqrt(1.0 + beta_gamma0*beta_gamma0)
+my_constants.beta0 = beta_gamma0/gamma0
+
+my_constants.Lx = 32.0*sigmax
+my_constants.Ly = 32.0*sigmay
+my_constants.Lz = 16.0*sigmaz
+my_constants.nx = 64
+my_constants.ny = 64
+my_constants.nz = 32
+
+# The synchronous particles travel from -f to +f during the WarpX call.
+my_constants.T = 2.0*focal_distance/(beta0*clight)
+my_constants.dt = T/nz
+
+warpx.used_inputs_file = "{USED_INPUTS_FILE}"
+warpx.use_2d_slices_fft_solver = 1
+
+stop_time = T
+amr.n_cell = nx ny nz
+amr.max_level = 0
+geometry.dims = 3
+geometry.prob_lo = -0.5*Lx -0.5*Ly -0.5*Lz
+geometry.prob_hi =  0.5*Lx  0.5*Ly  0.5*Lz
+warpx.random_seed = {WARPX_SEED}
+
+boundary.field_lo = open open open
+boundary.field_hi = open open open
+boundary.particle_lo = Absorbing Absorbing Absorbing
+boundary.particle_hi = Absorbing Absorbing Absorbing
+
+warpx.do_electrostatic = relativistic
+warpx.const_dt = dt
+warpx.grid_type = collocated
+warpx.poisson_solver = fft
+algo.particle_shape = 3
+algo.particle_pusher = vay
+
+particles.species_names = beam1 beam2 pho1 pho2
+
+beam1.species_type = electron
+beam1.initialize_self_fields = 1
+beam1.do_qed_quantum_sync = {BEAMSTRAHLUNG}
+beam1.qed_quantum_sync_phot_product_species = pho1
+
+beam2.species_type = positron
+beam2.initialize_self_fields = 1
+beam2.do_qed_quantum_sync = {BEAMSTRAHLUNG}
+beam2.qed_quantum_sync_phot_product_species = pho2
+
+pho1.species_type = photon
+pho1.injection_style = none
+pho1.do_not_deposit = 1
+pho2.species_type = photon
+pho2.injection_style = none
+pho2.do_not_deposit = 1
+
+qed_qs.photon_creation_energy_threshold = 0.0
+qed_qs.lookup_table_mode = builtin
+qed_qs.chi_min = 1.0e-8
+
+collisions.split_momentum_push = 0
+
+diagnostics.diags_names = particles_in particles_out
+
+particles_in.file_prefix = "{DIAG_DIR}/particles_in"
+particles_in.intervals = -1
+particles_in.diag_type = Full
+particles_in.species = beam1 beam2
+particles_in.fields_to_plot = none
+particles_in.format = openpmd
+particles_in.openpmd_backend = bp
+particles_in.dump_last_timestep = 1
+
+particles_out.file_prefix = "{DIAG_DIR}/particles_out"
+particles_out.intervals = -1
+particles_out.diag_type = BoundaryScraping
+particles_out.species = beam1 beam2
+particles_out.format = openpmd
+particles_out.openpmd_backend = bp
+particles_out.dump_last_timestep = 1
+
+beam1.save_particles_at_xlo = 1
+beam1.save_particles_at_ylo = 1
+beam1.save_particles_at_zlo = 1
+beam1.save_particles_at_xhi = 1
+beam1.save_particles_at_yhi = 1
+beam1.save_particles_at_zhi = 1
+beam2.save_particles_at_xlo = 1
+beam2.save_particles_at_ylo = 1
+beam2.save_particles_at_zlo = 1
+beam2.save_particles_at_xhi = 1
+beam2.save_particles_at_yhi = 1
+beam2.save_particles_at_zhi = 1
