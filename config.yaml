@@ -77,7 +77,7 @@ episodes:
 # --- Events and workshops ---
 - ossfe2025.Rmd
 - ucb-2026-twostream.Rmd
-#- us-hf-fcc.Rmd
+- us-fcc-2026.Rmd
 
 # Information for Learners
 learners: 
