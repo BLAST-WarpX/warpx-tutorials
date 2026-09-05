@@ -6,9 +6,10 @@ exercises: 0
 
 :::::::::::::::::::::::::::::::::::::: questions
 
-- How can WarpX, Xsuite, ImpactX, and MAD-X be used together for FCC-ee studies?
-- How can a beam-beam interaction be included in a multi-turn simulation?
-- How closely do Xsuite, ImpactX, and MAD-X agree for linear tracking?
+- How can WarpX, ImpactX, Xsuite, and MAD-X be combined for FCC-ee studies?
+- How closely do ImpactX, Xsuite, and MAD-X agree for linear optics?
+- How can a WarpX beam-beam interaction be included in a multi-turn
+  simulation with Xsuite?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -16,8 +17,9 @@ exercises: 0
 
 - Set up the software environment used by all three exercises.
 - Simulate one FCC-ee bunch crossing with WarpX.
+- Compare linear optics through an FCC-ee lattice with ImpactX, Xsuite, and
+  MAD-X.
 - Combine a WarpX beam-beam interaction with multi-turn Xsuite tracking.
-- Compare linear tracking through an FCC-ee lattice with Xsuite, ImpactX, and MAD-X.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -27,11 +29,13 @@ The three exercises cover different scales of an FCC-ee simulation.
 
 1. **A single bunch crossing.** WarpX models the electromagnetic interaction
    between an electron bunch and a positron bunch, including several QED
-   processes.
-2. **Many turns around the ring.** Xsuite tracks the bunches around the FCC-ee
+   processes such as beamstrahlung, radiative Bhabha scattering, and
+   incoherent pair generation.
+2. **An optics comparison.** ImpactX, Xsuite, and MAD-X evaluate the same
+   linear FCC-ee lattice with a common reference particle; ImpactX transports
+   a matched beam covariance through it.
+3. **Many turns around the ring.** Xsuite tracks the bunches around the FCC-ee
    lattice and WarpX supplies the beam-beam interaction at the collision point.
-3. **A tracking comparison.** Xsuite, ImpactX, and MAD-X track the same initial
-   distribution through the same linear FCC-ee lattice.
 
 All three exercises use one Conda environment. Tutorial 1 is designed to run
 on a laptop in a few minutes. Its numerical resolution is deliberately modest
@@ -39,6 +43,7 @@ and should not be used as a production setup.
 
 ## Installation
 
+We assume you have a Conda installation available in your machine.
 Download the [Conda environment file](./files/us-fcc-2026/environment_setup.yml),
 open a terminal in the directory containing it, and create the environment:
 
@@ -92,7 +97,7 @@ conda env remove -n usfcc26-warpx-tutorial
 At the FCC-ee Z pole, a 45.6 GeV electron bunch collides with a 45.6 GeV
 positron bunch at a full crossing angle of 30 mrad. The bunches are flat, with
 an rms size of about 8 micrometers horizontally and 35 nanometers vertically
-at the interaction point.
+at the interaction point. The bunches are 16 mm long.
 
 WarpX computes the beam-beam fields and advances both bunches through the
 collision. The same simulation also generates beamstrahlung photons,
@@ -129,6 +134,7 @@ cat ./files/us-fcc-2026/tutorial_001/tutorial_001_input.txt
 The laptop setup uses:
 
 - `100000` macroparticles in each primary bunch
+- `100` passive test particles for each beam
 - a `64 x 64 x 128` mesh
 - `128` time steps
 - a two-dimensional-slices FFT Poisson solver
@@ -146,16 +152,19 @@ The primary species and their main products are:
 | Species | Role |
 |:---|:---|
 | `beam1`, `beam2` | Initial electron and positron bunches |
+| `test1`, `test2` | Passive electron and positron probes used for trajectories |
 | `pho1`, `pho2` | Beamstrahlung photons emitted by the two bunches |
 | `vpho1`, `vpho2` | Virtual photons used by the equivalent-photon model |
 | `ele_ll`, `pos_ll` | Landau-Lifshitz pair products |
 | `ele_bh`, `pos_bh` | Breit-Heitler pair products |
 | `ele_bw`, `pos_bw` | Breit-Wheeler pair products |
-| `pho1_bha`, `pho2_bha` | Photons from the radiative Bhabha model |
-| `beam1_bha`, `beam2_bha` | Scattered primary particles from that model |
+| `pho1_bha`, `pho2_bha` | Photons from radiative Bhabha scattering |
+| `beam1_bha`, `beam2_bha` | Scattered primary particles from Bhabha events |
 
-Beamstrahlung is enabled directly on each primary beam. The incoherent-pair
-and radiative Bhabha channels are listed in `collisions.collision_names`.
+Beamstrahlung is enabled directly on each primary beam through the
+strong-field QED modules.
+The incoherent-pair and radiative Bhabha channels are listed in
+`collisions.collision_names`.
 Event multipliers increase the number of sampled rare events, while particle
 weights preserve the physical yield.
 
@@ -165,18 +174,37 @@ without mixing them into the original bunch species.
 
 ### Diagnostics
 
-The simulation writes two openPMD particle diagnostics:
+The simulation writes three openPMD particle diagnostics:
 
 - `diags/particles_in` contains snapshots of particles that are still inside
   the simulation domain
 - `diags/particles_out` records particles when they cross a domain boundary
+- `diags/trajectories` records the two test-particle species at every time
+  step
+
+The test species start with the same distributions as the primary beams, but
+`do_not_deposit = 1` prevents their charge and current from contributing to
+the field solve. They respond to the self-consistent beam-beam fields without
+changing those fields, making them useful single-particle probes.
 
 The `ColliderRelevant` and `DifferentialLuminosity` reduced diagnostics are
 written to `diags/reducedfiles`.
 
 The analysis utility module combines the particles that remain in the box
 with the boundary records. For escaped particles, it reconstructs their
-positions at the final simulation time from their scrape time and momentum.
+positions at the final simulation time from their scrape time and momentum:
+
+$$
+\boldsymbol{x}(t_{\mathrm{final}})
+=\boldsymbol{x}(t_{\mathrm{scrape}})
++\boldsymbol{v}\left(t_{\mathrm{final}}-t_{\mathrm{scrape}}\right).
+$$
+
+For photons, $\boldsymbol{v}=c\boldsymbol{p}/|\boldsymbol{p}|$. For massive
+particles, the utility obtains the velocity from
+$\boldsymbol{v}=\boldsymbol{p}/(\gamma m_e)$. This reconstruction lets the
+later spectrum and pair plots include products that have already left the
+mesh instead of silently discarding them.
 
 ### Run WarpX
 
@@ -240,24 +268,306 @@ cat ./files/us-fcc-2026/tutorial_001/tutorial_001_utils.py
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-The notebook proceeds through the following checks.
+### What the notebook checks
 
-1. It calculates the FCC-ee beam parameters and the analytical linear
-   beam-beam strength.
-2. It matches macroparticles between the first and last iterations and fits
-   the horizontal beam-beam kick.
-3. It plots five snapshots of the bunches during the collision.
-4. It compares the beamstrahlung and radiative Bhabha photon spectra.
-5. It extracts the simulated luminosity and compares it with an hourglass
-   calculation.
-6. It estimates the radiative Bhabha cross section and beam lifetime.
-7. It combines the three incoherent-pair channels and plots their angular and
-   spatial distributions.
+The notebook does more than plot the output. It turns the particle and reduced
+diagnostics into beam-physics quantities and, where a compact analytical model
+is available, compares the simulation with that model. The seven stages below
+explain what is calculated and what each comparison can tell us.
 
-With the supplied laptop input, the normalized horizontal kick slope is about
-`-0.0171`. The analytical value is about `-0.0183`, giving a difference of
-roughly 7 percent. This is a useful check that the field solve and particle
-tracking are behaving as expected at the chosen resolution.
+#### 1. Derived beam parameters
+
+The notebook first reproduces the quantities needed by the later estimates.
+The relativistic factor and the rms angular divergences at the interaction
+point are
+
+$$
+\gamma=\frac{E_{\mathrm{beam}}}{m_ec^2},
+\qquad
+\sigma_{x'}^*=\frac{\sigma_x^*}{\beta_x^*},
+\qquad
+\sigma_{y'}^*=\frac{\sigma_y^*}{\beta_y^*}.
+$$
+
+The 30 mrad value in the input is the *full* crossing angle, so the formulae
+use the half angle $\phi=15$ mrad. The Piwinski angle and the corresponding
+effective horizontal overlap size are
+
+$$
+\Phi=\frac{\sigma_z}{\sigma_x^*}\tan\phi,
+\qquad
+\sigma_{x,\mathrm{eff}}^*=\sigma_x^*\sqrt{1+\Phi^2}.
+$$
+
+For the supplied parameters, $\Phi\simeq31.34$: the crossing angle therefore
+dominates the effective horizontal overlap. The notebook evaluates the
+linearized beam-beam parameters
+
+$$
+\xi_x=\frac{N_b r_e\beta_x^*}
+{2\pi\gamma\sigma_{x,\mathrm{eff}}^*
+\left(\sigma_{x,\mathrm{eff}}^*+\sigma_y^*\right)},
+$$
+
+$$
+\xi_y=\frac{N_b r_e\beta_y^*}
+{2\pi\gamma\sigma_y^*
+\left(\sigma_{x,\mathrm{eff}}^*+\sigma_y^*\right)},
+$$
+
+where $N_b$ is the bunch population and $r_e$ is the classical electron
+radius. The resulting values are approximately $\xi_x=0.0015$ and
+$\xi_y=0.0805$.
+
+#### 2. Horizontal beam-beam kick
+
+To measure the kick, the notebook selects the beam-1 macroparticles present in
+the final diagnostic and uses their unique particle IDs to retrieve those same
+particles from the initial diagnostic. This avoids pairing unrelated rows if
+the openPMD particle order changes. It then converts momenta into
+ultrarelativistic trajectory angles,
+
+$$
+x'=\frac{p_x}{p_z},
+\qquad
+\Delta x'=x'_{\mathrm{end}}-x'_{\mathrm{start}}.
+$$
+
+Close to the opposing bunch axis, a Gaussian beam acts like a linear focusing
+lens:
+
+$$
+\Delta x'(x)\simeq-\frac{4\pi\xi_x}{\beta_x^*}x.
+$$
+
+Because $\sigma_{x'}^*=\sigma_x^*/\beta_x^*$, normalizing both axes gives a
+particularly direct test,
+
+$$
+\frac{\Delta x'}{\sigma_{x'}^*}
+\simeq -4\pi\xi_x\frac{x}{\sigma_x^*}.
+$$
+
+The notebook fits a straight line over $|x|<10\sigma_x^*$. This wide-looking
+interval still samples the central part of the force because
+$\sigma_{x,\mathrm{eff}}^*\gg\sigma_x^*$ for this crossing angle. With the
+supplied laptop input, the fitted normalized slope is about `-0.0171`, while
+the analytical slope $-4\pi\xi_x$ is about `-0.0183`, a difference of roughly
+7 percent. This tests the combined field solve and particle push at the chosen
+resolution. It is not a convergence test, and it considers only particles
+that remain in the domain through the final recorded iteration.
+
+The notebook then creates one `ParticleTracker` for `test1` and another for
+`test2`. Both trackers select their particles at the first trajectory output.
+With `preserve_particle_index=True`, a given particle ID retains the same
+array index at every later iteration; if a particle is absent, its entry is
+filled with `NaN` instead of shifting all subsequent trajectories. Plotting
+each column of the coordinate arrays therefore traces one physical particle
+through the $(z,x)$ and $(z,y)$ planes. These passive trajectories make the
+crossing geometry and the accumulated beam-beam deflection visible without
+the sampling noise of the full bunches.
+
+#### 3. Collision snapshots
+
+At each stored iteration, the notebook plots both primary beams and their
+beamstrahlung photons in the $(z,x)$ and $(z,y)$ planes. Coordinates are
+normalized as $z/\sigma_z$, $x/\sigma_x^*$, and $y/\sigma_y^*$ so that the
+very different horizontal, vertical, and longitudinal scales can be compared
+in the same figure. These views check the crossing geometry and direction of
+motion: beam 1 travels toward positive $z$, beam 2 toward negative $z$, and
+the photon products follow the parent beams. Plotting uses a stride for speed;
+the underlying diagnostic data are not down-sampled.
+
+#### 4. Photon spectra and the loss threshold
+
+The helper combines photons still inside the domain with photons found in the
+boundary-scraping diagnostics. Since openPMD returns momentum in this analysis
+as eV/$c$, the photon energy in GeV is calculated from
+
+$$
+E_\gamma[\mathrm{GeV}]
+=10^{-9}\sqrt{p_x^2+p_y^2+p_z^2}.
+$$
+
+The beamstrahlung and radiative Bhabha histograms are weighted histograms. In
+an energy bin $j$, the physical photon yield is
+
+$$
+N_{\gamma,j}=\sum_{i\in j}w_i,
+$$
+
+not the number of macroparticle records. This distinction matters because the
+rare-event multipliers deliberately create extra sampled events and compensate
+through the macroparticle weights $w_i$.
+
+For the Bhabha spectrum, the notebook also marks the energy associated with a
+1 percent ring momentum acceptance. If
+$\delta_{\mathrm{acc}}=0.01$, a photon is counted as causing the loss of its
+emitting primary when
+
+$$
+E_\gamma>\delta_{\mathrm{acc}}E_{\mathrm{beam}}.
+$$
+
+This is an approximate loss model: the actual ring acceptance depends on the
+lattice and on where the off-momentum particle travels.
+
+#### 5. Luminosity and the hourglass effect
+
+The `DifferentialLuminosity` diagnostic supplies the cumulative
+center-of-mass-energy spectrum $d\mathcal{L}/dE_{\mathrm{com}}$, in
+m$^{-2}$ eV$^{-1}$. In current WarpX output, the last value on each data row
+is the total luminosity per bunch crossing,
+
+$$
+\mathcal{L}_{E}=\mathcal{L}_{\mathrm{total}}.
+$$
+
+The utility separates that last value from the preceding energy bins before
+plotting. For compatibility with an older output layout that omitted the
+total, it emits a warning and evaluates the numerical energy integral
+
+$$
+\mathcal{L}_{E}
+\simeq\sum_j
+\left.\frac{d\mathcal{L}}{dE_{\mathrm{com}}}\right|_j\Delta E_j.
+$$
+
+The `ColliderRelevant` diagnostic supplies $d\mathcal{L}/dt$, which gives an
+independent estimate through a trapezoidal time integral,
+
+$$
+\mathcal{L}_{\mathrm{WarpX}}
+\simeq\sum_k\frac{1}{2}
+\left[
+\left.\frac{d\mathcal{L}}{dt}\right|_k+
+\left.\frac{d\mathcal{L}}{dt}\right|_{k+1}
+\right](t_{k+1}-t_k).
+$$
+
+Comparing $\mathcal{L}_{E}$ with $\mathcal{L}_{\mathrm{WarpX}}$ first checks
+the consistency of the two WarpX diagnostics. Their energy and time binning
+are different, so they are not expected to be bitwise identical; a material
+difference should prompt checks of the diagnostic binning and numerical
+resolution.
+
+The first analytical estimate treats the transverse sizes as constant and
+accounts for the crossing angle only through the effective horizontal size:
+
+$$
+\mathcal{L}_0
+=\frac{N_b^2}{4\pi\sigma_{x,\mathrm{eff}}^*\sigma_y^*}.
+$$
+
+FCC-ee has a strong hourglass effect because the beta functions, especially
+$\beta_y^*$, are short compared with the bunch length. The utility module
+therefore also evaluates the longitudinal overlap numerically. At a distance
+$s$ from the interaction-point waist,
+
+$$
+\sigma_u(s)=\sigma_u^*
+\sqrt{1+\left(\frac{s}{\beta_u^*}\right)^2},
+\qquad u\in\{x,y\},
+$$
+
+and the luminosity model used by the notebook is
+
+$$
+\mathcal{L}_{\mathrm{HG}}
+=\frac{N_b^2}{4\pi\sqrt{\pi}\sigma_z}
+\int_{-\infty}^{\infty}
+\frac{
+\exp\!\left[-(s/\sigma_z)^2\right]
+\exp\!\left[-(\phi s/\sigma_x(s))^2\right]
+}{\sigma_x(s)\sigma_y(s)}\,ds.
+$$
+
+The two exponential factors describe longitudinal bunch overlap and the
+crossing-angle reduction, respectively. The notebook reports
+$\mathcal{L}_{\mathrm{WarpX}}$, $\mathcal{L}_0$,
+$\mathcal{L}_{\mathrm{HG}}$, and the ratio
+$\mathcal{L}_{\mathrm{WarpX}}/\mathcal{L}_{\mathrm{HG}}$. At the deliberately
+coarse laptop resolution, a discrepancy should be interpreted as motivation
+for mesh, time-step, and macroparticle convergence studies rather than as a
+precision prediction.
+
+#### 6. Radiative Bhabha cross section and beam lifetime
+
+For each beam, the weighted number of photons above the momentum-acceptance
+threshold is
+
+$$
+N_{\mathrm{loss}}=
+\sum_{E_{\gamma,i}>\delta_{\mathrm{acc}}E_{\mathrm{beam}}}w_i.
+$$
+
+Dividing this yield by the simulated luminosity per crossing gives the WarpX
+cross-section estimate,
+
+$$
+\sigma_{\mathrm{Bhabha}}^{\mathrm{WarpX}}
+=\frac{N_{\mathrm{loss}}}{\mathcal{L}_{\mathrm{WarpX}}}.
+$$
+
+The notebook compares it with the following QED estimate without the beam-size
+effect. Defining $y=E_\gamma/E_{\mathrm{beam}}$ and
+$\delta=\delta_{\mathrm{acc}}$,
+
+$$
+\sigma_{\mathrm{Bhabha}}^{\mathrm{QED}}
+=\frac{2\alpha^3}{m_e^2}
+\int_\delta^1
+\frac{4/3+y^2-4y/3}{y}
+\left[
+2\ln\!\left(\frac{4E_{\mathrm{beam}}^2}{m_e^2}\right)
++2\ln\!\left(\frac{1-y}{y}\right)-1
+\right]dy.
+$$
+
+Energies and masses are inserted in GeV, and the result in GeV$^{-2}$ is
+converted with $1\ \mathrm{GeV}^{-2}=0.389\ \mathrm{mbarn}$. The comparison
+isolates, approximately, the influence of the equivalent-photon model and its
+beam-size effect; it is also subject to Monte Carlo statistics and the simple
+loss criterion above.
+
+Finally, the revolution frequency is $f_{\mathrm{rev}}=c/C$, where $C$ is the
+ring circumference. For one bunch, the lifetime inferred from either cross
+section is
+
+$$
+\tau=\frac{N_b}
+{\sigma_{\mathrm{Bhabha}}\mathcal{L}_{\mathrm{bx}}
+n_{\mathrm{IP}}f_{\mathrm{rev}}},
+$$
+
+with $n_{\mathrm{IP}}=4$ and
+$\mathcal{L}_{\mathrm{bx}}=\mathcal{L}_{\mathrm{WarpX}}$. The notebook reports
+the electron and positron WarpX estimates and compares the positron result
+with the QED estimate.
+
+#### 7. Incoherent-pair distributions
+
+The final stage combines the weights and coordinates of the electrons and
+positrons from the Landau-Lifshitz, Breit-Heitler, and Breit-Wheeler channels.
+For each product it calculates the polar angle
+
+$$
+\theta=\operatorname{atan2}
+\left(\sqrt{p_x^2+p_y^2},p_z\right),
+$$
+
+and forms the weighted angular density in bin $j$,
+
+$$
+\left.\frac{dN}{d\theta}\right|_j
+\simeq\frac{1}{\Delta\theta_j}\sum_{i\in j}w_i.
+$$
+
+The accompanying $(z,x)$ and $(x,y)$ projections show where the products are
+located at the final reconstructed time. These are useful first views of
+potential detector backgrounds, but the three production channels are summed
+and no detector geometry or transport through the accelerator magnets is
+included.
 
 ::::::::::::::::::::::::::::::::::::: callout
 
@@ -267,22 +577,482 @@ drawing quantitative conclusions from the QED yields or luminosity.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Tutorial 2: Multi-turn WarpX and Xsuite simulation
+## Tutorial 2: Linear optics comparison
 
-From the Tutorial 2 directory, run:
+### What we will compare
+
+This exercise evaluates one turn of the FCC-ee Z-pole `fccee_p_ring` sequence
+for a 45.6 GeV electron reference particle with ImpactX, Xsuite, and MAD-X.
+Rather than
+including beam-beam forces, radiation, or space charge, it isolates the
+single-particle linear optics. The main observables are the horizontal and
+vertical beta functions, $\beta_x(s)$ and $\beta_y(s)$, evaluated along the
+same lattice.
+
+All three calculations start from `fccee_z.madx`. This is important: agreement
+would be much less meaningful if the codes read independently maintained
+versions of the lattice. The Tutorial 2 directory contains:
+
+- `fccee_z.madx`, the common FCC-ee lattice
+- `fcc_impactx.py`, which runs the ImpactX envelope calculation
+- the Tutorial 2 analysis notebook, which runs MAD-X through CPyMAD, imports
+  the live MAD-X sequence into Xsuite, and compares all three results
+- `fccee_z.json`, an optional serialized Xsuite version of the lattice
+
+### The matched beam model
+
+At the interaction point, the geometric transverse emittances are constructed
+from the nominal rms sizes and beta functions,
+
+$$
+\varepsilon_x=\frac{(\sigma_x^*)^2}{\beta_x^*},
+\qquad
+\varepsilon_y=\frac{(\sigma_y^*)^2}{\beta_y^*}.
+$$
+
+For either transverse plane $u$, the matched covariance matrix has the Twiss
+form
+
+$$
+\Sigma_u=\varepsilon_u
+\begin{pmatrix}
+\beta_u & -\alpha_u\\
+-\alpha_u & \gamma_u
+\end{pmatrix},
+\qquad
+\gamma_u=\frac{1+\alpha_u^2}{\beta_u}.
+$$
+
+The dispersive part of the horizontal beam size is included through the MAD-X
+dispersion. For an rms relative momentum spread $\sigma_\delta$,
+
+$$
+\sigma_x^2=\varepsilon_x\beta_x+(D_x\sigma_\delta)^2.
+$$
+
+The script initializes ImpactX with the matched $\beta$, $\alpha$, $D$, and
+$D'$ values at the beginning of the sequence. For the longitudinal plane it
+uses
+
+$$
+\varepsilon_t=\sigma_z\sigma_\delta,
+\qquad
+\beta_t=\frac{\sigma_z}{\sigma_\delta}.
+$$
+
+These definitions ensure that a disagreement later in the ring is testing the
+lattice translation and transport maps, rather than an intentionally
+mismatched initial beam.
+
+### Run the ImpactX calculation
+
+Activate the common tutorial environment, change to the Tutorial 2 directory,
+and run:
 
 ```bash
-python ./exec_tutorial_002.py --gpu 0 --ac t --wx tutorial_002_input.txt --nm 10000 --nt 20 --jobdir .
+conda activate usfcc26-warpx-tutorial
+python fcc_impactx.py
 ```
 
-The full explanation and downloadable files will be added after the coupled
-simulation has been validated.
+The tested script uses envelope tracking by default:
 
-## Tutorial 3: Linear tracking comparison
+```python
+DO_PARTICLE_TRACKING = False
+```
 
-This exercise will compare the same FCC-ee lattice and initial particle
-coordinates in Xsuite, ImpactX, and MAD-X. Its run and analysis instructions
-will be added after the three implementations have been validated.
+ImpactX propagates the covariance matrix instead of sampling it with
+macroparticles. This removes Monte Carlo noise from the comparison and is much
+faster than tracking the script's configured $10^7$ macroparticles. Space
+charge is disabled, the lattice is loaded from `fccee_z.madx` with one slice
+per element, and `slice_step_diagnostics = True` records the beam parameters
+along the ring.
+
+After a successful run, the file used by the notebook is:
+
+```text
+diags/reduced_beam_characteristics.0
+```
+
+It contains $s$, beam sizes, emittances, Twiss parameters, and dispersions at
+the ImpactX diagnostic locations.
+
+### Run the three-code comparison
+
+Open the Tutorial 2 analysis notebook from the same directory and run its cells
+in order. The notebook performs the following steps:
+
+1. CPyMAD loads `fccee_z.madx`, selects the `fccee_p_ring` sequence, defines a
+   45.6 GeV electron reference beam, and runs MAD-X `TWISS`.
+2. Xsuite constructs a thick-element `Line` directly from that in-memory
+   MAD-X sequence. It assigns the same electron reference particle and runs a
+   four-dimensional Twiss calculation.
+3. Pandas reads the ImpactX reduced diagnostic, and the notebook maps the
+   common quantity names—for example, MAD-X `betx`, ImpactX `beta_x`, and
+   Xsuite `betx`—onto the same plot.
+4. The beta functions are compared over the full 90.6 km ring and over the
+   first 2 km, where individual optics features are easier to inspect.
+
+For a beam matrix transported by a linear map $R(s)$,
+
+$$
+\Sigma(s)=R(s)\Sigma(0)R(s)^{\mathsf T},
+\qquad
+\beta_u(s)=\frac{\Sigma_{uu}(s)}{\varepsilon_u}.
+$$
+
+This is the quantity produced by the ImpactX envelope calculation and compared
+with the Twiss functions from the other two codes. A useful point-by-point
+metric is
+
+$$
+\Delta\beta_u(s)=
+\frac{\beta_u^{\mathrm{code}}(s)-\beta_u^{\mathrm{MAD-X}}(s)}
+{\beta_u^{\mathrm{MAD-X}}(s)}.
+$$
+
+The curves from the tested setup overlap closely in both planes. The final
+ImpactX beta functions also return to within about 0.1 percent of their
+initial values after one turn. Inspect the interaction-region peaks and the
+one-turn closure separately: agreement at low-beta locations is a more
+sensitive check than agreement in slowly varying sections.
+
+::::::::::::::::::::::::::::::::::::: callout
+
+Small differences can come from element slicing, coordinate conventions, or
+the treatment of fringe fields and higher-order terms. This exercise uses
+one slice per element and a four-dimensional Xsuite Twiss calculation, so it
+checks the selected linear model; it does not establish equivalence for
+nonlinear or synchrotron motion.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Tutorial 3: Multi-turn WarpX and Xsuite simulation
+
+### What the coupled model does
+
+This exercise connects two deliberately different descriptions of the
+collider. Xsuite transports the bunches through a linear map representing one
+FCC-ee superperiod, while WarpX resolves the collective electron-positron
+collision at the following interaction point. The same macroparticles are
+passed back and forth, so the beam-beam kick from one encounter affects every
+later encounter.
+
+One iteration follows this sequence:
+
+1. Xsuite advances both bunches through one linear superperiod.
+2. The adapter converts the two Xsuite coordinate systems into one laboratory
+   frame and writes one openPMD file per bunch.
+3. A separate Python process starts WarpX, loads those particles, and advances
+   them through a single head-on collision.
+4. The adapter combines particles still inside the WarpX box with particles
+   recorded at its absorbing boundaries.
+5. Particle IDs are matched, the coordinates are converted back, and the
+   Xsuite particle arrays are updated.
+6. Centroids, rms sizes, covariances, and emittances are recorded before the
+   next iteration.
+
+The separation of responsibilities is important. Xsuite does not apply a
+second beam-beam kick, and WarpX does not model the 90.6 km arc.
+
+### Download the files
+
+Create a Tutorial 3 directory containing:
+
+- [Coupled simulation driver](./files/us-fcc-2026/tutorial_003/exec_tutorial_003.py)
+- [WarpX input template](./files/us-fcc-2026/tutorial_003/tutorial_003_input.txt)
+- [Single-collision WarpX launcher](./files/us-fcc-2026/tutorial_003/run_warpx.py)
+- [Beam and map configuration](./files/us-fcc-2026/tutorial_003/tutorial_003_config.py)
+- [Coupling and analysis utilities](./files/us-fcc-2026/tutorial_003/tutorial_003_utils.py)
+- [Analysis notebook](./files/us-fcc-2026/tutorial_003/tutorial_003_plots.ipynb)
+
+Keep the six files together. The driver renders a run-specific WarpX input in
+the job directory; it never edits the downloaded template.
+
+### Simplified FCC-ee model
+
+The reference momentum is 182.5 GeV/$c$, corresponding to the FCC-ee ttbar
+working point. For an IP with $alpha=0$, the initialized Gaussian widths are
+
+$$
+\sigma_x=\sqrt{\varepsilon_x\beta_x},
+\qquad
+\sigma_{p_x}=\sqrt{\frac{\varepsilon_x}{\beta_x}},
+$$
+
+and likewise in $y$. The exercise sets
+$\varepsilon_x=\varepsilon_y=1.59\,\mathrm{nm}$ and
+$\beta_x=\beta_y=1\,\mathrm{m}$, producing round
+$39.9\,\mu\mathrm{m}$ beams. This is a teaching configuration, not the
+nominal flat FCC-ee beam.
+
+The full ring is divided into four identical superperiods. The transverse
+phase advance used by each Xsuite map is therefore
+
+$$
+Q_{x,\mathrm{sp}}
+=\operatorname{frac}\!\left(\frac{398.148}{4}\right)=0.537,
+$$
+
+with the same intentionally symmetric value in $y$. The longitudinal tune is
+$Q_{s,\mathrm{sp}}=0.091/4=0.02275$. Consequently, the command-line
+`--iterations` value counts superperiods: 20 iterations represent five full
+revolutions, not 20 revolutions.
+
+The Xsuite element explicitly selects `longitudinal_mode="linear_fixed_qs"`.
+This matters because `qs` and `bets` are parameters of that particular
+`LineSegmentMap` mode; leaving the mode implicit makes the intended
+synchrotron rotation dependent on constructor behavior.
+
+Synchrotron radiation in the arc, the crossing angle, crab-waist sextupoles,
+and the nonlinear lattice are omitted. Beamstrahlung in WarpX is optional so
+that its longitudinal effect can be isolated.
+
+The initialized values $\sigma_z=2.17$ mm and
+$\sigma_\delta=1.92\times10^{-3}$ are the beamstrahlung-broadened values
+retained from the original example. They describe an equilibrium only when
+the competing ring processes are also modeled. Turning on a fresh
+beamstrahlung kick at every IP while omitting arc damping, quantum excitation,
+and synchronous-energy compensation does not preserve that equilibrium; this
+tutorial should therefore be read as a transient coupling study.
+
+### The coordinate handoff
+
+This is the numerically delicate part of the exercise. Xsuite stores
+
+$$
+p_x=\frac{P_x}{P_0},\qquad
+p_y=\frac{P_y}{P_0},\qquad
+\delta=\frac{P-P_0}{P_0}.
+$$
+
+Therefore $p_x$ is not exactly the geometric slope. At a field-free handoff
+plane,
+
+$$
+\frac{P_s}{P_0}
+=\sqrt{(1+\delta)^2-p_x^2-p_y^2},
+\qquad
+x'=\frac{P_x}{P_s}
+=\frac{p_x}{\sqrt{(1+\delta)^2-p_x^2-p_y^2}}.
+$$
+
+Using $p_x$ directly as $x'$ introduces an energy-dependent drift error. It
+can be almost invisible without radiation and then become correlated with
+beamstrahlung energy loss.
+
+WarpX stores normalized mechanical momenta
+$\boldsymbol{u}=\boldsymbol{P}/(m_ec)$. With
+$(\beta\gamma)_0=P_0/(m_ec)$, the forward conversion is
+
+$$
+u_x=(\beta\gamma)_0p_x,
+\qquad
+u_y=(\beta\gamma)_0p_y,
+\qquad
+u_s=(\beta\gamma)_0
+\sqrt{(1+\delta)^2-p_x^2-p_y^2}.
+$$
+
+After WarpX, the relative momentum deviation must be reconstructed from the
+full momentum magnitude,
+
+$$
+\delta
+=\frac{\sqrt{u_x^2+u_y^2+u_s^2}}{(\beta\gamma)_0}-1,
+$$
+
+not from $u_s$ alone. The polished adapter uses these relations in both
+directions and tests an algebraic round trip before every collision. Its
+openPMD writer also attaches the required SI dimensions and unit scales to the
+position and momentum records; a bare array plus a momentum scale is not a
+complete external-particle description.
+
+Xsuite defines the longitudinal coordinate as
+$\zeta=s-\beta_0ct$. There is consequently a distinction between Xsuite's
+coordinates on the IP plane and the simultaneous particle snapshot required
+by WarpX. At the initial common time $t_-=-f/(\beta_0c)$, the local
+longitudinal position is
+
+$$
+s_- = \frac{u_s}{\gamma\beta_0}(\zeta-f),
+$$
+
+and the transverse positions are drifted by
+$x_-=x+s_-u_x/u_s$ and $y_-=y+s_-u_y/u_s$. At the final common time
+$t_+=f/(\beta_0c)$, the inverse longitudinal transformation is
+
+$$
+\zeta=\frac{\beta_0\gamma}{u_s}s_+-f.
+$$
+
+The earlier script implicitly replaced the particle velocity $cu_s/\gamma$
+by $\beta_0c$. That is an excellent numerical approximation for the reference
+particle at 182.5 GeV, but it is unnecessary and ceases to be an exact
+round trip after radiation changes the momentum.
+
+The WarpX bunch centers start a distance $f=4\sigma_z$ before the IP and end
+the same distance after it, so the collision duration is
+
+$$
+T=\frac{2f}{\beta_0c}.
+$$
+
+Beam 2 requires additional sign changes because its local $s$ and $x$ axes
+point opposite to those of beam 1. The present adapter explicitly rejects a
+nonzero crossing angle: supporting one correctly would require a consistent
+transformation of positions, momenta, and time, rather than rotating positions
+alone.
+
+### Run the reference and coupled cases
+
+First generate an inexpensive arc-only reference:
+
+```bash
+python exec_tutorial_003.py --no-warpx --macroparticles 10000 --iterations 256
+```
+
+Then run the classical WarpX collision. A short laptop test is:
+
+```bash
+python exec_tutorial_003.py --macroparticles 10000 --iterations 20
+```
+
+It writes `outputs_with_warpx`. To test the longitudinal coupling with
+quantum-synchrotron emission enabled, use:
+
+```bash
+python exec_tutorial_003.py --macroparticles 10000 --iterations 20 --beamstrahlung
+```
+
+That run writes `outputs_with_warpx_beamstrahlung`. Each collision starts a
+new WarpX process because a WarpX simulation cannot simply be reinitialized
+in the same Python process. The driver uses a different deterministic random
+seed for every collision. Reusing the same WarpX seed at every iteration
+would repeat the same Monte Carlo stream and could turn stochastic photon
+emission into an artificial coherent excitation.
+
+The openPMD handoff deliberately does not write `opticalDepthQSR`. This is a
+WarpX QED runtime attribute that WarpX initializes stochastically for the
+imported electron and positron species. The previous openPMD file contained a
+zero-valued record, but the documented `external_file` interface does not
+include this runtime attribute and current WarpX initializes it separately.
+That record was therefore probably ignored or overwritten, so it is not an
+established cause of the observed oscillation. If a version did honor the
+supplied value, zero would mean that the sampled emission threshold had already
+been reached, rather than “no accumulated probability.”
+
+The default `direct` launcher is appropriate for the single-rank Conda WarpX
+package. `--launcher srun` is available for an appropriately compiled HPC
+installation, but this teaching adapter currently enforces one WarpX rank so
+that its fallback particle-ID mapping remains auditable.
+
+### Coupling checks
+
+Every coupled run writes `handoff_checks.csv`. For each bunch and collision it
+records:
+
+- the numbers of primary particles sent to and recovered from WarpX
+- whether WarpX preserved the supplied IDs or the documented single-rank
+  input-order fallback was needed
+- the maximum algebraic position and momentum round-trip error
+- $\langle\zeta\rangle$, $\sigma_z$, $\langle\delta\rangle$, and
+  $\sigma_\delta$ immediately before and after WarpX
+- the longitudinal rms emittance before and after WarpX
+- the mean energy change and rms instantaneous change in $\zeta$
+
+The longitudinal rms emittance is
+
+$$
+\varepsilon_\zeta
+=\sqrt{
+\sigma_\zeta^2\sigma_\delta^2
+-\operatorname{Cov}(\zeta,\delta)^2
+}.
+$$
+
+These quantities separate a handoff error from longitudinal dynamics. With
+beamstrahlung off, the algebraic round-trip errors should be near floating
+point precision, and every primary should be recovered from either the full
+or boundary diagnostic. With beamstrahlung on,
+$\langle\Delta\delta\rangle<0$ and an increase in energy spread are expected;
+a large instantaneous $\zeta$ jump during the short WarpX call is more
+suspicious.
+
+### Why beamstrahlung can produce a real bunch-length oscillation
+
+Even a perfect handoff does not imply constant $\sigma_z$. Beamstrahlung
+changes the momentum distribution locally at the IP but does not
+simultaneously rematch the bunch length and $\zeta$-$\delta$ covariance. The
+next linear synchrotron map transports the covariance as
+
+$$
+\Sigma_s(n+1)=R_s\Sigma_s(n)R_s^{\mathsf T}.
+$$
+
+For the usual phase-space rotation, the new bunch-length variance contains
+contributions from both the old bunch length and energy spread,
+
+$$
+\sigma_{\zeta,n+1}^2
+=\cos^2\mu_s\,\sigma_{\zeta,n}^2
++\beta_s^2\sin^2\mu_s\,\sigma_{\delta,n}^2
++2\beta_s\sin\mu_s\cos\mu_s
+\operatorname{Cov}(\zeta,\delta),
+$$
+
+up to the sign convention of the longitudinal map. Thus a beamstrahlung
+increase in $\sigma_\delta$ naturally becomes an oscillation of $\sigma_z$.
+In this simplified model there is no radiation damping, quantum excitation,
+consistent compensation of the mean radiative loss, or self-consistent
+beamstrahlung equilibrium to damp or rematch that oscillation.
+
+The most useful diagnostic sequence is:
+
+1. Check whether $\sigma_z$ jumps across the WarpX call itself.
+2. Check whether beamstrahlung first changes $\sigma_\delta$ and
+   $\varepsilon_\zeta$.
+3. Check whether $\sigma_z$ changes mainly after the next Xsuite arc map.
+4. Repeat with several initial seeds to rule out a correlated Monte Carlo
+   excitation.
+
+### Analyze the coherent modes
+
+Open [the Tutorial 3 notebook](./files/us-fcc-2026/tutorial_003/tutorial_003_plots.ipynb)
+and run its cells after producing one or more output directories. It plots the
+beam moments, the handoff checks, and windowed centroid spectra.
+
+Without beam-beam interaction, the centroid has one peak at the unperturbed
+superperiod tune. Two identical interacting beams instead have two coherent
+normal modes:
+
+- the $\sigma$ mode, in which the physical beam centroids move in phase and
+  $Q_\sigma\simeq Q_0$
+- the $\pi$ mode, in which their physical centroids move oppositely and the
+  beam-beam force shifts the coherent tune
+
+Because the local horizontal axes point in opposite directions,
+
+$$
+x_\sigma=x_1-x_2,
+\qquad
+x_\pi=x_1+x_2.
+$$
+
+The vertical axes have the same orientation, so
+$y_\sigma=y_1+y_2$ and $y_\pi=y_1-y_2$. For $N$ recorded superperiods, the
+FFT bin spacing is $\Delta Q=1/N$. Twenty iterations are useful for checking
+the workflow but are too short for a clean mode measurement; use hundreds of
+iterations for the spectrum.
+
+::::::::::::::::::::::::::::::::::::: callout
+
+This adapter assumes head-on beams, field-free handoff planes, ultra-relativistic
+primary particles that all appear in either the final or boundary diagnostic,
+and a single WarpX rank. Boundary-scraped particles are propagated ballistically
+to the common final time. These assumptions are checked or stated explicitly,
+but they remain part of the model.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: keypoints
 
@@ -290,9 +1060,22 @@ will be added after the three implementations have been validated.
   and collider-specific reduced diagnostics.
 - The laptop input prioritizes runtime and teaching value over numerical
   convergence.
+- Matching particle IDs between diagnostics makes the normalized kick slope a
+  direct check of the linear beam-beam model.
 - Keeping different QED products in separate species makes their spectra and
-  yields easier to inspect.
-- The analysis notebook uses openPMD-viewer to connect the simulation output
-  to beam-physics observables.
+  weighted yields easier to inspect.
+- The luminosity, Bhabha cross-section, lifetime, and pair-distribution checks
+  connect the openPMD and reduced diagnostics to accelerator observables.
+- Using one MAD-X sequence and one matched covariance model makes the Tutorial
+  2 beta-function comparison sensitive to differences in lattice translation
+  and linear transport.
+- The Tutorial 3 adapter converts normalized momentum and geometric slope
+  separately; this prevents beamstrahlung energy loss from contaminating the
+  transverse drift.
+- A beamstrahlung-induced $\sigma_z$ oscillation is not automatically a
+  coupling error: a local increase in energy spread creates a longitudinal
+  mismatch that the arc map rotates into bunch length.
+- Per-collision handoff logs distinguish an instantaneous coordinate jump
+  from subsequent synchrotron motion.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

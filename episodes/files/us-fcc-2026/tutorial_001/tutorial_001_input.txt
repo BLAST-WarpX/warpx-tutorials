@@ -63,7 +63,7 @@ my_constants.probability_estimate =   npart / nmacropart * sigma_bw_max * 2 * cl
 my_constants.probability_target_value = 0.01 # we want the event to have this probability
 my_constants.multiplier_bw = probability_target_value / probability_estimate 
 my_constants.probability_threshold = 0.1
-my_constants.multiplier_kn = sigma_bw_max / sigma_kn_max  * multiplier_bw
+my_constants.multiplier_kn = sigma_kn_max / sigma_bw_max  * multiplier_bw
 
 # DIAGNOSTICS
 my_constants.bin_num_1d = 512
@@ -108,7 +108,7 @@ warpx.random_seed = 20260908
 #################
 ### PARTICLES ###
 #################
-particles.species_names = beam1 beam2 pho1 pho2 ele_bh pos_bh ele_bw pos_bw ele_ll pos_ll vpho1 vpho2 pho1_bha pho2_bha beam1_bha beam2_bha
+particles.species_names = beam1 beam2 pho1 pho2 ele_bh pos_bh ele_bw pos_bw ele_ll pos_ll vpho1 vpho2 pho1_bha pho2_bha beam1_bha beam2_bha test1 test2
 
 # Beams 
 beam1.species_type = electron
@@ -170,6 +170,55 @@ beam2.do_classical_radiation_reaction = 0
 beam2.do_qed_virtual_photons = 1
 beam2.qed_virtual_photons_do_beam_size_effect = 1
 beam2.qed_virtual_photon_species_name = vpho2
+
+# Test particles
+test1.species_type = electron
+test1.injection_style = gaussian_beam
+test1.x_rms = sigmax
+test1.y_rms = sigmay
+test1.z_rms = sigmaz
+test1.x_m = - mux
+test1.y_m = - muy
+test1.z_m = - muz
+test1.npart = 100
+test1.q_tot = -charge
+test1.focal_distance = focal_distance
+test1.do_gaussian_beam_rotation = 1
+test1.do_gaussian_beam_rotation_momenta = 0
+test1.gaussian_beam_rotation_angle = rotation_angle
+test1.gaussian_beam_rotation_axis = 0 1 0
+test1.momentum_distribution_type = gaussian
+test1.uz_m = gamma
+test1.uy_m = 0.0
+test1.ux_m = 0.0
+test1.ux_th = dux
+test1.uy_th = duy
+test1.uz_th = espread
+test1.do_not_deposit = 1
+
+test2.species_type = positron
+test2.injection_style = gaussian_beam
+test2.x_rms = sigmax
+test2.y_rms = sigmay
+test2.z_rms = sigmaz
+test2.x_m = mux
+test2.y_m = muy
+test2.z_m = muz
+test2.npart = 100
+test2.q_tot = charge
+test2.focal_distance = focal_distance
+test2.do_gaussian_beam_rotation = 1
+test2.do_gaussian_beam_rotation_momenta = 0
+test2.gaussian_beam_rotation_angle = -rotation_angle
+test2.gaussian_beam_rotation_axis = 0 1 0
+test2.momentum_distribution_type = gaussian
+test2.uz_m = -gamma
+test2.uy_m = 0.0
+test2.ux_m = 0.0
+test2.ux_th = dux
+test2.uy_th = duy
+test2.uz_th = espread
+test2.do_not_deposit = 1
 
 # Beamstrahlung photons 
 pho1.species_type = photon 
@@ -296,18 +345,27 @@ bhabha2.probability_target_value = probability_target_value
 ### DIAGNOSTICS ###
 ###################
 # These will contain per particle coordinates, momenta and weights
-diagnostics.diags_names = particles_in particles_out
+diagnostics.diags_names = particles_in particles_out trajectories
+
+trajectories.intervals = 1
+trajectories.write_species = 1
+trajectories.diag_type = Full
+trajectories.species = test1 test2
+trajectories.fields_to_plot = none
+trajectories.format = openpmd
+trajectories.openpmd_backend = bp
+trajectories.dump_last_timestep = 1
+trajectories.test1.additional_variables = Ex Ey Ez Bx By Bz
+trajectories.test2.additional_variables = Ex Ey Ez Bx By Bz
 
 particles_in.intervals = floor(nz/4)
 particles_in.write_species = 1
 particles_in.diag_type = Full
-particles_in.species = beam1 beam2 pho1 pho2 ele_bh pos_bh ele_bw pos_bw ele_ll pos_ll pho1_bha pho2_bha
+particles_in.species = beam1 beam2 pho1 pho2 ele_bh pos_bh ele_bw pos_bw ele_ll pos_ll pho1_bha pho2_bha beam1_bha beam2_bha
 particles_in.fields_to_plot = none
 particles_in.format = openpmd
 particles_in.openpmd_backend = bp
 particles_in.dump_last_timestep = 1
-particles_in.beam1.additional_variables = Ex Ey Ez Bx By Bz
-particles_in.beam2.additional_variables = Ex Ey Ez Bx By Bz
 
 particles_out.intervals = -1
 particles_out.diag_type = BoundaryScraping
@@ -398,6 +456,20 @@ pho2_bha.save_particles_at_zlo = 1
 pho2_bha.save_particles_at_xhi = 1
 pho2_bha.save_particles_at_yhi = 1
 pho2_bha.save_particles_at_zhi = 1 
+
+beam1_bha.save_particles_at_xlo = 1
+beam1_bha.save_particles_at_ylo = 1
+beam1_bha.save_particles_at_zlo = 1
+beam1_bha.save_particles_at_xhi = 1
+beam1_bha.save_particles_at_yhi = 1
+beam1_bha.save_particles_at_zhi = 1
+
+beam2_bha.save_particles_at_xlo = 1
+beam2_bha.save_particles_at_ylo = 1
+beam2_bha.save_particles_at_zlo = 1
+beam2_bha.save_particles_at_xhi = 1
+beam2_bha.save_particles_at_yhi = 1
+beam2_bha.save_particles_at_zhi = 1
 
 # REDUCED
 warpx.reduced_diags_names = DiffLumi_beam1_beam2 ColliderRelevant

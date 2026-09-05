@@ -1,10 +1,11 @@
 import os
 import re
+import warnings
 
 import numpy as np
 from openpmd_viewer import OpenPMDTimeSeries
 from scipy.constants import c, e, m_e
-from scipy.integrate import quad
+from scipy.integrate import quad, trapezoid
 
 
 def extract_macroparticles(species_list, sim_folder=".", diags_name="diags", step=-1):
@@ -92,15 +93,38 @@ def get_Ecom(filename):
 
 def get_dL_dEcom(filename):
     """
-    Returns 2 numpy arrays: 
-    - the center-of-mass energy [eV]
-    - luminosity [s^-1 m^-2 eV^-1]
-    """
-    Ecom = get_Ecom(filename) # eV
-    dL_dEcom = np.loadtxt(filename)[-1,2:] # s^-1 m^-2 eV^-1
-    Ltot = np.loadtxt(filename)[-1,-1]
+    Return the cumulative differential luminosity and its energy integral.
 
-    return Ecom, dL_dEcom, Ltot # eV, s^-1 m^-2 eV^-1, s^-1 m^-2 
+    Returns:
+    - the center-of-mass energy [eV]
+    - differential luminosity [m^-2 eV^-1]
+    - luminosity integrated over center-of-mass energy [m^-2]
+    """
+    Ecom = get_Ecom(filename)  # eV
+    # ``ndmin=2`` also handles a diagnostic containing only its final row.
+    values = np.loadtxt(filename, ndmin=2)[-1, 2:]
+    if values.size == Ecom.size + 1:
+        # Current WarpX appends the total luminosity after the differential
+        # energy bins. Keep it out of the plotted spectrum.
+        dL_dEcom = values[:-1]  # m^-2 eV^-1
+        Ltot = values[-1]  # m^-2
+    elif values.size == Ecom.size:
+        # Compatibility with older output that omitted the total column.
+        warnings.warn(
+            "DifferentialLuminosity has no final total-luminosity column; "
+            "integrating the energy bins. Check the WarpX version.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        dL_dEcom = values
+        Ltot = trapezoid(dL_dEcom, Ecom)
+    else:
+        raise ValueError(
+            "Unexpected DifferentialLuminosity layout: "
+            f"found {values.size} values for {Ecom.size} energy bins"
+        )
+
+    return Ecom, dL_dEcom, Ltot
 
 
 def luminosity_per_bx_hourglass(
