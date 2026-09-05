@@ -591,13 +591,15 @@ same lattice.
 
 All three calculations start from `fccee_z.madx`. This is important: agreement
 would be much less meaningful if the codes read independently maintained
-versions of the lattice. The Tutorial 2 directory contains:
+versions of the lattice. Create a Tutorial 2 directory containing:
 
-- `fccee_z.madx`, the common FCC-ee lattice
-- `fcc_impactx.py`, which runs the ImpactX envelope calculation
-- the Tutorial 2 analysis notebook, which runs MAD-X through CPyMAD, imports
-  the live MAD-X sequence into Xsuite, and compares all three results
-- `fccee_z.json`, an optional serialized Xsuite version of the lattice
+- [the common FCC-ee MAD-X lattice](./files/us-fcc-2026/tutorial_002/fccee_z.madx)
+- [the ImpactX envelope script](./files/us-fcc-2026/tutorial_002/fcc_impactx.py)
+- [the Tutorial 2 analysis notebook](./files/us-fcc-2026/tutorial_002/tutorial_002_plots.ipynb)
+
+The notebook runs MAD-X through CPyMAD, imports the live MAD-X sequence into
+Xsuite, reads the ImpactX diagnostic, and compares all three results. Keep the
+three files together and execute them from that directory.
 
 ### The matched beam model
 
