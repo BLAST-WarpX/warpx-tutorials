@@ -57,17 +57,17 @@ my_constants.nt = floor(T/dt)
 my_constants.hwmin = 1e-4 * mc2 * mc2 / energy
 
 # COLLISIONS
-my_constants.sigma_kn_max = 6.65e-29 # m^2, maximum total Compton cross section (Klein-Nishina) 
+my_constants.sigma_kn_max = 6.65e-29 # m^2, maximum total Compton cross section (Klein-Nishina)
 my_constants.sigma_bw_max = 1.7e-29 # m^2, maximum total Breit-Wheeler  cross section
 my_constants.probability_estimate =   npart / nmacropart * sigma_bw_max * 2 * clight * dt  / (dx * dy * dz)
 my_constants.probability_target_value = 0.01 # we want the event to have this probability
-my_constants.multiplier_bw = probability_target_value / probability_estimate 
+my_constants.multiplier_bw = probability_target_value / probability_estimate
 my_constants.probability_threshold = 0.1
 my_constants.multiplier_kn = sigma_kn_max / sigma_bw_max  * multiplier_bw
 
 # DIAGNOSTICS
 my_constants.bin_num_1d = 512
-my_constants.bin_center_min_1d = 0. 
+my_constants.bin_center_min_1d = 0.
 my_constants.bin_center_max_1d = 2.1*energy_eV
 my_constants.bin_size_1d = (bin_center_max_1d - bin_center_min_1d) / bin_num_1d
 my_constants.bin_edge_min_1d = bin_center_min_1d - 0.5 * bin_size_1d
@@ -88,8 +88,8 @@ geometry.prob_hi =  0.5*Lx  0.5*Ly  0.5*Lz
 ###########################
 ### BOUNDARY CONDITIONS ###
 ###########################
-boundary.field_lo = open open open 
-boundary.field_hi = open open open 
+boundary.field_lo = open open open
+boundary.field_hi = open open open
 boundary.particle_lo = Absorbing Absorbing Absorbing
 boundary.particle_hi = Absorbing Absorbing Absorbing
 
@@ -97,25 +97,25 @@ boundary.particle_hi = Absorbing Absorbing Absorbing
 ### NUMERICS ###
 ################
 warpx.do_electrostatic = relativistic
-warpx.const_dt = dt 
+warpx.const_dt = dt
 warpx.grid_type = collocated
 algo.particle_shape = 3
-algo.particle_pusher = vay 
+algo.particle_pusher = vay
 warpx.poisson_solver = fft
 warpx.use_2d_slices_fft_solver = 1
-warpx.random_seed = 20260908 
+warpx.random_seed = 20260908
 
 #################
 ### PARTICLES ###
 #################
 particles.species_names = beam1 beam2 pho1 pho2 ele_bh pos_bh ele_bw pos_bw ele_ll pos_ll vpho1 vpho2 pho1_bha pho2_bha beam1_bha beam2_bha test1 test2
 
-# Beams 
+# Beams
 beam1.species_type = electron
 beam1.injection_style = gaussian_beam
 beam1.x_rms = sigmax
 beam1.y_rms = sigmay
-beam1.z_rms = sigmaz 
+beam1.z_rms = sigmaz
 beam1.x_m = - mux
 beam1.y_m = - muy
 beam1.z_m = - muz
@@ -146,7 +146,7 @@ beam2.injection_style = gaussian_beam
 beam2.x_rms = sigmax
 beam2.y_rms = sigmay
 beam2.z_rms = sigmaz
-beam2.x_m = mux 
+beam2.x_m = mux
 beam2.y_m = muy
 beam2.z_m = muz
 beam2.npart = nmacropart
@@ -220,12 +220,12 @@ test2.uy_th = duy
 test2.uz_th = espread
 test2.do_not_deposit = 1
 
-# Beamstrahlung photons 
-pho1.species_type = photon 
-pho1.injection_style = none 
+# Beamstrahlung photons
+pho1.species_type = photon
+pho1.injection_style = none
 
 pho2.species_type = photon
-pho2.injection_style = none 
+pho2.injection_style = none
 
 # Virtual photons
 vpho1.qed_virtual_photons_min_energy = hwmin
@@ -243,7 +243,7 @@ vpho2.do_not_push = 1
 # Incoherent pairs
 ele_bw.species_type = electron
 ele_bw.injection_style = none
-ele_bw.do_not_deposit = 1 
+ele_bw.do_not_deposit = 1
 
 pos_bw.species_type = positron
 pos_bw.injection_style = none
@@ -265,7 +265,7 @@ pos_bh.species_type = positron
 pos_bh.injection_style = none
 pos_bh.do_not_deposit = 1
 
-# Bhabha photons 
+# Bhabha photons
 pho1_bha.species_type = photon
 pho1_bha.injection_style = none
 pho1_bha.do_qed_breit_wheeler = 0
@@ -274,12 +274,12 @@ pho2_bha.species_type = photon
 pho2_bha.injection_style = none
 pho2_bha.do_qed_breit_wheeler = 0
 
-# Backscattered beam particles 
-beam1_bha.species_type = electron 
+# Backscattered beam particles
+beam1_bha.species_type = electron
 beam1_bha.injection_style = none
 beam1_bha.do_not_deposit = 1
 
-beam2_bha.species_type = positron 
+beam2_bha.species_type = positron
 beam2_bha.injection_style = none
 beam2_bha.do_not_deposit = 1
 
@@ -336,7 +336,7 @@ bhabha1.probability_target_value = probability_target_value
 
 bhabha2.species = vpho1 beam2
 bhabha2.type = linear_compton
-bhabha2.product_species = pho2_bha beam2_bha 
+bhabha2.product_species = pho2_bha beam2_bha
 bhabha2.event_multiplier = multiplier_kn
 bhabha2.probability_threshold = probability_threshold
 bhabha2.probability_target_value = probability_target_value
@@ -455,7 +455,7 @@ pho2_bha.save_particles_at_ylo = 1
 pho2_bha.save_particles_at_zlo = 1
 pho2_bha.save_particles_at_xhi = 1
 pho2_bha.save_particles_at_yhi = 1
-pho2_bha.save_particles_at_zhi = 1 
+pho2_bha.save_particles_at_zhi = 1
 
 beam1_bha.save_particles_at_xlo = 1
 beam1_bha.save_particles_at_ylo = 1

@@ -82,7 +82,7 @@ def extract_macroparticles(species_list, sim_folder=".", diags_name="diags", ste
 
 def get_Ecom(filename):
     """
-    Return 1 numpy array: 
+    Return 1 numpy array:
     - the center-of-mass energy (in eV)
     """
     with open(filename) as f:

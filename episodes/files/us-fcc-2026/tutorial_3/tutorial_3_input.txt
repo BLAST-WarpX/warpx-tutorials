@@ -2,7 +2,7 @@
 ### RENDERED BY THE PYTHON DRIVER ###
 ####################################
 
-# Strings in braces are replaced by exec_tutorial_003.py. Do not run this
+# Strings in braces are replaced by exec_tutorial_3.py. Do not run this
 # template directly with warpx.3d.
 
 beam1.injection_style = external_file
@@ -22,7 +22,8 @@ my_constants.beta0 = beta_gamma0/gamma0
 
 my_constants.Lx = 32.0*sigmax
 my_constants.Ly = 32.0*sigmay
-my_constants.Lz = 16.0*sigmaz
+# Leave six sigma_z between each initial bunch center and the nearest boundary.
+my_constants.Lz = 20.0*sigmaz
 my_constants.nx = 64
 my_constants.ny = 64
 my_constants.nz = 32

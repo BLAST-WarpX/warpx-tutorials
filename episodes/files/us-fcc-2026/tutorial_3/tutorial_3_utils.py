@@ -417,7 +417,8 @@ def _read_openpmd_folder(
         "uy": np.asarray(uy),
         "uz": np.asarray(uz),
         "w": np.asarray(weight),
-        "id": np.rint(particle_id).astype(np.int64),
+        # WarpX 26.09 IDs can exceed the signed 64-bit range.
+        "id": np.asarray(particle_id, dtype=np.uint64),
     }
 
 
@@ -456,19 +457,19 @@ def map_warpx_ids(
     is unambiguous in the latter case.
     """
 
-    output_ids = output_ids.astype(np.int64)
-    sent_ids = np.sort(sent_ids.astype(np.int64))
+    output_ids = np.asarray(output_ids, dtype=np.uint64)
+    sent_ids = np.sort(np.asarray(sent_ids, dtype=np.int64))
     if len(output_ids) != len(sent_ids):
         raise RuntimeError(
             f"Sent {len(sent_ids)} primaries but recovered {len(output_ids)}. "
             "The handoff refuses a partial update."
         )
 
-    if np.array_equal(np.sort(output_ids), sent_ids):
-        return output_ids, "preserved"
+    if np.array_equal(np.sort(output_ids), sent_ids.astype(np.uint64)):
+        return output_ids.astype(np.int64), "preserved"
 
     order = np.argsort(output_ids)
-    mapped = np.empty_like(output_ids)
+    mapped = np.empty_like(sent_ids)
     mapped[order] = sent_ids
     return mapped, "single-rank input order"
 
@@ -584,6 +585,7 @@ def read_moment_csv(output_dir: str | Path) -> dict[int, dict[str, np.ndarray]]:
             output_dir / f"moments_b{beam_number}.csv",
             delimiter=",",
             names=True,
+            ndmin=1,
         )
         result[beam_number] = {name: data[name] for name in data.dtype.names}
     return result

@@ -107,16 +107,16 @@ radiative Bhabha photons, and incoherent electron-positron pairs.
 
 Create a directory for Tutorial 1 and place all of the following files in it:
 
-- [WarpX input file](./files/us-fcc-2026/tutorial_001/tutorial_001_input.txt)
-- [Analysis notebook](./files/us-fcc-2026/tutorial_001/tutorial_001_plots.ipynb)
-- [Analysis utility module](./files/us-fcc-2026/tutorial_001/tutorial_001_utils.py)
+- [WarpX input file](./files/us-fcc-2026/tutorial_1/tutorial_1_input.txt)
+- [Analysis notebook](./files/us-fcc-2026/tutorial_1/tutorial_1_plots.ipynb)
+- [Analysis utility module](./files/us-fcc-2026/tutorial_1/tutorial_1_utils.py)
 
 The notebook and utility module must remain in the same directory as the
 input file.
 
 ### Read the input file
 
-The [input file](./files/us-fcc-2026/tutorial_001/tutorial_001_input.txt) is
+The [input file](./files/us-fcc-2026/tutorial_1/tutorial_1_input.txt) is
 split into constants, numerical settings, particle species, collision
 processes, and diagnostics. Values defined under `my_constants` can be reused
 throughout the rest of the file.
@@ -126,7 +126,7 @@ throughout the rest of the file.
 ### View the WarpX input file
 
 ```{r engine='bash', echo=FALSE, comment=''}
-cat ./files/us-fcc-2026/tutorial_001/tutorial_001_input.txt
+cat ./files/us-fcc-2026/tutorial_1/tutorial_1_input.txt
 ```
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -213,7 +213,7 @@ three downloaded files, and run:
 
 ```bash
 conda activate usfcc26-warpx-tutorial
-warpx.3d tutorial_001_input.txt
+warpx.3d tutorial_1_input.txt
 ```
 
 On the laptop used to prepare this tutorial, the run takes about three to four
@@ -223,9 +223,9 @@ processor and storage system.
 When the run finishes, your directory should contain:
 
 ```text
-tutorial_001_input.txt
-tutorial_001_plots.ipynb
-tutorial_001_utils.py
+tutorial_1_input.txt
+tutorial_1_plots.ipynb
+tutorial_1_utils.py
 diags/
 warpx_used_inputs.txt
 ```
@@ -235,7 +235,7 @@ input and is useful when an input value is defined through an expression.
 
 ### Analyze the collision
 
-Open [the analysis notebook](./files/us-fcc-2026/tutorial_001/tutorial_001_plots.ipynb)
+Open [the analysis notebook](./files/us-fcc-2026/tutorial_1/tutorial_1_plots.ipynb)
 with your preferred Jupyter interface and run the cells in order. The notebook
 expects the `diags` directory in the current Tutorial 1 directory.
 
@@ -244,7 +244,7 @@ expects the `diags` directory in the current Tutorial 1 directory.
 ### View the analysis notebook
 
 <iframe
-  src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/us-fcc-2026/tutorial_001/tutorial_001_plots.ipynb"
+  src="https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/us-fcc-2026/tutorial_1/tutorial_1_plots.ipynb"
   width="100%"
   height="800"
   style="border: none"
@@ -253,7 +253,7 @@ expects the `diags` directory in the current Tutorial 1 directory.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-The [utility module](./files/us-fcc-2026/tutorial_001/tutorial_001_utils.py)
+The [utility module](./files/us-fcc-2026/tutorial_1/tutorial_1_utils.py)
 contains the routines used to read particle data, reconstruct boundary
 particles, integrate the hourglass luminosity, and calculate the radiative
 Bhabha cross section and lifetime.
@@ -263,7 +263,7 @@ Bhabha cross section and lifetime.
 ### View the analysis utility module
 
 ```{r engine='bash', echo=FALSE, comment=''}
-cat ./files/us-fcc-2026/tutorial_001/tutorial_001_utils.py
+cat ./files/us-fcc-2026/tutorial_1/tutorial_1_utils.py
 ```
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -319,7 +319,29 @@ where $N_b$ is the bunch population and $r_e$ is the classical electron
 radius. The resulting values are approximately $\xi_x=0.0015$ and
 $\xi_y=0.0805$.
 
-#### 2. Horizontal beam-beam kick
+#### 2. Collision snapshots
+
+At each stored iteration, the notebook plots both primary beams and their
+beamstrahlung photons in the $(z,x)$ and $(z,y)$ planes. Coordinates are
+normalized as $z/\sigma_z$, $x/\sigma_x^*$, and $y/\sigma_y^*$ so that the
+very different horizontal, vertical, and longitudinal scales can be compared
+in the same figure. These views check the crossing geometry and direction of
+motion: beam 1 travels toward positive $z$, beam 2 toward negative $z$, and
+the photon products follow the parent beams. Plotting uses a stride for speed;
+the underlying diagnostic data are not down-sampled.
+
+The notebook next creates one `ParticleTracker` for `test1` and another for
+`test2`. Both trackers select their particles at the first trajectory output.
+With `preserve_particle_index=True`, a given particle ID retains the same
+array index at every later iteration; if a particle is absent, its entry is
+filled with `NaN` instead of shifting all subsequent trajectories. Plotting
+each column of the coordinate arrays therefore traces one physical particle
+through the collision. The 3D view shows the full $(z,x,y)$ paths, while the
+$(z,x)$ and $(z,y)$ projections make the small transverse motion easier to
+read. These passive trajectories reveal the crossing geometry and accumulated
+beam-beam deflection without the sampling noise of the full bunches.
+
+#### 3. Horizontal beam-beam kick
 
 To measure the kick, the notebook selects the beam-1 macroparticles present in
 the final diagnostic and uses their unique particle IDs to retrieve those same
@@ -356,27 +378,6 @@ the analytical slope $-4\pi\xi_x$ is about `-0.0183`, a difference of roughly
 7 percent. This tests the combined field solve and particle push at the chosen
 resolution. It is not a convergence test, and it considers only particles
 that remain in the domain through the final recorded iteration.
-
-The notebook then creates one `ParticleTracker` for `test1` and another for
-`test2`. Both trackers select their particles at the first trajectory output.
-With `preserve_particle_index=True`, a given particle ID retains the same
-array index at every later iteration; if a particle is absent, its entry is
-filled with `NaN` instead of shifting all subsequent trajectories. Plotting
-each column of the coordinate arrays therefore traces one physical particle
-through the $(z,x)$ and $(z,y)$ planes. These passive trajectories make the
-crossing geometry and the accumulated beam-beam deflection visible without
-the sampling noise of the full bunches.
-
-#### 3. Collision snapshots
-
-At each stored iteration, the notebook plots both primary beams and their
-beamstrahlung photons in the $(z,x)$ and $(z,y)$ planes. Coordinates are
-normalized as $z/\sigma_z$, $x/\sigma_x^*$, and $y/\sigma_y^*$ so that the
-very different horizontal, vertical, and longitudinal scales can be compared
-in the same figure. These views check the crossing geometry and direction of
-motion: beam 1 travels toward positive $z$, beam 2 toward negative $z$, and
-the photon products follow the parent beams. Plotting uses a stride for speed;
-the underlying diagnostic data are not down-sampled.
 
 #### 4. Photon spectra and the loss threshold
 
@@ -549,7 +550,10 @@ with the QED estimate.
 
 The final stage combines the weights and coordinates of the electrons and
 positrons from the Landau-Lifshitz, Breit-Heitler, and Breit-Wheeler channels.
-For each product it calculates the polar angle
+The simulation keeps the colliding beams head-on in momentum space, so the
+pair momenta are first rotated into the physical crossing-angle frame. Products
+with $p_z>0$ are rotated by $+\phi$ about $y$, and products with $p_z<0$ by
+$-\phi$. For each rotated momentum it then calculates the polar angle
 
 $$
 \theta=\operatorname{atan2}
@@ -593,13 +597,15 @@ All three calculations start from `fccee_z.madx`. This is important: agreement
 would be much less meaningful if the codes read independently maintained
 versions of the lattice. Create a Tutorial 2 directory containing:
 
-- [the common FCC-ee MAD-X lattice](./files/us-fcc-2026/tutorial_002/fccee_z.madx)
-- [the ImpactX envelope script](./files/us-fcc-2026/tutorial_002/fcc_impactx.py)
-- [the Tutorial 2 analysis notebook](./files/us-fcc-2026/tutorial_002/tutorial_002_plots.ipynb)
+- [the common FCC-ee MAD-X lattice](./files/us-fcc-2026/tutorial_2/fccee_z.madx)
+- [the ImpactX envelope script](./files/us-fcc-2026/tutorial_2/fcc_impactx.py)
+- [the Tutorial 2 analysis notebook](./files/us-fcc-2026/tutorial_2/tutorial_2_plots.ipynb)
 
 The notebook runs MAD-X through CPyMAD, imports the live MAD-X sequence into
-Xsuite, reads the ImpactX diagnostic, and compares all three results. Keep the
-three files together and execute them from that directory.
+Xsuite, reads the ImpactX diagnostic, and compares all three results. The first
+run saves the converted Xsuite line as `fccee_p_ring.json`; later runs load this
+file instead of repeating the conversion. Keep the three supplied files
+together and execute them from that directory.
 
 ### The matched beam model
 
@@ -685,9 +691,9 @@ in order. The notebook performs the following steps:
 
 1. CPyMAD loads `fccee_z.madx`, selects the `fccee_p_ring` sequence, defines a
    45.6 GeV electron reference beam, and runs MAD-X `TWISS`.
-2. Xsuite constructs a thick-element `Line` directly from that in-memory
-   MAD-X sequence. It assigns the same electron reference particle and runs a
-   four-dimensional Twiss calculation.
+2. If `fccee_p_ring.json` is absent, Xsuite constructs a thick-element `Line`
+   from that in-memory MAD-X sequence and saves it. Otherwise, it loads the
+   existing line. It then runs a four-dimensional Twiss calculation.
 3. Pandas reads the ImpactX reduced diagnostic, and the notebook maps the
    common quantity names—for example, MAD-X `betx`, ImpactX `beta_x`, and
    Xsuite `betx`—onto the same plot.
@@ -760,12 +766,12 @@ second beam-beam kick, and WarpX does not model the 90.6 km arc.
 
 Create a Tutorial 3 directory containing:
 
-- [Coupled simulation driver](./files/us-fcc-2026/tutorial_003/exec_tutorial_003.py)
-- [WarpX input template](./files/us-fcc-2026/tutorial_003/tutorial_003_input.txt)
-- [Single-collision WarpX launcher](./files/us-fcc-2026/tutorial_003/run_warpx.py)
-- [Beam and map configuration](./files/us-fcc-2026/tutorial_003/tutorial_003_config.py)
-- [Coupling and analysis utilities](./files/us-fcc-2026/tutorial_003/tutorial_003_utils.py)
-- [Analysis notebook](./files/us-fcc-2026/tutorial_003/tutorial_003_plots.ipynb)
+- [Coupled simulation driver](./files/us-fcc-2026/tutorial_3/exec_tutorial_3.py)
+- [WarpX input template](./files/us-fcc-2026/tutorial_3/tutorial_3_input.txt)
+- [Single-collision WarpX launcher](./files/us-fcc-2026/tutorial_3/run_warpx.py)
+- [Beam and map configuration](./files/us-fcc-2026/tutorial_3/tutorial_3_config.py)
+- [Coupling and analysis utilities](./files/us-fcc-2026/tutorial_3/tutorial_3_utils.py)
+- [Analysis notebook](./files/us-fcc-2026/tutorial_3/tutorial_3_plots.ipynb)
 
 Keep the six files together. The driver renders a run-specific WarpX input in
 the job directory; it never edits the downloaded template.
@@ -782,7 +788,7 @@ Run the driver from the directory containing the six downloaded files. You
 can inspect all command-line options with
 
 ```bash
-python exec_tutorial_003.py --help
+python exec_tutorial_3.py --help
 ```
 
 The `--device gpu` option selects an Xsuite `ContextCupy`; WarpX itself uses
@@ -940,20 +946,20 @@ seed to each collision.
 First generate the inexpensive arc-only reference:
 
 ```bash
-python exec_tutorial_003.py --no-warpx --macroparticles 10000 --iterations 256
+python exec_tutorial_3.py --no-warpx --macroparticles 10000 --iterations 256
 ```
 
 Then run the classical WarpX collision. A short laptop test is:
 
 ```bash
-python exec_tutorial_003.py --macroparticles 10000 --iterations 20
+python exec_tutorial_3.py --macroparticles 10000 --iterations 20
 ```
 
 It writes `outputs_with_warpx`. To test the longitudinal coupling with
 quantum-synchrotron emission enabled, use:
 
 ```bash
-python exec_tutorial_003.py --macroparticles 10000 --iterations 20 --beamstrahlung
+python exec_tutorial_3.py --macroparticles 10000 --iterations 20 --beamstrahlung
 ```
 
 That run writes `outputs_with_warpx_beamstrahlung`. Each collision starts a
@@ -987,7 +993,7 @@ to the current directory:
 | `outputs_*/handoff_checks.csv` | Before/after WarpX comparisons for every primary particle |
 | `warpx_read/beam1.bp`, `beam2.bp` | Simultaneous openPMD snapshots written by the adapter |
 | `warpx_runtime_input.txt` | Rendered input used for the most recent collision |
-| `warpx_used_inputs_tutorial_003.txt` | Parameters reported by WarpX for the most recent collision |
+| `warpx_used_inputs_tutorial_3.txt` | Parameters reported by WarpX for the most recent collision |
 | `warpx_dump/diags` | Primary particles from the most recent WarpX call |
 
 By default the previous collision diagnostic is removed before the next call.
@@ -1093,7 +1099,7 @@ The most useful diagnostic sequence is:
 
 ### Analyze the coherent modes
 
-Open [the Tutorial 3 notebook](./files/us-fcc-2026/tutorial_003/tutorial_003_plots.ipynb)
+Open [the Tutorial 3 notebook](./files/us-fcc-2026/tutorial_3/tutorial_3_plots.ipynb)
 and run its cells after producing one or more output directories. It plots the
 beam moments, the handoff checks, and windowed centroid spectra.
 

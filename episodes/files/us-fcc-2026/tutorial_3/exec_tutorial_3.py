@@ -11,8 +11,8 @@ import xobjects as xo
 import xpart as xp
 from scipy.constants import elementary_charge
 
-import tutorial_003_config as config
-import tutorial_003_utils as utils
+import tutorial_3_config as config
+import tutorial_3_utils as utils
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -31,7 +31,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--input",
         type=Path,
-        default=script_dir / "tutorial_003_input.txt",
+        default=script_dir / "tutorial_3_input.txt",
         help="WarpX input template",
     )
     parser.add_argument(
@@ -179,7 +179,7 @@ def main() -> None:
     warpx_read_dir = job_dir / "warpx_read"
     diag_dir = job_dir / "warpx_dump" / "diags"
     rendered_input = job_dir / "warpx_runtime_input.txt"
-    used_inputs = job_dir / "warpx_used_inputs_tutorial_003.txt"
+    used_inputs = job_dir / "warpx_used_inputs_tutorial_3.txt"
     focal_distance = 4.0 * beam["sigma_z"]
 
     print(
