@@ -1,0 +1,485 @@
+####################
+### MY CONSTANTS ###
+####################
+my_constants.mc2   = m_e*clight*clight
+my_constants.GeV   = q_e*1.e9
+my_constants.pico  = 1.e-12
+my_constants.nano  = 1.e-9
+my_constants.micro = 1.e-6
+my_constants.milli = 1.e-3
+
+# BEAMS
+my_constants.energy         = 45.6*GeV
+my_constants.energy_eV      = energy / q_e
+my_constants.gamma          = energy / mc2
+my_constants.npart          = 20.20e10
+my_constants.nmacropart     = 1e5
+my_constants.charge         = q_e * npart
+my_constants.betax          = 90*milli
+my_constants.betay          = 0.7*milli
+my_constants.sigmax         = 7993.75*nano
+my_constants.sigmay         = 35.20*nano
+my_constants.emitx          = sigmax*sigmax / betax
+my_constants.emity          = sigmay*sigmay / betay
+my_constants.emitx_n        = emitx * gamma
+my_constants.emity_n        = emity * gamma
+my_constants.sigmaz         = 16.7*milli
+my_constants.dux            = emitx_n / sigmax
+my_constants.duy            = emity_n / sigmay
+my_constants.espread        = 1.34e-3 * gamma
+my_constants.mux            = 0.0*sigmax
+my_constants.muy            = 0.0*sigmay
+my_constants.muz            = 0.25*Lz
+my_constants.focal_distance = muz
+my_constants.crossing_angle = 30e-3
+my_constants.rotation_angle = 0.5*crossing_angle
+my_constants.sigmax_init    = sigmax*sqrt(1 + (muz/betax)**2)
+my_constants.sigmay_init    = sigmay*sqrt(1 + (muz/betay)**2)
+
+# BOX
+my_constants.Lx = 8*( sigmax_init*cos(rotation_angle) + sigmaz*sin(rotation_angle) )
+my_constants.Ly = 8*sigmay_init
+my_constants.Lz = 16*sigmaz*cos(rotation_angle)
+my_constants.nx = 64    # 512
+my_constants.ny = 64    # 2048
+my_constants.nz = 128   # 512
+my_constants.dx = Lx/nx
+my_constants.dy = Ly/ny
+my_constants.dz = Lz/nz
+
+# TIME
+my_constants.T = 0.5*Lz/clight
+my_constants.dt = T / nz
+my_constants.nt = floor(T/dt)
+
+# VIRTUAL PHOTONS
+# minimum energy
+my_constants.hwmin = 1e-4 * mc2 * mc2 / energy
+
+# COLLISIONS
+my_constants.sigma_kn_max = 6.65e-29 # m^2, maximum total Compton cross section (Klein-Nishina)
+my_constants.sigma_bw_max = 1.7e-29 # m^2, maximum total Breit-Wheeler  cross section
+my_constants.probability_estimate =   npart / nmacropart * sigma_bw_max * 2 * clight * dt  / (dx * dy * dz)
+my_constants.probability_target_value = 0.01 # we want the event to have this probability
+my_constants.multiplier_bw = probability_target_value / probability_estimate
+my_constants.probability_threshold = 0.1
+my_constants.multiplier_kn = sigma_kn_max / sigma_bw_max  * multiplier_bw
+
+# DIAGNOSTICS
+my_constants.bin_num_1d = 512
+my_constants.bin_center_min_1d = 0.
+my_constants.bin_center_max_1d = 2.1*energy_eV
+my_constants.bin_size_1d = (bin_center_max_1d - bin_center_min_1d) / bin_num_1d
+my_constants.bin_edge_min_1d = bin_center_min_1d - 0.5 * bin_size_1d
+my_constants.bin_edge_max_1d = bin_center_max_1d + 0.5 * bin_size_1d
+my_constants.bin_num_1d_eff = bin_num_1d + 1
+warpx.used_inputs_file = warpx_used_inputs.txt
+
+##########################
+### GENERAL PARAMETERS ###
+##########################
+stop_time = T
+amr.n_cell = nx ny nz
+amr.max_level = 0
+geometry.dims = 3
+geometry.prob_lo = -0.5*Lx -0.5*Ly -0.5*Lz
+geometry.prob_hi =  0.5*Lx  0.5*Ly  0.5*Lz
+
+###########################
+### BOUNDARY CONDITIONS ###
+###########################
+boundary.field_lo = open open open
+boundary.field_hi = open open open
+boundary.particle_lo = Absorbing Absorbing Absorbing
+boundary.particle_hi = Absorbing Absorbing Absorbing
+
+################
+### NUMERICS ###
+################
+warpx.do_electrostatic = relativistic
+warpx.const_dt = dt
+warpx.grid_type = collocated
+algo.particle_shape = 3
+algo.particle_pusher = vay
+warpx.poisson_solver = fft
+warpx.use_2d_slices_fft_solver = 1
+warpx.random_seed = 20260908
+
+#################
+### PARTICLES ###
+#################
+particles.species_names = beam1 beam2 pho1 pho2 ele_bh pos_bh ele_bw pos_bw ele_ll pos_ll vpho1 vpho2 pho1_bha pho2_bha beam1_bha beam2_bha test1 test2
+
+# Beams
+beam1.species_type = electron
+beam1.injection_style = gaussian_beam
+beam1.x_rms = sigmax
+beam1.y_rms = sigmay
+beam1.z_rms = sigmaz
+beam1.x_m = - mux
+beam1.y_m = - muy
+beam1.z_m = - muz
+beam1.npart = nmacropart
+beam1.q_tot = -charge
+beam1.focal_distance = focal_distance
+beam1.do_gaussian_beam_rotation = 1
+beam1.do_gaussian_beam_rotation_momenta = 0
+beam1.gaussian_beam_rotation_angle = rotation_angle
+beam1.gaussian_beam_rotation_axis = 0 1 0
+beam1.momentum_distribution_type = gaussian
+beam1.uz_m = gamma
+beam1.uy_m = 0.0
+beam1.ux_m = 0.0
+beam1.ux_th = dux
+beam1.uy_th = duy
+beam1.uz_th = espread
+beam1.initialize_self_fields = 1
+beam1.do_qed_quantum_sync = 1 # BS
+beam1.qed_quantum_sync_phot_product_species = pho1
+beam1.do_classical_radiation_reaction = 0
+beam1.do_qed_virtual_photons = 1
+beam1.qed_virtual_photons_do_beam_size_effect = 1
+beam1.qed_virtual_photon_species_name = vpho1
+
+beam2.species_type = positron
+beam2.injection_style = gaussian_beam
+beam2.x_rms = sigmax
+beam2.y_rms = sigmay
+beam2.z_rms = sigmaz
+beam2.x_m = mux
+beam2.y_m = muy
+beam2.z_m = muz
+beam2.npart = nmacropart
+beam2.q_tot = charge
+beam2.focal_distance = focal_distance
+beam2.do_gaussian_beam_rotation = 1
+beam2.do_gaussian_beam_rotation_momenta = 0
+beam2.gaussian_beam_rotation_angle = -rotation_angle
+beam2.gaussian_beam_rotation_axis = 0 1 0
+beam2.momentum_distribution_type = gaussian
+beam2.uz_m = -gamma
+beam2.uy_m = 0.0
+beam2.ux_m = 0.0
+beam2.ux_th = dux
+beam2.uy_th = duy
+beam2.uz_th = espread
+beam2.initialize_self_fields = 1
+beam2.do_qed_quantum_sync = 1
+beam2.qed_quantum_sync_phot_product_species = pho2
+beam2.do_classical_radiation_reaction = 0
+beam2.do_qed_virtual_photons = 1
+beam2.qed_virtual_photons_do_beam_size_effect = 1
+beam2.qed_virtual_photon_species_name = vpho2
+
+# Test particles
+test1.species_type = electron
+test1.injection_style = gaussian_beam
+test1.x_rms = sigmax
+test1.y_rms = sigmay
+test1.z_rms = sigmaz
+test1.x_m = - mux
+test1.y_m = - muy
+test1.z_m = - muz
+test1.npart = 100
+test1.q_tot = -charge
+test1.focal_distance = focal_distance
+test1.do_gaussian_beam_rotation = 1
+test1.do_gaussian_beam_rotation_momenta = 0
+test1.gaussian_beam_rotation_angle = rotation_angle
+test1.gaussian_beam_rotation_axis = 0 1 0
+test1.momentum_distribution_type = gaussian
+test1.uz_m = gamma
+test1.uy_m = 0.0
+test1.ux_m = 0.0
+test1.ux_th = dux
+test1.uy_th = duy
+test1.uz_th = espread
+test1.do_not_deposit = 1
+
+test2.species_type = positron
+test2.injection_style = gaussian_beam
+test2.x_rms = sigmax
+test2.y_rms = sigmay
+test2.z_rms = sigmaz
+test2.x_m = mux
+test2.y_m = muy
+test2.z_m = muz
+test2.npart = 100
+test2.q_tot = charge
+test2.focal_distance = focal_distance
+test2.do_gaussian_beam_rotation = 1
+test2.do_gaussian_beam_rotation_momenta = 0
+test2.gaussian_beam_rotation_angle = -rotation_angle
+test2.gaussian_beam_rotation_axis = 0 1 0
+test2.momentum_distribution_type = gaussian
+test2.uz_m = -gamma
+test2.uy_m = 0.0
+test2.ux_m = 0.0
+test2.ux_th = dux
+test2.uy_th = duy
+test2.uz_th = espread
+test2.do_not_deposit = 1
+
+# Beamstrahlung photons
+pho1.species_type = photon
+pho1.injection_style = none
+
+pho2.species_type = photon
+pho2.injection_style = none
+
+# Virtual photons
+vpho1.qed_virtual_photons_min_energy = hwmin
+vpho1.qed_virtual_photons_multiplier = 1
+vpho1.species_type = photon
+vpho1.injection_style = none
+vpho1.do_not_push = 1
+
+vpho2.qed_virtual_photons_min_energy = hwmin
+vpho2.qed_virtual_photons_multiplier = 1
+vpho2.species_type = photon
+vpho2.injection_style = none
+vpho2.do_not_push = 1
+
+# Incoherent pairs
+ele_bw.species_type = electron
+ele_bw.injection_style = none
+ele_bw.do_not_deposit = 1
+
+pos_bw.species_type = positron
+pos_bw.injection_style = none
+pos_bw.do_not_deposit = 1
+
+ele_ll.species_type = electron
+ele_ll.injection_style = none
+ele_ll.do_not_deposit = 1
+
+pos_ll.species_type = positron
+pos_ll.injection_style = none
+pos_ll.do_not_deposit = 1
+
+ele_bh.species_type = electron
+ele_bh.injection_style = none
+ele_bh.do_not_deposit = 1
+
+pos_bh.species_type = positron
+pos_bh.injection_style = none
+pos_bh.do_not_deposit = 1
+
+# Bhabha photons
+pho1_bha.species_type = photon
+pho1_bha.injection_style = none
+pho1_bha.do_qed_breit_wheeler = 0
+
+pho2_bha.species_type = photon
+pho2_bha.injection_style = none
+pho2_bha.do_qed_breit_wheeler = 0
+
+# Backscattered beam particles
+beam1_bha.species_type = electron
+beam1_bha.injection_style = none
+beam1_bha.do_not_deposit = 1
+
+beam2_bha.species_type = positron
+beam2_bha.injection_style = none
+beam2_bha.do_not_deposit = 1
+
+##############
+### SF-QED ###
+##############
+
+qed_qs.photon_creation_energy_threshold = 0.
+
+qed_qs.lookup_table_mode = builtin
+qed_qs.chi_min = 1.e-8
+
+warpx.do_qed_schwinger = 0.
+
+##################
+### COLLISIONS ###
+##################
+collisions.collision_names = ll bh1 bh2 lbw bhabha1 bhabha2
+
+lbw.species = pho1 pho2
+lbw.type = linear_breit_wheeler
+lbw.product_species = ele_bw pos_bw
+lbw.event_multiplier = multiplier_bw
+lbw.probability_threshold = probability_threshold
+lbw.probability_target_value = probability_target_value
+
+ll.species = vpho1 vpho2
+ll.type = linear_breit_wheeler
+ll.product_species = ele_ll pos_ll
+ll.event_multiplier = multiplier_bw
+ll.probability_threshold = probability_threshold
+ll.probability_target_value = probability_target_value
+
+bh1.species = vpho1 pho2
+bh1.type = linear_breit_wheeler
+bh1.product_species = ele_bh pos_bh
+bh1.event_multiplier = multiplier_bw
+bh1.probability_threshold = probability_threshold
+bh1.probability_target_value = probability_target_value
+
+bh2.species = pho1 vpho2
+bh2.type = linear_breit_wheeler
+bh2.product_species = ele_bh pos_bh
+bh2.event_multiplier = multiplier_bw
+bh2.probability_threshold = probability_threshold
+bh2.probability_target_value = probability_target_value
+
+bhabha1.species = vpho2 beam1
+bhabha1.type = linear_compton
+bhabha1.product_species = pho1_bha beam1_bha
+bhabha1.event_multiplier = multiplier_kn
+bhabha1.probability_threshold = probability_threshold
+bhabha1.probability_target_value = probability_target_value
+
+bhabha2.species = vpho1 beam2
+bhabha2.type = linear_compton
+bhabha2.product_species = pho2_bha beam2_bha
+bhabha2.event_multiplier = multiplier_kn
+bhabha2.probability_threshold = probability_threshold
+bhabha2.probability_target_value = probability_target_value
+
+###################
+### DIAGNOSTICS ###
+###################
+# These will contain per particle coordinates, momenta and weights
+diagnostics.diags_names = particles_in particles_out trajectories
+
+trajectories.intervals = 1
+trajectories.write_species = 1
+trajectories.diag_type = Full
+trajectories.species = test1 test2
+trajectories.fields_to_plot = none
+trajectories.format = openpmd
+trajectories.openpmd_backend = bp
+trajectories.dump_last_timestep = 1
+trajectories.test1.additional_variables = Ex Ey Ez Bx By Bz
+trajectories.test2.additional_variables = Ex Ey Ez Bx By Bz
+
+particles_in.intervals = floor(nz/4)
+particles_in.write_species = 1
+particles_in.diag_type = Full
+particles_in.species = beam1 beam2 pho1 pho2 ele_bh pos_bh ele_bw pos_bw ele_ll pos_ll pho1_bha pho2_bha beam1_bha beam2_bha
+particles_in.fields_to_plot = none
+particles_in.format = openpmd
+particles_in.openpmd_backend = bp
+particles_in.dump_last_timestep = 1
+
+particles_out.intervals = -1
+particles_out.diag_type = BoundaryScraping
+particles_out.format = openpmd
+particles_out.openpmd_backend = bp
+particles_out.dump_last_timestep = 1
+
+beam1.save_particles_at_xlo = 1
+beam1.save_particles_at_ylo = 1
+beam1.save_particles_at_zlo = 1
+beam1.save_particles_at_xhi = 1
+beam1.save_particles_at_yhi = 1
+beam1.save_particles_at_zhi = 1
+
+beam2.save_particles_at_xlo = 1
+beam2.save_particles_at_ylo = 1
+beam2.save_particles_at_zlo = 1
+beam2.save_particles_at_xhi = 1
+beam2.save_particles_at_yhi = 1
+beam2.save_particles_at_zhi = 1
+
+pho1.save_particles_at_xlo = 1
+pho1.save_particles_at_ylo = 1
+pho1.save_particles_at_zlo = 1
+pho1.save_particles_at_xhi = 1
+pho1.save_particles_at_yhi = 1
+pho1.save_particles_at_zhi = 1
+
+pho2.save_particles_at_xlo = 1
+pho2.save_particles_at_ylo = 1
+pho2.save_particles_at_zlo = 1
+pho2.save_particles_at_xhi = 1
+pho2.save_particles_at_yhi = 1
+pho2.save_particles_at_zhi = 1
+
+ele_ll.save_particles_at_xlo = 1
+ele_ll.save_particles_at_ylo = 1
+ele_ll.save_particles_at_zlo = 1
+ele_ll.save_particles_at_xhi = 1
+ele_ll.save_particles_at_yhi = 1
+ele_ll.save_particles_at_zhi = 1
+
+pos_ll.save_particles_at_xlo = 1
+pos_ll.save_particles_at_ylo = 1
+pos_ll.save_particles_at_zlo = 1
+pos_ll.save_particles_at_xhi = 1
+pos_ll.save_particles_at_yhi = 1
+pos_ll.save_particles_at_zhi = 1
+
+ele_bh.save_particles_at_xlo = 1
+ele_bh.save_particles_at_ylo = 1
+ele_bh.save_particles_at_zlo = 1
+ele_bh.save_particles_at_xhi = 1
+ele_bh.save_particles_at_yhi = 1
+ele_bh.save_particles_at_zhi = 1
+
+pos_bh.save_particles_at_xlo = 1
+pos_bh.save_particles_at_ylo = 1
+pos_bh.save_particles_at_zlo = 1
+pos_bh.save_particles_at_xhi = 1
+pos_bh.save_particles_at_yhi = 1
+pos_bh.save_particles_at_zhi = 1
+
+ele_bw.save_particles_at_xlo = 1
+ele_bw.save_particles_at_ylo = 1
+ele_bw.save_particles_at_zlo = 1
+ele_bw.save_particles_at_xhi = 1
+ele_bw.save_particles_at_yhi = 1
+ele_bw.save_particles_at_zhi = 1
+
+pos_bw.save_particles_at_xlo = 1
+pos_bw.save_particles_at_ylo = 1
+pos_bw.save_particles_at_zlo = 1
+pos_bw.save_particles_at_xhi = 1
+pos_bw.save_particles_at_yhi = 1
+pos_bw.save_particles_at_zhi = 1
+
+pho1_bha.save_particles_at_xlo = 1
+pho1_bha.save_particles_at_ylo = 1
+pho1_bha.save_particles_at_zlo = 1
+pho1_bha.save_particles_at_xhi = 1
+pho1_bha.save_particles_at_yhi = 1
+pho1_bha.save_particles_at_zhi = 1
+
+pho2_bha.save_particles_at_xlo = 1
+pho2_bha.save_particles_at_ylo = 1
+pho2_bha.save_particles_at_zlo = 1
+pho2_bha.save_particles_at_xhi = 1
+pho2_bha.save_particles_at_yhi = 1
+pho2_bha.save_particles_at_zhi = 1
+
+beam1_bha.save_particles_at_xlo = 1
+beam1_bha.save_particles_at_ylo = 1
+beam1_bha.save_particles_at_zlo = 1
+beam1_bha.save_particles_at_xhi = 1
+beam1_bha.save_particles_at_yhi = 1
+beam1_bha.save_particles_at_zhi = 1
+
+beam2_bha.save_particles_at_xlo = 1
+beam2_bha.save_particles_at_ylo = 1
+beam2_bha.save_particles_at_zlo = 1
+beam2_bha.save_particles_at_xhi = 1
+beam2_bha.save_particles_at_yhi = 1
+beam2_bha.save_particles_at_zhi = 1
+
+# REDUCED
+warpx.reduced_diags_names = DiffLumi_beam1_beam2 ColliderRelevant
+
+DiffLumi_beam1_beam2.type = DifferentialLuminosity
+DiffLumi_beam1_beam2.intervals = nt
+DiffLumi_beam1_beam2.species = beam1 beam2
+DiffLumi_beam1_beam2.bin_number = bin_num_1d_eff
+DiffLumi_beam1_beam2.bin_max = bin_edge_max_1d
+DiffLumi_beam1_beam2.bin_min = bin_edge_min_1d
+
+ColliderRelevant.species = beam1 beam2
+ColliderRelevant.type = ColliderRelevant

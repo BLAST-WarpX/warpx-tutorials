@@ -90,7 +90,7 @@
 </div>
     </div>
   </div>
-  <hr></header><nav class="navbar navbar-expand-xl bottom-nav incubator" aria-label="Main Navigation"><div class="container-fluid nav-container">
+</header><nav class="navbar navbar-expand-xl bottom-nav incubator" aria-label="Main Navigation"><div class="container-fluid nav-container">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle Navigation">
       <span class="navbar-toggler-icon"></span>
       <span class="menu-title">Menu</span>
@@ -208,8 +208,7 @@
             </div>
 <!--/div.col -->
 
-            <hr>
-</div>
+          </div>
 <!--/div.mobile-row -->
 
           <div class="accordion accordion-flush" id="accordion-chapters-toggle">
@@ -359,6 +358,18 @@
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading12">
         <a href="ucb-2026-twostream.html">11. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush13">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading13">
+        <a href="us-fcc-2026.html">12. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -560,7 +571,32 @@ existing example, modify, run, visualize, and refine.</p>
 documentation</a> and the <a href="https://warpx.readthedocs.io/en/latest/usage/examples.html" class="external-link">examples
 gallery</a> are the best starting points.</p>
 <p>When things don’t look right, check the basics: enough timesteps,
-adequate resolution, and appropriate temperature.</p></section>
+adequate resolution, and appropriate temperature.</p></section><section id="us-fcc-2026"><h2 class="section-heading"><a href="us-fcc-2026.html">US-FCC 2026: Beam-Beam and Tracking Tutorial</a></h2>
+<hr class="half-width">
+<ul>
+<li>WarpX resolves one collision in detail and writes both particle
+snapshots and collider-specific reduced diagnostics.</li>
+<li>The laptop input prioritizes runtime and teaching value over
+numerical convergence.</li>
+<li>Matching particle IDs between diagnostics makes the normalized kick
+slope a direct check of the linear beam-beam model.</li>
+<li>Keeping different QED products in separate species makes their
+spectra and weighted yields easier to inspect.</li>
+<li>The luminosity, Bhabha cross-section, lifetime, and
+pair-distribution checks connect the openPMD and reduced diagnostics to
+accelerator observables.</li>
+<li>Using one MAD-X sequence and one matched covariance model makes the
+Tutorial 2 beta-function comparison sensitive to differences in lattice
+translation and linear transport.</li>
+<li>The Tutorial 3 adapter converts normalized momentum and geometric
+slope separately; this prevents beamstrahlung energy loss from
+contaminating the transverse drift.</li>
+<li>A beamstrahlung-induced <span class="math inline">\(\sigma_z\)</span> oscillation is not automatically
+a coupling error: a local increase in energy spread creates a
+longitudinal mismatch that the arc map rotates into bunch length.</li>
+<li>Per-collision handoff logs distinguish an instantaneous coordinate
+jump from subsequent synchrotron motion.</li>
+</ul></section>
 </div>
     </main>
 </div>
@@ -579,7 +615,7 @@ adequate resolution, and appropriate temperature.</p></section>
         | <a href="https://blast-warpx.github.io/warpx-tutorials/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://blast-warpx.github.io/warpx-tutorials/" class="external-link">Source</a></p>
         <p>
-        <a href="https://blast-warpx.github.io/warpx-tutorials/blob/main/" class="external-link">Cite</a>
+        <a href="citation.html">Cite</a>
         | <a href="mailto:ariannaformenti@lbl.gov">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -587,7 +623,7 @@ adequate resolution, and appropriate temperature.</p></section>
         <p>Materials licensed under <a href="LICENSE.html">CC-BY 4.0</a> by the authors</p>
 
         <p>Template licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">CC-BY 4.0</a> by <a href="https://carpentries.org/" class="external-link">The Carpentries</a></p>
-        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.20.1" class="external-link">sandpaper (0.20.1)</a>, <a href="https://github.com/carpentries/pegboard/tree/0.7.9" class="external-link">pegboard (0.7.9)</a>, and <a href="https://github.com/carpentries/varnish/tree/1.1.0" class="external-link">varnish (1.1.0)</a></p>
+        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.21.0" class="external-link">sandpaper (0.21.0)</a>, <a href="https://github.com/carpentries/pegboard/tree/0.7.9" class="external-link">pegboard (0.7.9)</a>, and <a href="https://github.com/carpentries/varnish/tree/1.1.2" class="external-link">varnish (1.1.2)</a></p>
 		</div>
 		</footer>
 </div> <!-- / div.container -->
@@ -609,9 +645,9 @@ adequate resolution, and appropriate temperature.</p></section>
   "creativeWorkStatus": "active",
   "url": "https://warpx-tutorials.github.io/NA/key-points.html",
   "identifier": "https://warpx-tutorials.github.io/NA/key-points.html",
-  "dateCreated": "2026-04-09",
-  "dateModified": "2026-05-12",
-  "datePublished": "2026-05-12"
+  "dateCreated": "2026-09-08",
+  "dateModified": "2026-09-08",
+  "datePublished": "2026-09-08"
 }
 
   </script><script>
