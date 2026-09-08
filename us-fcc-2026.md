@@ -1,5 +1,6 @@
 ---
 title: 'US-FCC 2026: Beam-Beam and Tracking Tutorial'
+author: 'Arianna Formenti (LBNL), Peter Kicsiny (SLAC)'
 teaching: 0
 exercises: 0
 ---
@@ -24,6 +25,8 @@ exercises: 0
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Overview
+
+*Lesson authors: Arianna Formenti (LBNL) and Peter Kicsiny (SLAC).*
 
 The three exercises cover different scales of an FCC-ee simulation.
 
@@ -71,9 +74,9 @@ name: usfcc26-warpx-tutorial
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
-  - warpx
-  - impactx
+  - python=3.14
+  - warpx=26.09
+  - impactx=26.09
   - openmpi
   - numpy
   - pandas
@@ -210,7 +213,10 @@ my_constants.probability_estimate =   npart / nmacropart * sigma_bw_max * 2 * cl
 my_constants.probability_target_value = 0.01 # we want the event to have this probability
 my_constants.multiplier_bw = probability_target_value / probability_estimate
 my_constants.probability_threshold = 0.1
-my_constants.multiplier_kn = sigma_kn_max / sigma_bw_max  * multiplier_bw
+# The sampling probability scales as cross section times event multiplier.
+# Reduce the Klein-Nishina multiplier so its approximate maximum probability
+# matches the Breit-Wheeler target used above.
+my_constants.multiplier_kn = sigma_bw_max / sigma_kn_max * multiplier_bw
 
 # DIAGNOSTICS
 my_constants.bin_num_1d = 512
@@ -285,7 +291,10 @@ beam1.do_qed_quantum_sync = 1 # BS
 beam1.qed_quantum_sync_phot_product_species = pho1
 beam1.do_classical_radiation_reaction = 0
 beam1.do_qed_virtual_photons = 1
-beam1.qed_virtual_photons_do_beam_size_effect = 1
+# Keep the baseline consistent with the analytical Bhabha comparison, which
+# neglects the finite beam-size effect. Set this and the beam2 flag to 1 for a
+# separate finite-beam-size study.
+beam1.qed_virtual_photons_do_beam_size_effect = 0
 beam1.qed_virtual_photon_species_name = vpho1
 
 beam2.species_type = positron
@@ -315,7 +324,7 @@ beam2.do_qed_quantum_sync = 1
 beam2.qed_quantum_sync_phot_product_species = pho2
 beam2.do_classical_radiation_reaction = 0
 beam2.do_qed_virtual_photons = 1
-beam2.qed_virtual_photons_do_beam_size_effect = 1
+beam2.qed_virtual_photons_do_beam_size_effect = 0
 beam2.qed_virtual_photon_species_name = vpho2
 
 # Test particles
@@ -650,6 +659,15 @@ The built-in QED table also keeps the download small but has low resolution.
 A quantitative physics study would require a higher-resolution QED table,
 together with mesh and macroparticle convergence scans.
 
+The Conda Forge WarpX package used by this lesson includes QED support and the
+built-in tables, but it does not currently install the standalone
+`qed_table_generator` executable. To generate a higher-resolution table, build
+WarpX from source with `WarpX_QED_TOOLS=ON`, following the
+[WarpX QED table-tool instructions](https://warpx.readthedocs.io/en/latest/usage/workflows/generate_lookup_tables_with_tools.html).
+The resulting `qed_table_generator` can create a quantum-synchrotron table
+that WarpX reads with `qed_qs.lookup_table_mode = load` and
+`qed_qs.load_table_from = /path/to/table`.
+
 The primary species and their main products are:
 
 | Species | Role |
@@ -666,10 +684,21 @@ The primary species and their main products are:
 
 Beamstrahlung is enabled directly on each primary beam through the
 strong-field QED modules.
+The finite beam-size correction in the equivalent-photon model is disabled in
+the baseline input. This makes the radiative Bhabha result consistent with the
+analytical comparison below, which also neglects that correction; it does not
+disable beamstrahlung. To study finite-beam-size suppression, set
+`qed_virtual_photons_do_beam_size_effect = 1` for both primary beams and run
+the modified input in a separate directory so that the baseline diagnostics
+are retained.
 The incoherent-pair and radiative Bhabha channels are listed in
 `collisions.collision_names`.
 Event multipliers increase the number of sampled rare events, while particle
 weights preserve the physical yield.
+Because the sampling probability scales with cross section times event
+multiplier, the Klein--Nishina multiplier is reduced by
+`sigma_bw_max / sigma_kn_max` relative to the Breit--Wheeler multiplier. This
+keeps their approximate maximum sampling probabilities near the same target.
 
 Notice that the radiative Bhabha products are stored in new species. This
 makes the emitted photons and scattered primary particles easy to analyze
@@ -1270,10 +1299,13 @@ $$
 $$
 
 Energies and masses are inserted in GeV, and the result in GeV$^{-2}$ is
-converted with $1\ \mathrm{GeV}^{-2}=0.389\ \mathrm{mbarn}$. The comparison
-isolates, approximately, the influence of the equivalent-photon model and its
-beam-size effect; it is also subject to Monte Carlo statistics and the simple
-loss criterion above.
+converted with $1\ \mathrm{GeV}^{-2}=0.389\ \mathrm{mbarn}$. Since the
+finite beam-size correction is disabled in the baseline WarpX input, this is a
+like-for-like comparison of two calculations that neglect that effect.
+Residual differences can come from the equivalent-photon and linear-Compton
+implementation, Monte Carlo statistics, numerical resolution, and the simple
+loss criterion above. Repeating the WarpX calculation with the correction
+enabled separately demonstrates its influence.
 
 Finally, the revolution frequency is $f_{\mathrm{rev}}=c/C$, where $C$ is the
 ring circumference. For one bunch, the lifetime inferred from either cross
@@ -1686,7 +1718,23 @@ seed to each collision.
 | Classical collision | none | `outputs_with_warpx` | Test the coordinate handoff and collective beam-beam kick |
 | Collision with beamstrahlung | `--beamstrahlung` | `outputs_with_warpx_beamstrahlung` | Add stochastic photon emission and longitudinal energy loss |
 
-First generate the inexpensive arc-only reference:
+Choose the run scale according to the question being asked:
+
+| Run level | Macroparticles | Superperiods | Purpose |
+|:---|---:|---:|:---|
+| Smoke test | 1,000 | 1 | Verify installation and one Xsuite--WarpX handoff |
+| Tutorial | 10,000 | 20 coupled; 256 arc-only | Inspect moments and coupling checks; obtain a modest-resolution reference FFT |
+| High-statistics spectrum | 1,000,000 | 1,024 | Resolve coherent peaks with lower centroid noise on an appropriate GPU or HPC system |
+
+The smoke test is:
+
+```bash
+python exec_tutorial_3.py --macroparticles 1000 --iterations 1
+```
+
+It establishes that the workflow runs, but one sample cannot say anything
+about tunes or coherent modes. For the tutorial-scale analysis, first generate
+the inexpensive arc-only reference:
 
 ```bash
 python exec_tutorial_3.py --no-warpx --macroparticles 10000 --iterations 256
@@ -1704,6 +1752,13 @@ quantum-synchrotron emission enabled, use:
 ```bash
 python exec_tutorial_3.py --macroparticles 10000 --iterations 20 --beamstrahlung
 ```
+
+The 20-superperiod coupled runs are intended to expose handoff or gross beam
+dynamics problems; their Fourier-bin spacing is $1/20=0.05$, which is too
+coarse for a meaningful coherent tune measurement. The 256-superperiod
+arc-only run has a finer spacing of about $0.0039$. A spectrum-quality coupled
+comparison should use hundreds to 1024 superperiods and enough macroparticles
+to suppress centroid noise.
 
 That run writes `outputs_with_warpx_beamstrahlung`. Each collision starts a
 new WarpX process because a WarpX simulation cannot simply be reinitialized
@@ -1742,6 +1797,22 @@ to the current directory:
 By default the previous collision diagnostic is removed before the next call.
 Use `--keep-diags` only when the individual openPMD outputs are needed; it can
 consume substantial storage in a long run.
+
+### Optional high-statistics reference data
+
+Generated 1-million-macroparticle, 1024-superperiod results do not belong in
+the lesson's Git history. The
+[reference-data instructions](./files/us-fcc-2026/tutorial_3/reference_data/README.md)
+define the external archive layout, commands, and provenance information. If
+an archive is extracted as `tutorial_3/reference_data/`, the notebook detects
+its `outputs_*` directories automatically and plots them alongside any local
+runs.
+
+Only the compact moment CSV files and handoff checks should be published in
+the archive. Per-collision openPMD files are large and are unnecessary for the
+notebook. The older `coords_b*.txt` results supplied with the previous adapter
+use a different schema and should not be represented as reference results from
+the revised coordinate handoff.
 
 ### Coupling checks
 
@@ -1847,6 +1918,14 @@ and run its cells after producing one or more output directories. It plots the
 beam moments, the handoff checks, and windowed centroid spectra.
 
 ![Evolution of normalized beam moments for the arc-only, classical WarpX, and WarpX-with-beamstrahlung runs.](./files/us-fcc-2026/tutorial_3/img/beam-moment-evolution.png)
+
+The following diagram illustrates the physical transverse displacement of the
+two beams at successive collision samples. In the $\sigma$ mode the beams move
+together, whereas in the $\pi$ mode they move oppositely. The diagram's
+"Turn" labels are schematic: this tutorial records one superperiod and one IP
+encounter per sample, so four samples correspond to one full-ring turn.
+
+![Physical motion of two colliding bunches in the coherent sigma and pi modes at successive collision encounters.](./files/us-fcc-2026/tutorial_3/img/coherent-modes.png)
 
 Without beam-beam interaction, the centroid has one peak at the unperturbed
 superperiod tune. Two identical interacting beams instead have two coherent

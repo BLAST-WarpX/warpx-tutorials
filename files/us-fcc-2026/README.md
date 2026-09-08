@@ -97,8 +97,9 @@ cd tutorial_3
 python exec_tutorial_3.py --macroparticles 1000 --iterations 1
 ```
 
-The standard comparison uses an arc-only reference and a classical WarpX
-collision run:
+This only checks that the Xsuite--WarpX handoff completes. The standard
+tutorial comparison uses an arc-only reference long enough for a useful FFT
+and a short classical WarpX collision run:
 
 ```bash
 python exec_tutorial_3.py \
@@ -119,6 +120,11 @@ Analyze whichever runs are available with:
 ```bash
 jupyter lab tutorial_3_plots.ipynb
 ```
+
+For a high-statistics coherent-mode spectrum, see
+[`tutorial_3/reference_data/README.md`](tutorial_3/reference_data/README.md).
+That workflow uses many more macroparticles and 1024 superperiods, and keeps
+the generated result archive outside Git.
 
 Use `python exec_tutorial_3.py --help` to see the device, launcher, output,
 and diagnostics options. The default coupling is intentionally single-rank.
