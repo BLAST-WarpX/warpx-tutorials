@@ -2,9 +2,9 @@ name: usfcc26-warpx-tutorial
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
-  - warpx
-  - impactx
+  - python=3.14
+  - warpx=26.09
+  - impactx=26.09
   - openmpi
   - numpy
   - pandas
