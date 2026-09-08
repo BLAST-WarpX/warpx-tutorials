@@ -1041,8 +1041,11 @@ $$
 $$
 
 For the supplied parameters, $\Phi\simeq31.34$: the crossing angle therefore
-dominates the effective horizontal overlap. The notebook evaluates the
-linearized beam-beam parameters
+dominates the effective horizontal overlap.
+
+![The crossing angle increases the effective horizontal overlap of the two bunches.](./files/us-fcc-2026/tutorial_1/img/tilted_beam_ellipse.png)
+
+The notebook evaluates the linearized beam-beam parameters
 
 $$
 \xi_x=\frac{N_b r_e\beta_x^*}
@@ -1419,7 +1422,7 @@ along the ring.
 After a successful run, the file used by the notebook is:
 
 ```text
-diags/reduced_beam_characteristics.0
+diags/reduced_beam_characteristics.0.0
 ```
 
 It contains $s$, beam sizes, emittances, Twiss parameters, and dispersions at
@@ -1449,15 +1452,14 @@ $$
 \beta_u(s)=\frac{\Sigma_{uu}(s)}{\varepsilon_u}.
 $$
 
-This is the quantity produced by the ImpactX envelope calculation and compared
-with the Twiss functions from the other two codes. A useful point-by-point
-metric is
+This is the quantity produced by the ImpactX envelope calculation and overlaid
+with the Twiss functions from the other two codes. Because the codes record
+values at different longitudinal locations, any quantitative comparison would
+first require an explicit matching or interpolation convention.
 
-$$
-\Delta\beta_u(s)=
-\frac{\beta_u^{\mathrm{code}}(s)-\beta_u^{\mathrm{MAD-X}}(s)}
-{\beta_u^{\mathrm{MAD-X}}(s)}.
-$$
+![Horizontal beta functions from MAD-X, ImpactX, and Xsuite over the first 2 km of the FCC-ee lattice.](./files/us-fcc-2026/tutorial_2/img/beta-x-first-2km.png)
+
+![Vertical beta functions from MAD-X, ImpactX, and Xsuite over the first 2 km of the FCC-ee lattice.](./files/us-fcc-2026/tutorial_2/img/beta-y-first-2km.png)
 
 The curves from the tested setup overlap closely in both planes. The final
 ImpactX beta functions also return to within about 0.1 percent of their
@@ -1843,6 +1845,8 @@ The most useful diagnostic sequence is:
 Open [the Tutorial 3 notebook](./files/us-fcc-2026/tutorial_3/tutorial_3_plots.ipynb)
 and run its cells after producing one or more output directories. It plots the
 beam moments, the handoff checks, and windowed centroid spectra.
+
+![Evolution of normalized beam moments for the arc-only, classical WarpX, and WarpX-with-beamstrahlung runs.](./files/us-fcc-2026/tutorial_3/img/beam-moment-evolution.png)
 
 Without beam-beam interaction, the centroid has one peak at the unperturbed
 superperiod tune. Two identical interacting beams instead have two coherent
