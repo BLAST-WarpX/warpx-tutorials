@@ -421,7 +421,9 @@ tracking.</li>
 </div>
 </div>
 <section><h2 class="section-heading" id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a></h2>
-<hr class="half-width"><p>The three exercises cover different scales of an FCC-ee
+<hr class="half-width"><p><em>Lesson authors: Arianna Formenti (LBNL) and Peter Kicsiny
+(SLAC).</em></p>
+<p>The three exercises cover different scales of an FCC-ee
 simulation.</p>
 <ol style="list-style-type: decimal"><li>
 <strong>A single bunch crossing.</strong> WarpX models the
@@ -475,9 +477,9 @@ analysis notebooks.</p>
 <span><span class="va">channels</span><span class="op">:</span></span>
 <span>  <span class="op">-</span> <span class="va">conda</span><span class="op">-</span><span class="va">forge</span></span>
 <span><span class="va">dependencies</span><span class="op">:</span></span>
-<span>  <span class="op">-</span> <span class="va">python</span><span class="op">=</span><span class="fl">3.11</span></span>
-<span>  <span class="op">-</span> <span class="va">warpx</span></span>
-<span>  <span class="op">-</span> <span class="va">impactx</span></span>
+<span>  <span class="op">-</span> <span class="va">python</span><span class="op">=</span><span class="fl">3.14</span></span>
+<span>  <span class="op">-</span> <span class="va">warpx</span><span class="op">=</span><span class="fl">26.09</span></span>
+<span>  <span class="op">-</span> <span class="va">impactx</span><span class="op">=</span><span class="fl">26.09</span></span>
 <span>  <span class="op">-</span> <span class="va">openmpi</span></span>
 <span>  <span class="op">-</span> <span class="va">numpy</span></span>
 <span>  <span class="op">-</span> <span class="va">pandas</span></span>
@@ -623,7 +625,10 @@ my_constants.probability_estimate =   npart / nmacropart * sigma_bw_max * 2 * cl
 my_constants.probability_target_value = 0.01 # we want the event to have this probability
 my_constants.multiplier_bw = probability_target_value / probability_estimate
 my_constants.probability_threshold = 0.1
-my_constants.multiplier_kn = sigma_kn_max / sigma_bw_max  * multiplier_bw
+# The sampling probability scales as cross section times event multiplier.
+# Reduce the Klein-Nishina multiplier so its approximate maximum probability
+# matches the Breit-Wheeler target used above.
+my_constants.multiplier_kn = sigma_bw_max / sigma_kn_max * multiplier_bw
 
 # DIAGNOSTICS
 my_constants.bin_num_1d = 512
@@ -698,7 +703,10 @@ beam1.do_qed_quantum_sync = 1 # BS
 beam1.qed_quantum_sync_phot_product_species = pho1
 beam1.do_classical_radiation_reaction = 0
 beam1.do_qed_virtual_photons = 1
-beam1.qed_virtual_photons_do_beam_size_effect = 1
+# Keep the baseline consistent with the analytical Bhabha comparison, which
+# neglects the finite beam-size effect. Set this and the beam2 flag to 1 for a
+# separate finite-beam-size study.
+beam1.qed_virtual_photons_do_beam_size_effect = 0
 beam1.qed_virtual_photon_species_name = vpho1
 
 beam2.species_type = positron
@@ -728,7 +736,7 @@ beam2.do_qed_quantum_sync = 1
 beam2.qed_quantum_sync_phot_product_species = pho2
 beam2.do_classical_radiation_reaction = 0
 beam2.do_qed_virtual_photons = 1
-beam2.qed_virtual_photons_do_beam_size_effect = 1
+beam2.qed_virtual_photons_do_beam_size_effect = 0
 beam2.qed_virtual_photon_species_name = vpho2
 
 # Test particles
@@ -1065,6 +1073,15 @@ the collision. The built-in QED table also keeps the download small but
 has low resolution. A quantitative physics study would require a
 higher-resolution QED table, together with mesh and macroparticle
 convergence scans.</p>
+<p>The Conda Forge WarpX package used by this lesson includes QED
+support and the built-in tables, but it does not currently install the
+standalone <code>qed_table_generator</code> executable. To generate a
+higher-resolution table, build WarpX from source with
+<code>WarpX_QED_TOOLS=ON</code>, following the <a href="https://warpx.readthedocs.io/en/latest/usage/workflows/generate_lookup_tables_with_tools.html" class="external-link">WarpX
+QED table-tool instructions</a>. The resulting
+<code>qed_table_generator</code> can create a quantum-synchrotron table
+that WarpX reads with <code>qed_qs.lookup_table_mode = load</code> and
+<code>qed_qs.load_table_from = /path/to/table</code>.</p>
 <p>The primary species and their main products are:</p>
 <table class="table"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th align="left">Species</th>
 <th align="left">Role</th>
@@ -1107,10 +1124,22 @@ model</td>
 </td>
 <td align="left">Scattered primary particles from Bhabha events</td>
 </tr></tbody></table><p>Beamstrahlung is enabled directly on each primary beam through the
-strong-field QED modules. The incoherent-pair and radiative Bhabha
-channels are listed in <code>collisions.collision_names</code>. Event
-multipliers increase the number of sampled rare events, while particle
-weights preserve the physical yield.</p>
+strong-field QED modules. The finite beam-size correction in the
+equivalent-photon model is disabled in the baseline input. This makes
+the radiative Bhabha result consistent with the analytical comparison
+below, which also neglects that correction; it does not disable
+beamstrahlung. To study finite-beam-size suppression, set
+<code>qed_virtual_photons_do_beam_size_effect = 1</code> for both
+primary beams and run the modified input in a separate directory so that
+the baseline diagnostics are retained. The incoherent-pair and radiative
+Bhabha channels are listed in <code>collisions.collision_names</code>.
+Event multipliers increase the number of sampled rare events, while
+particle weights preserve the physical yield. Because the sampling
+probability scales with cross section times event multiplier, the
+Klein–Nishina multiplier is reduced by
+<code>sigma_bw_max / sigma_kn_max</code> relative to the Breit–Wheeler
+multiplier. This keeps their approximate maximum sampling probabilities
+near the same target.</p>
 <p>Notice that the radiative Bhabha products are stored in new species.
 This makes the emitted photons and scattered primary particles easy to
 analyze without mixing them into the original bunch species.</p>
@@ -1680,10 +1709,13 @@ beam-size effect. Defining <span class="math inline">\(y=E_\gamma/E_{\mathrm{bea
 \right]dy.
 \]</span></p>
 <p>Energies and masses are inserted in GeV, and the result in GeV<span class="math inline">\(^{-2}\)</span> is converted with <span class="math inline">\(1\ \mathrm{GeV}^{-2}=0.389\
-\mathrm{mbarn}\)</span>. The comparison isolates, approximately, the
-influence of the equivalent-photon model and its beam-size effect; it is
-also subject to Monte Carlo statistics and the simple loss criterion
-above.</p>
+\mathrm{mbarn}\)</span>. Since the finite beam-size correction is
+disabled in the baseline WarpX input, this is a like-for-like comparison
+of two calculations that neglect that effect. Residual differences can
+come from the equivalent-photon and linear-Compton implementation, Monte
+Carlo statistics, numerical resolution, and the simple loss criterion
+above. Repeating the WarpX calculation with the correction enabled
+separately demonstrates its influence.</p>
 <p>Finally, the revolution frequency is <span class="math inline">\(f_{\mathrm{rev}}=c/C\)</span>, where <span class="math inline">\(C\)</span> is the ring circumference. For one
 bunch, the lifetime inferred from either cross section is</p>
 <p><span class="math display">\[
@@ -2080,25 +2112,58 @@ kick</td>
 <td align="left"><code>outputs_with_warpx_beamstrahlung</code></td>
 <td align="left">Add stochastic photon emission and longitudinal energy
 loss</td>
-</tr></tbody></table><p>First generate the inexpensive arc-only reference:</p>
+</tr></tbody></table><p>Choose the run scale according to the question being asked:</p>
+<table class="table"><colgroup><col width="25%"><col width="25%"><col width="25%"><col width="25%"></colgroup><thead><tr><th align="left">Run level</th>
+<th align="right">Macroparticles</th>
+<th align="right">Superperiods</th>
+<th align="left">Purpose</th>
+</tr></thead><tbody><tr><td align="left">Smoke test</td>
+<td align="right">1,000</td>
+<td align="right">1</td>
+<td align="left">Verify installation and one Xsuite–WarpX handoff</td>
+</tr><tr><td align="left">Tutorial</td>
+<td align="right">10,000</td>
+<td align="right">20 coupled; 256 arc-only</td>
+<td align="left">Inspect moments and coupling checks; obtain a
+modest-resolution reference FFT</td>
+</tr><tr><td align="left">High-statistics spectrum</td>
+<td align="right">1,000,000</td>
+<td align="right">1,024</td>
+<td align="left">Resolve coherent peaks with lower centroid noise on an
+appropriate GPU or HPC system</td>
+</tr></tbody></table><p>The smoke test is:</p>
 <div class="codewrapper sourceCode" id="cb15">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1" aria-label="code-block-15-1"></a><span class="ex">python</span> exec_tutorial_3.py <span class="at">--no-warpx</span> <span class="at">--macroparticles</span> 10000 <span class="at">--iterations</span> 256</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1" aria-label="code-block-15-1"></a><span class="ex">python</span> exec_tutorial_3.py <span class="at">--macroparticles</span> 1000 <span class="at">--iterations</span> 1</span></code></pre>
 </div>
-<p>Then run the classical WarpX collision. A short laptop test is:</p>
+<p>It establishes that the workflow runs, but one sample cannot say
+anything about tunes or coherent modes. For the tutorial-scale analysis,
+first generate the inexpensive arc-only reference:</p>
 <div class="codewrapper sourceCode" id="cb16">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1" aria-label="code-block-16-1"></a><span class="ex">python</span> exec_tutorial_3.py <span class="at">--macroparticles</span> 10000 <span class="at">--iterations</span> 20</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1" aria-label="code-block-16-1"></a><span class="ex">python</span> exec_tutorial_3.py <span class="at">--no-warpx</span> <span class="at">--macroparticles</span> 10000 <span class="at">--iterations</span> 256</span></code></pre>
 </div>
-<p>It writes <code>outputs_with_warpx</code>. To test the longitudinal
-coupling with quantum-synchrotron emission enabled, use:</p>
+<p>Then run the classical WarpX collision. A short laptop test is:</p>
 <div class="codewrapper sourceCode" id="cb17">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1" aria-label="code-block-17-1"></a><span class="ex">python</span> exec_tutorial_3.py <span class="at">--macroparticles</span> 10000 <span class="at">--iterations</span> 20 <span class="at">--beamstrahlung</span></span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1" aria-label="code-block-17-1"></a><span class="ex">python</span> exec_tutorial_3.py <span class="at">--macroparticles</span> 10000 <span class="at">--iterations</span> 20</span></code></pre>
 </div>
+<p>It writes <code>outputs_with_warpx</code>. To test the longitudinal
+coupling with quantum-synchrotron emission enabled, use:</p>
+<div class="codewrapper sourceCode" id="cb18">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" tabindex="-1" aria-label="code-block-18-1"></a><span class="ex">python</span> exec_tutorial_3.py <span class="at">--macroparticles</span> 10000 <span class="at">--iterations</span> 20 <span class="at">--beamstrahlung</span></span></code></pre>
+</div>
+<p>The 20-superperiod coupled runs are intended to expose handoff or
+gross beam dynamics problems; their Fourier-bin spacing is <span class="math inline">\(1/20=0.05\)</span>, which is too coarse for a
+meaningful coherent tune measurement. The 256-superperiod arc-only run
+has a finer spacing of about <span class="math inline">\(0.0039\)</span>. A spectrum-quality coupled
+comparison should use hundreds to 1024 superperiods and enough
+macroparticles to suppress centroid noise.</p>
 <p>That run writes <code>outputs_with_warpx_beamstrahlung</code>. Each
 collision starts a new WarpX process because a WarpX simulation cannot
 simply be reinitialized in the same Python process. The driver uses a
@@ -2151,6 +2216,22 @@ collision</td>
 next call. Use <code>--keep-diags</code> only when the individual
 openPMD outputs are needed; it can consume substantial storage in a long
 run.</p>
+</div>
+<div class="section level3">
+<h3 id="optional-high-statistics-reference-data">Optional high-statistics reference data<a class="anchor" aria-label="anchor" href="#optional-high-statistics-reference-data"></a></h3>
+<p>Generated 1-million-macroparticle, 1024-superperiod results do not
+belong in the lesson’s Git history. The <a href="./files/us-fcc-2026/tutorial_3/reference_data/README.html">reference-data
+instructions</a> define the external archive layout, commands, and
+provenance information. If an archive is extracted as
+<code>tutorial_3/reference_data/</code>, the notebook detects its
+<code>outputs_*</code> directories automatically and plots them
+alongside any local runs.</p>
+<p>Only the compact moment CSV files and handoff checks should be
+published in the archive. Per-collision openPMD files are large and are
+unnecessary for the notebook. The older <code>coords_b*.txt</code>
+results supplied with the previous adapter use a different schema and
+should not be represented as reference results from the revised
+coordinate handoff.</p>
 </div>
 <div class="section level3">
 <h3 id="coupling-checks">Coupling checks<a class="anchor" aria-label="anchor" href="#coupling-checks"></a></h3>
@@ -2252,6 +2333,15 @@ output directories. It plots the beam moments, the handoff checks, and
 windowed centroid spectra.</p>
 <figure><img src="./files/us-fcc-2026/tutorial_3/img/beam-moment-evolution.png" alt="Evolution of normalized beam moments for the arc-only, classical WarpX, and WarpX-with-beamstrahlung runs." class="figure mx-auto d-block"><div class="figcaption">Evolution of normalized beam moments for the
 arc-only, classical WarpX, and WarpX-with-beamstrahlung runs.</div>
+</figure><p>The following diagram illustrates the physical transverse
+displacement of the two beams at successive collision samples. In the
+<span class="math inline">\(\sigma\)</span> mode the beams move
+together, whereas in the <span class="math inline">\(\pi\)</span> mode
+they move oppositely. The diagram’s “Turn” labels are schematic: this
+tutorial records one superperiod and one IP encounter per sample, so
+four samples correspond to one full-ring turn.</p>
+<figure><img src="./files/us-fcc-2026/tutorial_3/img/coherent-modes.png" alt="Physical motion of two colliding bunches in the coherent sigma and pi modes at successive collision encounters." class="figure mx-auto d-block"><div class="figcaption">Physical motion of two colliding bunches in the
+coherent sigma and pi modes at successive collision encounters.</div>
 </figure><p>Without beam-beam interaction, the centroid has one peak at the
 unperturbed superperiod tune. Two identical interacting beams instead
 have two coherent normal modes:</p>
