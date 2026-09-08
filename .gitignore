@@ -51,3 +51,12 @@ po/*~
 
 # renv detritus
 renv/sandbox/
+
+# Generated US-FCC Tutorial 3 data
+episodes/files/us-fcc-2026/tutorial_3/outputs_*/
+episodes/files/us-fcc-2026/tutorial_3/reference_data/outputs_*/
+episodes/files/us-fcc-2026/tutorial_3/reference_data/*.tar.gz
+episodes/files/us-fcc-2026/tutorial_3/warpx_read/
+episodes/files/us-fcc-2026/tutorial_3/warpx_dump/
+episodes/files/us-fcc-2026/tutorial_3/warpx_runtime_input.txt
+episodes/files/us-fcc-2026/tutorial_3/warpx_used_inputs_tutorial_3.txt

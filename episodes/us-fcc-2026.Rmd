@@ -1,6 +1,6 @@
 ---
 title: 'US-FCC 2026: Beam-Beam and Tracking Tutorial'
-author: 'Arianna Formenti (LBNL). Peter Kicsiny (SLAC)'
+author: 'Arianna Formenti (LBNL), Peter Kicsiny (SLAC)'
 teaching: 0
 exercises: 0
 ---
@@ -26,7 +26,7 @@ exercises: 0
 
 ## Overview
 
-*Lesson author: Peter Kicsiny (SLAC).*
+*Lesson authors: Arianna Formenti (LBNL) and Peter Kicsiny (SLAC).*
 
 The three exercises cover different scales of an FCC-ee simulation.
 
@@ -971,7 +971,23 @@ seed to each collision.
 | Classical collision | none | `outputs_with_warpx` | Test the coordinate handoff and collective beam-beam kick |
 | Collision with beamstrahlung | `--beamstrahlung` | `outputs_with_warpx_beamstrahlung` | Add stochastic photon emission and longitudinal energy loss |
 
-First generate the inexpensive arc-only reference:
+Choose the run scale according to the question being asked:
+
+| Run level | Macroparticles | Superperiods | Purpose |
+|:---|---:|---:|:---|
+| Smoke test | 1,000 | 1 | Verify installation and one Xsuite--WarpX handoff |
+| Tutorial | 10,000 | 20 coupled; 256 arc-only | Inspect moments and coupling checks; obtain a modest-resolution reference FFT |
+| High-statistics spectrum | 1,000,000 | 1,024 | Resolve coherent peaks with lower centroid noise on an appropriate GPU or HPC system |
+
+The smoke test is:
+
+```bash
+python exec_tutorial_3.py --macroparticles 1000 --iterations 1
+```
+
+It establishes that the workflow runs, but one sample cannot say anything
+about tunes or coherent modes. For the tutorial-scale analysis, first generate
+the inexpensive arc-only reference:
 
 ```bash
 python exec_tutorial_3.py --no-warpx --macroparticles 10000 --iterations 256
@@ -989,6 +1005,13 @@ quantum-synchrotron emission enabled, use:
 ```bash
 python exec_tutorial_3.py --macroparticles 10000 --iterations 20 --beamstrahlung
 ```
+
+The 20-superperiod coupled runs are intended to expose handoff or gross beam
+dynamics problems; their Fourier-bin spacing is $1/20=0.05$, which is too
+coarse for a meaningful coherent tune measurement. The 256-superperiod
+arc-only run has a finer spacing of about $0.0039$. A spectrum-quality coupled
+comparison should use hundreds to 1024 superperiods and enough macroparticles
+to suppress centroid noise.
 
 That run writes `outputs_with_warpx_beamstrahlung`. Each collision starts a
 new WarpX process because a WarpX simulation cannot simply be reinitialized
@@ -1027,6 +1050,22 @@ to the current directory:
 By default the previous collision diagnostic is removed before the next call.
 Use `--keep-diags` only when the individual openPMD outputs are needed; it can
 consume substantial storage in a long run.
+
+### Optional high-statistics reference data
+
+Generated 1-million-macroparticle, 1024-superperiod results do not belong in
+the lesson's Git history. The
+[reference-data instructions](./files/us-fcc-2026/tutorial_3/reference_data/README.md)
+define the external archive layout, commands, and provenance information. If
+an archive is extracted as `tutorial_3/reference_data/`, the notebook detects
+its `outputs_*` directories automatically and plots them alongside any local
+runs.
+
+Only the compact moment CSV files and handoff checks should be published in
+the archive. Per-collision openPMD files are large and are unnecessary for the
+notebook. The older `coords_b*.txt` results supplied with the previous adapter
+use a different schema and should not be represented as reference results from
+the revised coordinate handoff.
 
 ### Coupling checks
 
@@ -1132,6 +1171,14 @@ and run its cells after producing one or more output directories. It plots the
 beam moments, the handoff checks, and windowed centroid spectra.
 
 ![Evolution of normalized beam moments for the arc-only, classical WarpX, and WarpX-with-beamstrahlung runs.](./files/us-fcc-2026/tutorial_3/img/beam-moment-evolution.png)
+
+The following diagram illustrates the physical transverse displacement of the
+two beams at successive collision samples. In the $\sigma$ mode the beams move
+together, whereas in the $\pi$ mode they move oppositely. The diagram's
+"Turn" labels are schematic: this tutorial records one superperiod and one IP
+encounter per sample, so four samples correspond to one full-ring turn.
+
+![Physical motion of two colliding bunches in the coherent sigma and pi modes at successive collision encounters.](./files/us-fcc-2026/tutorial_3/img/coherent-modes.png)
 
 Without beam-beam interaction, the centroid has one peak at the unperturbed
 superperiod tune. Two identical interacting beams instead have two coherent
