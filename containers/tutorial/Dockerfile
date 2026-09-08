@@ -3,14 +3,14 @@
 #
 # Runs JupyterLab (browser-based notebooks + terminal) under supervisord so
 # tutorial participants can run WarpX and post-process results in their
-# browser. WarpX and the post-processing stack are pre-installed into a conda
-# environment named "warpx", pre-activated in terminals and pre-selected as the
-# notebook kernel.
+# browser. CPU and CUDA-enabled WarpX environments are pre-installed and
+# exposed as Jupyter kernels.
 ###############################################################################
 
 FROM condaforge/miniforge3:latest
 
 ARG USER=tutorial
+ARG CUDAARCHS=75
 ENV HOME=/home/${USER}
 
 # Point matplotlib's cache at a writable, pre-created dir. Otherwise the first
@@ -25,26 +25,53 @@ RUN apt-get update \
 # Non-root user to run the tutorial
 RUN useradd --create-home --shell /bin/bash ${USER}
 
-# Pre-build the "warpx" environment: WarpX (serial/CPU from conda-forge) plus
-# the post-processing stack the analysis notebooks import.
+# Pre-build the CPU environment: WarpX (serial/CPU from conda-forge) plus the
+# post-processing stack the analysis notebooks import.
 # Pin warpX version to match current tutorial content.
-RUN mamba create -y -n warpx -c conda-forge \
+RUN mamba create -y -n warpx-cpu -c conda-forge \
         warpx=26.05 \
         openpmd-api openpmd-viewer yt h5py \
         numpy scipy pandas matplotlib fast-histogram numba \
-        jupyterlab ipympl ipywidgets \
+        ipykernel jupyterlab ipympl ipywidgets \
  && mamba clean -a -y
 
-# Register "warpx" as kernel "warpx-pm-postproc" — the name the notebooks hardcode.
-# The chown fixes root-owned ~/.ipython created by this step
-RUN /opt/conda/envs/warpx/bin/python -m ipykernel install --prefix=/usr/local \
-        --name warpx-pm-postproc --display-name "WarpX-PM-PostProcessing" \
+# Build serial CUDA WarpX from the development branch.
+RUN mamba create -y -n warpx-gpu -c nvidia -c conda-forge \
+        blaspp boost ccache cmake compilers cuda cuda-nvtx-dev cupy fftw git \
+        h5py ipykernel jupyterlab lapackpp make matplotlib mamba ninja numpy \
+        openpmd-api openpmd-viewer packaging pandas pip pkg-config python \
+        python-build scipy setuptools virtualenv wheel yt \
+ && git clone --branch 26.05 --depth 1 https://github.com/BLAST-WarpX/warpx.git /tmp/warpx-src \
+ && mamba run -n warpx-gpu cmake -S /tmp/warpx-src -B /tmp/warpx-build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CUDA_ARCHITECTURES=${CUDAARCHS} \
+        -DCMAKE_INSTALL_PREFIX=/opt/conda/envs/warpx-gpu \
+        -DWarpX_COMPUTE=CUDA \
+        -DWarpX_DIMS="1;2;3;RZ" \
+        -DWarpX_FFT=ON \
+        -DWarpX_MPI=OFF \
+        -DWarpX_PYTHON=ON \
+ && mamba run -n warpx-gpu cmake --build /tmp/warpx-build --target install -j 2 \
+ && mamba run -n warpx-gpu cmake --build /tmp/warpx-build --target pip_install -j 2 \
+ && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.1d* /opt/conda/envs/warpx-gpu/bin/warpx.1d \
+ && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.2d* /opt/conda/envs/warpx-gpu/bin/warpx.2d \
+ && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.rz* /opt/conda/envs/warpx-gpu/bin/warpx.rz \
+ && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.3d* /opt/conda/envs/warpx-gpu/bin/warpx.3d \
+ && rm -rf /tmp/warpx-src /tmp/warpx-build \
+ && mamba clean -a -y
+
+# Keep the established CPU kernel name for notebooks and add a GPU kernel for
+# simulations. The chown fixes root-owned ~/.ipython created by this step.
+RUN /opt/conda/envs/warpx-cpu/bin/python -m ipykernel install --prefix=/usr/local \
+        --name warpx-pm-postproc --display-name "WarpX CPU" \
+ && /opt/conda/envs/warpx-gpu/bin/python -m ipykernel install --prefix=/usr/local \
+        --name warpx-gpu --display-name "WarpX GPU" \
  && mkdir -p ${MPLCONFIGDIR} \
  && chown -R ${USER}:${USER} ${HOME}
 
-# Auto-activate "warpx" in new terminals. Running as root, we append directly
+# Auto-activate the CPU environment in new terminals. Running as root, we append directly
 # to the user's .bashrc; `conda init bash` here would only touch root's.
-RUN printf '\nsource /opt/conda/etc/profile.d/conda.sh\nconda activate warpx\n' >> ${HOME}/.bashrc \
+RUN printf '\nsource /opt/conda/etc/profile.d/conda.sh\nconda activate warpx-cpu\n' >> ${HOME}/.bashrc \
  && chown ${USER}:${USER} ${HOME}/.bashrc
 
 # Copy the whole repo; JupyterLab root is set in supervisord.conf.

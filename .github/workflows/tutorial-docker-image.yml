@@ -42,6 +42,7 @@ jobs:
       - name: Build docker image
         run: |
           docker build \
+            --build-arg CUDAARCHS=75 \
             --file containers/tutorial/Dockerfile \
             --tag "${{ steps.tags.outputs.latest }}" \
             --tag "${{ steps.tags.outputs.sha }}" \
