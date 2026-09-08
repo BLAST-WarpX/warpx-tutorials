@@ -63,7 +63,10 @@ my_constants.probability_estimate =   npart / nmacropart * sigma_bw_max * 2 * cl
 my_constants.probability_target_value = 0.01 # we want the event to have this probability
 my_constants.multiplier_bw = probability_target_value / probability_estimate
 my_constants.probability_threshold = 0.1
-my_constants.multiplier_kn = sigma_kn_max / sigma_bw_max  * multiplier_bw
+# The sampling probability scales as cross section times event multiplier.
+# Reduce the Klein-Nishina multiplier so its approximate maximum probability
+# matches the Breit-Wheeler target used above.
+my_constants.multiplier_kn = sigma_bw_max / sigma_kn_max * multiplier_bw
 
 # DIAGNOSTICS
 my_constants.bin_num_1d = 512
@@ -138,7 +141,10 @@ beam1.do_qed_quantum_sync = 1 # BS
 beam1.qed_quantum_sync_phot_product_species = pho1
 beam1.do_classical_radiation_reaction = 0
 beam1.do_qed_virtual_photons = 1
-beam1.qed_virtual_photons_do_beam_size_effect = 1
+# Keep the baseline consistent with the analytical Bhabha comparison, which
+# neglects the finite beam-size effect. Set this and the beam2 flag to 1 for a
+# separate finite-beam-size study.
+beam1.qed_virtual_photons_do_beam_size_effect = 0
 beam1.qed_virtual_photon_species_name = vpho1
 
 beam2.species_type = positron
@@ -168,7 +174,7 @@ beam2.do_qed_quantum_sync = 1
 beam2.qed_quantum_sync_phot_product_species = pho2
 beam2.do_classical_radiation_reaction = 0
 beam2.do_qed_virtual_photons = 1
-beam2.qed_virtual_photons_do_beam_size_effect = 1
+beam2.qed_virtual_photons_do_beam_size_effect = 0
 beam2.qed_virtual_photon_species_name = vpho2
 
 # Test particles
