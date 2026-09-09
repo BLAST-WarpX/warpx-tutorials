@@ -11,6 +11,7 @@ FROM condaforge/miniforge3:latest
 
 ARG USER=tutorial
 ARG CUDAARCHS=75
+ARG WARPX_VERSION=26.09
 ENV HOME=/home/${USER}
 
 # Point matplotlib's cache at a writable, pre-created dir. Otherwise the first
@@ -27,21 +28,20 @@ RUN useradd --create-home --shell /bin/bash ${USER}
 
 # Pre-build the CPU environment: WarpX (serial/CPU from conda-forge) plus the
 # post-processing stack the analysis notebooks import.
-# Pin warpX version to match current tutorial content.
 RUN mamba create -y -n warpx-cpu -c conda-forge \
-        warpx=26.05 \
+        warpx=${WARPX_VERSION} \
         openpmd-api openpmd-viewer yt h5py \
         numpy scipy pandas matplotlib fast-histogram numba \
         ipykernel jupyterlab ipympl ipywidgets \
  && mamba clean -a -y
 
-# Build serial CUDA WarpX from the development branch.
+# Build serial CUDA WarpX from the same source version as the CPU package.
 RUN mamba create -y -n warpx-gpu -c nvidia -c conda-forge \
         blaspp boost ccache cmake compilers cuda cuda-nvtx-dev cupy fftw git \
         h5py ipykernel jupyterlab lapackpp make matplotlib mamba ninja numpy \
         openpmd-api openpmd-viewer packaging pandas pip pkg-config python \
         python-build scipy setuptools virtualenv wheel yt \
- && git clone --branch 26.05 --depth 1 https://github.com/BLAST-WarpX/warpx.git /tmp/warpx-src \
+ && git clone --branch ${WARPX_VERSION} --depth 1 https://github.com/BLAST-WarpX/warpx.git /tmp/warpx-src \
  && mamba run -n warpx-gpu cmake -S /tmp/warpx-src -B /tmp/warpx-build \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_CUDA_ARCHITECTURES=${CUDAARCHS} \
