@@ -12,6 +12,7 @@ FROM condaforge/miniforge3:latest
 ARG USER=tutorial
 ARG CUDAARCHS=75
 ARG WARPX_VERSION=26.09
+ARG BLASPP_VERSION=2025.05.28
 ENV HOME=/home/${USER}
 
 # Point matplotlib's cache at a writable, pre-created dir. Otherwise the first
@@ -37,15 +38,42 @@ RUN mamba create -y -n warpx-cpu -c conda-forge \
 
 # Build serial CUDA WarpX from the same source version as the CPU package.
 RUN mamba create -y -n warpx-gpu -c nvidia -c conda-forge \
-        blaspp boost ccache cmake compilers cuda cuda-nvtx-dev cupy fftw git \
-        h5py ipykernel jupyterlab lapackpp make matplotlib mamba ninja numpy \
+        boost ccache cmake compilers cuda cuda-nvtx-dev cupy fftw git \
+        h5py ipykernel jupyterlab libblas libcblas liblapack liblapacke make matplotlib mamba ninja numpy \
         openpmd-api openpmd-viewer packaging pandas pip pkg-config python \
         python-build scipy setuptools virtualenv wheel yt \
+ && curl -fsSL https://github.com/icl-utk-edu/blaspp/releases/download/v${BLASPP_VERSION}/blaspp-${BLASPP_VERSION}.tar.gz \
+        | tar -xz -C /tmp \
+ && mamba run -n warpx-gpu cmake -S /tmp/blaspp-${BLASPP_VERSION} -B /tmp/blaspp-build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/conda/envs/warpx-gpu \
+        -DCMAKE_PREFIX_PATH=/opt/conda/envs/warpx-gpu \
+        -DCMAKE_CUDA_ARCHITECTURES=${CUDAARCHS} \
+        -Dgpu_backend=cuda \
+        -Duse_openmp=OFF \
+        -Duse_cmake_find_blas=ON \
+        -DBLA_VENDOR=Generic \
+        -Dblas_int="int (LP64)" \
+        -Dbuild_tests=OFF \
+ && mamba run -n warpx-gpu cmake --build /tmp/blaspp-build --target install -j 2 \
+ && curl -fsSL https://github.com/icl-utk-edu/lapackpp/releases/download/v${BLASPP_VERSION}/lapackpp-${BLASPP_VERSION}.tar.gz \
+        | tar -xz -C /tmp \
+ && mamba run -n warpx-gpu cmake -S /tmp/lapackpp-${BLASPP_VERSION} -B /tmp/lapackpp-build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/conda/envs/warpx-gpu \
+        -DCMAKE_PREFIX_PATH=/opt/conda/envs/warpx-gpu \
+        -DCMAKE_CUDA_ARCHITECTURES=${CUDAARCHS} \
+        -Dgpu_backend=cuda \
+        -Duse_cmake_find_lapack=ON \
+        -DBLA_VENDOR=Generic \
+        -Dbuild_tests=OFF \
+ && mamba run -n warpx-gpu cmake --build /tmp/lapackpp-build --target install -j 2 \
  && git clone --branch ${WARPX_VERSION} --depth 1 https://github.com/BLAST-WarpX/warpx.git /tmp/warpx-src \
  && mamba run -n warpx-gpu cmake -S /tmp/warpx-src -B /tmp/warpx-build \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_CUDA_ARCHITECTURES=${CUDAARCHS} \
         -DCMAKE_INSTALL_PREFIX=/opt/conda/envs/warpx-gpu \
+        -DCMAKE_PREFIX_PATH=/opt/conda/envs/warpx-gpu \
         -DWarpX_COMPUTE=CUDA \
         -DWarpX_DIMS="1;2;3;RZ" \
         -DWarpX_FFT=ON \
@@ -57,7 +85,7 @@ RUN mamba create -y -n warpx-gpu -c nvidia -c conda-forge \
  && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.2d* /opt/conda/envs/warpx-gpu/bin/warpx.2d \
  && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.rz* /opt/conda/envs/warpx-gpu/bin/warpx.rz \
  && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.3d* /opt/conda/envs/warpx-gpu/bin/warpx.3d \
- && rm -rf /tmp/warpx-src /tmp/warpx-build \
+ && rm -rf /tmp/blaspp-${BLASPP_VERSION} /tmp/blaspp-build /tmp/lapackpp-${BLASPP_VERSION} /tmp/lapackpp-build /tmp/warpx-src /tmp/warpx-build \
  && mamba clean -a -y
 
 # Keep the established CPU kernel name for notebooks and add a GPU kernel for
