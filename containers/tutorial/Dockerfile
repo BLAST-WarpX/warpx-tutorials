@@ -280,6 +280,7 @@ RUN git clone --branch ${IMPACTX_VERSION} --depth 1 \
         -DPython_EXECUTABLE=${VENV}/bin/python \
  && cmake --build /tmp/impactx-build --target install -j ${NJOBS} \
  && cmake --build /tmp/impactx-build --target pip_install -j ${NJOBS} \
+ && ln -s ${PREFIX}/bin/impactx.* ${PREFIX}/bin/impactx \
  && rm -rf /tmp/impactx-src /tmp/impactx-build /tmp/warpx-src
 
 # Build-time leftovers. Headers and CMake/pkg-config metadata are only needed
@@ -438,6 +439,7 @@ RUN git clone --branch ${IMPACTX_VERSION} --depth 1 \
         -DPython_EXECUTABLE=${VENV}/bin/python \
  && cmake --build /tmp/impactx-build --target install -j ${NJOBS} \
  && cmake --build /tmp/impactx-build --target pip_install -j ${NJOBS} \
+ && ln -s ${PREFIX}/bin/impactx.* ${PREFIX}/bin/impactx \
  && rm -rf /tmp/impactx-src /tmp/impactx-build /tmp/warpx-src
 
 RUN rm -rf ${PREFIX}/include ${PREFIX}/lib/cmake ${PREFIX}/lib/pkgconfig \
@@ -497,6 +499,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Ubuntu 24.04 carries t64 suffixes on several of these.
 # libgomp1 is needed by BOTH flavors: the CPU build is OpenMP, and PICSAR's
 # QED table generator links OpenMP even in the CUDA build.
+# Both FFTW precisions are needed: AMReX_FFT=ON links libfftw3 *and*
+# libfftw3f, so without libfftw3-single3 even `import impactx` fails.
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -504,6 +508,7 @@ RUN apt-get update \
         git \
         libbz2-1.0 \
         libfftw3-double3 \
+        libfftw3-single3 \
         libgomp1 \
         libhdf5-103-1t64 \
         libhdf5-hl-100t64 \
