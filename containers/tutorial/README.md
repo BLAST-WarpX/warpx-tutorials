@@ -78,8 +78,9 @@ tutorial runs multi-rank.
   describes the Conda-Forge install, not this container. Leaving RZ out also
   removes the BLAS++/LAPACK++ dependency, which WarpX needs only for RZ
   together with FFT.
-- `cupy` is not installed, so pyAMReX's `.to_cupy()` GPU-array path is
-  unavailable. Add `cupy-cuda12x` to `/opt/venv-gpu` if you need it.
+- `cupy` is installed in the GPU environment only (it is what makes pyAMReX's
+  `.to_cupy()` zero-copy GPU-array path work). The CPU environment has no
+  `cupy` and does not need one.
 - The us-fcc-2026 lesson additionally imports `xsuite` and `cpymad`, which are
   not in the image.
 - JupyterLab runs without a token or password. That is fine behind the

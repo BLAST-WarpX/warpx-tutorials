@@ -284,10 +284,16 @@ RUN git clone --branch ${IMPACTX_VERSION} --depth 1 \
  && rm -rf /tmp/impactx-src /tmp/impactx-build /tmp/warpx-src
 
 # Build-time leftovers. Headers and CMake/pkg-config metadata are only needed
-# by the builds above, which are done. --strip-debug is safe for CUDA fatbins
-# (they live in allocated data sections).
+# by the builds above, which are done. The *_pybind*.so are Python extension
+# modules that the install targets duplicate into the prefix; pip_install
+# already placed them in the venv and nothing links the prefix copies, so
+# they are ~270 MB of dead weight in the CUDA flavor.
+# --strip-debug is safe for CUDA fatbins (they live in allocated data
+# sections); --strip-unneeded buys nothing here, these libraries are device
+# code rather than symbols.
 RUN rm -rf ${PREFIX}/include ${PREFIX}/lib/cmake ${PREFIX}/lib/pkgconfig \
  && rm -f ${PREFIX}/lib/*.a \
+ && rm -f ${PREFIX}/lib/*pybind*.so \
  && find ${PREFIX}/lib ${PREFIX}/bin ${VENV} -type f -name '*.so*' \
         -exec strip --strip-debug {} + 2>/dev/null || true \
  && rm -rf /root/.cache
@@ -310,9 +316,13 @@ ENV PREFIX=/opt/warpx-gpu \
     CMAKE_PREFIX_PATH=/opt/deps:/opt/warpx-gpu
 
 # No JupyterLab here: this venv is only ever a kernel.
+# cupy gives pyAMReX's .to_cupy() zero-copy access to GPU arrays. Note it
+# pulls in cuBLAS/cuSOLVER/cuSPARSE/NVRTC at runtime, which is why the final
+# stage cannot drop to the CUDA -base image and hand-pick libraries.
 RUN python3 -m venv ${VENV} \
  && ${VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
  && ${VENV}/bin/pip install --no-cache-dir \
+        cupy-cuda12x \
         imageio \
         imageio-ffmpeg \
         ipykernel \
@@ -444,6 +454,7 @@ RUN git clone --branch ${IMPACTX_VERSION} --depth 1 \
 
 RUN rm -rf ${PREFIX}/include ${PREFIX}/lib/cmake ${PREFIX}/lib/pkgconfig \
  && rm -f ${PREFIX}/lib/*.a \
+ && rm -f ${PREFIX}/lib/*pybind*.so \
  && find ${PREFIX}/lib ${PREFIX}/bin ${VENV} -type f -name '*.so*' \
         -exec strip --strip-debug {} + 2>/dev/null || true \
  && rm -rf /root/.cache
