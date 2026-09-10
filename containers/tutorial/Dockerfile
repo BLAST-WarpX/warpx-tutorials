@@ -13,6 +13,7 @@ ARG USER=tutorial
 ARG CUDAARCHS=75
 ARG WARPX_VERSION=26.09
 ARG BLASPP_VERSION=2025.05.28
+ARG NJOBS=4
 ENV HOME=/home/${USER}
 
 # Point matplotlib's cache at a writable, pre-created dir. Otherwise the first
@@ -58,7 +59,7 @@ RUN curl -fsSL https://github.com/icl-utk-edu/blaspp/releases/download/v${BLASPP
         -DBLA_VENDOR=Generic \
         -Dblas_int="int (LP64)" \
         -Dbuild_tests=OFF \
- && mamba run -n warpx-gpu cmake --build /tmp/blaspp-build --target install -j 2 \
+ && mamba run -n warpx-gpu cmake --build /tmp/blaspp-build --target install -j ${NJOBS} \
  && rm -rf /tmp/blaspp-${BLASPP_VERSION} /tmp/blaspp-build
 
 # Build CUDA-enabled LAPACK++ against the installed BLAS++ library.
@@ -73,7 +74,7 @@ RUN curl -fsSL https://github.com/icl-utk-edu/lapackpp/releases/download/v${BLAS
         -Duse_cmake_find_lapack=ON \
         -DBLA_VENDOR=Generic \
         -Dbuild_tests=OFF \
- && mamba run -n warpx-gpu cmake --build /tmp/lapackpp-build --target install -j 2 \
+ && mamba run -n warpx-gpu cmake --build /tmp/lapackpp-build --target install -j ${NJOBS} \
  && rm -rf /tmp/lapackpp-${BLASPP_VERSION} /tmp/lapackpp-build
 
 # Build serial CUDA WarpX from the same source version as the CPU package.
@@ -88,8 +89,8 @@ RUN git clone --branch ${WARPX_VERSION} --depth 1 https://github.com/BLAST-WarpX
         -DWarpX_FFT=ON \
         -DWarpX_MPI=OFF \
         -DWarpX_PYTHON=ON \
- && mamba run -n warpx-gpu cmake --build /tmp/warpx-build --target install -j 2 \
- && mamba run -n warpx-gpu cmake --build /tmp/warpx-build --target pip_install -j 2 \
+ && mamba run -n warpx-gpu cmake --build /tmp/warpx-build --target install -j ${NJOBS} \
+ && mamba run -n warpx-gpu cmake --build /tmp/warpx-build --target pip_install -j ${NJOBS} \
  && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.1d* /opt/conda/envs/warpx-gpu/bin/warpx.1d \
  && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.2d* /opt/conda/envs/warpx-gpu/bin/warpx.2d \
  && ln -s /opt/conda/envs/warpx-gpu/bin/warpx.rz* /opt/conda/envs/warpx-gpu/bin/warpx.rz \

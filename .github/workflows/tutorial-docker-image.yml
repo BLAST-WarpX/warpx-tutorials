@@ -47,7 +47,9 @@ jobs:
         with:
           context: .
           file: containers/tutorial/Dockerfile
-          build-args: CUDAARCHS=75
+          build-args: |
+            CUDAARCHS=75
+            NJOBS=4
           tags: |
             ${{ steps.tags.outputs.latest }}
             ${{ steps.tags.outputs.sha }}
