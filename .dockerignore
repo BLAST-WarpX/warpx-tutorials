@@ -1,0 +1,7 @@
+# The container image ships the lesson sources, not the build machinery.
+.git
+.github
+renv
+site
+*.Rproj
+.Rproj.user
