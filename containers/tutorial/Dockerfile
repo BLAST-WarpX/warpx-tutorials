@@ -101,7 +101,7 @@ RUN git clone --branch ${WARPX_VERSION} --depth 1 https://github.com/BLAST-WarpX
 # Keep the established CPU kernel name for notebooks and add a GPU kernel for
 # simulations. The chown fixes root-owned ~/.ipython created by this step.
 RUN /opt/conda/envs/warpx-cpu/bin/python -m ipykernel install --prefix=/usr/local \
-        --name warpx-pm-postproc --display-name "WarpX CPU" \
+        --name warpx-cpu --display-name "WarpX CPU" \
  && /opt/conda/envs/warpx-gpu/bin/python -m ipykernel install --prefix=/usr/local \
         --name warpx-gpu --display-name "WarpX GPU" \
  && mkdir -p ${MPLCONFIGDIR} \
