@@ -5,17 +5,22 @@
 # terminal) with a CPU and a CUDA kernel.
 #
 # Multi-stage build:
-#   deps       compute-agnostic dependencies                -> /opt/deps
-#              (ADIOS2, openPMD-api incl. its Python bindings)
+#   deps       compute-agnostic dependencies    -> /opt/deps, /opt/venv
+#              (ADIOS2, openPMD-api incl. its Python bindings, and the
+#               shared Python analysis stack)
 #   build-cpu  OpenMP flavor   -> /opt/warpx-cpu + /opt/venv-cpu
 #   build-gpu  CUDA flavor     -> /opt/warpx-gpu + /opt/venv-gpu
-#   tutorial   slim runtime: CUDA *runtime* base + installed artifacts only
+#   tutorial   CUDA *base* image + only the CUDA libraries we actually use,
+#              plus the installed artifacts - no toolchain, no headers
 #
 # Sharing, so that nothing compute-agnostic is built or shipped twice:
 #   * ADIOS2 and openPMD-api are built once in `deps`. Both venvs import the
 #     one openPMD-api Python module, so the reader is guaranteed to be the
 #     same build as the writer - the PyPI openpmd-api wheel would instead
 #     vendor its own second copy of ADIOS2 and HDF5 into each venv.
+#   * The Python analysis stack is installed once into /opt/venv; the flavor
+#     venvs pick it up with a .pth file and hold only what is flavor-specific
+#     (pywarpx, amrex, impactx, plus cupy on GPU and JupyterLab on CPU).
 #   * Within a flavor, AMReX and pyAMReX are built once and shared by WarpX
 #     and ImpactX (-DWarpX_amrex_internal=OFF etc.).
 # Everything is built as shared libraries, which is also what lets the Python
@@ -123,6 +128,30 @@ RUN git clone --branch ${OPENPMD_VERSION} --depth 1 \
  && ln -s "${OPENPMD_PY_DIR}" /opt/deps/python \
  && rm -rf /tmp/openpmd /tmp/openpmd-build
 
+# Shared analysis stack. Every one of these is a pure-Python or manylinux
+# wheel with no compute-backend flavor, so it is installed once here and both
+# flavor venvs put it on sys.path with a .pth file. Keeping it out of the
+# flavor venvs avoids ~370 MB of duplication (scipy, pandas, matplotlib and
+# the IPython machinery are the bulk of it).
+#
+# Note: no PYTHONDONTWRITEBYTECODE anywhere in this build. /opt/venv* is
+# root-owned and the tutorial runs unprivileged, so a missing .pyc could
+# never be written later - every kernel start would recompile the stack.
+RUN python3 -m venv /opt/venv \
+ && /opt/venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
+ && /opt/venv/bin/pip install --no-cache-dir \
+        imageio \
+        ipykernel \
+        ipython \
+        ipywidgets \
+        matplotlib \
+        numpy \
+        openpmd-viewer \
+        pandas \
+        scipy \
+ && /opt/venv/bin/python -c "import site, pathlib; pathlib.Path(site.getsitepackages()[0], 'openpmd-deps.pth').write_text('/opt/deps/python\n')" \
+ && /opt/venv/bin/python -c "import openpmd_api, openpmd_viewer; print('shared stack ok', openpmd_api.__version__)"
+
 
 ###############################################################################
 # Stage: build-cpu - OpenMP flavor
@@ -136,34 +165,6 @@ ARG IMPACTX_VERSION=26.09
 ENV PREFIX=/opt/warpx-cpu \
     VENV=/opt/venv-cpu \
     CMAKE_PREFIX_PATH=/opt/deps:/opt/warpx-cpu
-
-# Python analysis stack. This is exactly what the lessons import; yt, numba
-# and fast-histogram are deliberately absent (nothing under episodes/ imports
-# them). imageio-ffmpeg supplies the libx264 encoder the FODO and UCB
-# notebooks need, and is ~10x smaller than apt's ffmpeg.
-# openpmd-api is NOT pip-installed: the .pth below points at the single
-# openPMD-api build in /opt/deps.
-# JupyterLab lives in this venv only - it is the server; the GPU venv is only
-# ever a kernel.
-#
-# Note: no PYTHONDONTWRITEBYTECODE here. /opt/venv-* is root-owned and the
-# tutorial runs unprivileged, so a missing .pyc could never be written later:
-# every kernel start would recompile the whole analysis stack.
-RUN python3 -m venv ${VENV} \
- && ${VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
- && ${VENV}/bin/pip install --no-cache-dir \
-        imageio \
-        imageio-ffmpeg \
-        ipykernel \
-        ipywidgets \
-        jupyterlab \
-        matplotlib \
-        numpy \
-        openpmd-viewer \
-        pandas \
-        scipy \
- && ${VENV}/bin/python -c "import site, pathlib; pathlib.Path(site.getsitepackages()[0], 'openpmd-deps.pth').write_text('/opt/deps/python\n')" \
- && ${VENV}/bin/python -c "import openpmd_api; print('openPMD-api', openpmd_api.__version__)"
 
 # The WarpX source tree stays around: it pins the AMReX/pyAMReX versions we
 # build below, and ImpactX consumes it as its ABLASTR source.
@@ -206,6 +207,22 @@ RUN AMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/dep
         -DAMReX_BUILD_TUTORIALS=OFF \
  && cmake --build /tmp/amrex-build --target install -j ${NJOBS} \
  && rm -rf /tmp/amrex /tmp/amrex-build
+
+# Flavor venv, created only now that the non-Python stack is built, so that
+# editing the package lists below does not invalidate the AMReX layer.
+# It holds only what is flavor-specific; the shared analysis stack and the
+# openPMD-api module come in via the .pth file.
+# JupyterLab lives here only - this venv runs the server; the GPU venv is
+# only ever a kernel. imageio-ffmpeg (a ~77 MB bundled encoder) likewise: the
+# notebooks that write libx264 mp4 are analysis notebooks and run on the CPU
+# kernel.
+RUN python3 -m venv ${VENV} \
+ && ${VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
+ && ${VENV}/bin/pip install --no-cache-dir \
+        imageio-ffmpeg \
+        jupyterlab \
+ && ${VENV}/bin/python -c "import site, sys, pathlib; v=f'python{sys.version_info.major}.{sys.version_info.minor}'; pathlib.Path(site.getsitepackages()[0], 'shared-deps.pth').write_text(f'/opt/venv/lib/{v}/site-packages\n/opt/deps/python\n')" \
+ && ${VENV}/bin/python -c "import openpmd_api, openpmd_viewer, numpy, scipy, matplotlib, ipykernel; print('shared stack visible')"
 
 # Shared pyAMReX. pyAMReX_CODES must list BOTH codes: WarpX asks for the
 # CODES_WarpX component and ImpactX for CODES_ImpactX.
@@ -315,26 +332,6 @@ ENV PREFIX=/opt/warpx-gpu \
     VENV=/opt/venv-gpu \
     CMAKE_PREFIX_PATH=/opt/deps:/opt/warpx-gpu
 
-# No JupyterLab here: this venv is only ever a kernel.
-# cupy gives pyAMReX's .to_cupy() zero-copy access to GPU arrays. Note it
-# pulls in cuBLAS/cuSOLVER/cuSPARSE/NVRTC at runtime, which is why the final
-# stage cannot drop to the CUDA -base image and hand-pick libraries.
-RUN python3 -m venv ${VENV} \
- && ${VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
- && ${VENV}/bin/pip install --no-cache-dir \
-        cupy-cuda12x \
-        imageio \
-        imageio-ffmpeg \
-        ipykernel \
-        ipywidgets \
-        matplotlib \
-        numpy \
-        openpmd-viewer \
-        pandas \
-        scipy \
- && ${VENV}/bin/python -c "import site, pathlib; pathlib.Path(site.getsitepackages()[0], 'openpmd-deps.pth').write_text('/opt/deps/python\n')" \
- && ${VENV}/bin/python -c "import openpmd_api; print('openPMD-api', openpmd_api.__version__)"
-
 RUN git clone --branch ${WARPX_VERSION} --depth 1 \
         https://github.com/BLAST-WarpX/warpx.git /tmp/warpx-src
 
@@ -382,6 +379,19 @@ RUN AMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/dep
         -DAMReX_BUILD_TUTORIALS=OFF \
  && cmake --build /tmp/amrex-build --target install -j ${NJOBS} \
  && rm -rf /tmp/amrex /tmp/amrex-build
+
+# Flavor venv, after the non-Python stack for the same cache reason as the CPU
+# stage. No JupyterLab and no imageio-ffmpeg here: this venv is only ever a
+# kernel, and the mp4-writing notebooks are analysis, i.e. the CPU kernel.
+# cupy gives pyAMReX's .to_cupy() zero-copy access to GPU arrays; it is what
+# makes the final stage need cuBLAS/cuSOLVER/cuSPARSE/NVRTC on top of the
+# cuFFT and cuRAND our own binaries link.
+RUN python3 -m venv ${VENV} \
+ && ${VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
+ && ${VENV}/bin/pip install --no-cache-dir \
+        cupy-cuda12x \
+ && ${VENV}/bin/python -c "import site, sys, pathlib; v=f'python{sys.version_info.major}.{sys.version_info.minor}'; pathlib.Path(site.getsitepackages()[0], 'shared-deps.pth').write_text(f'/opt/venv/lib/{v}/site-packages\n/opt/deps/python\n')" \
+ && ${VENV}/bin/python -c "import openpmd_api, openpmd_viewer, numpy, scipy, matplotlib, ipykernel, cupy; print('shared stack visible, cupy', cupy.__version__)"
 
 RUN PYAMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/dependencies.json'))['commit_pyamrex'])") \
  && git clone --branch ${PYAMREX_TAG} --depth 1 \
@@ -476,6 +486,7 @@ RUN rm -rf ${PREFIX}/include ${PREFIX}/lib/cmake ${PREFIX}/lib/pkgconfig \
 ###############################################################################
 FROM scratch AS export-cpu
 COPY --from=build-cpu /opt/deps      /opt/deps
+COPY --from=build-cpu /opt/venv      /opt/venv
 COPY --from=build-cpu /opt/warpx-cpu /opt/warpx-cpu
 COPY --from=build-cpu /opt/venv-cpu  /opt/venv-cpu
 
@@ -487,9 +498,11 @@ COPY --from=build-gpu /opt/venv-gpu  /opt/venv-gpu
 ###############################################################################
 # Stage: tutorial - the shipped image
 ###############################################################################
-FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu${UBUNTU_VERSION} AS tutorial
+FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu${UBUNTU_VERSION} AS tutorial
 
 ARG USER=tutorial
+# CUDA library package suffix; keep in sync with CUDA_VERSION above.
+ARG CUDA_PKG=12-8
 ENV HOME=/home/${USER}
 
 # Point matplotlib's cache at a writable, pre-created dir. Otherwise the first
@@ -507,6 +520,14 @@ ENV PATH=/opt/venv-cpu/bin:/opt/warpx-cpu/bin:/opt/deps/bin:${PATH}
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Runtime shared libraries only - no compilers, no headers, no CUDA toolkit.
+#
+# The CUDA libraries are hand-picked on top of the -base image rather than
+# taking the -runtime image, which bundles a fixed superset: measured 2.69 GB
+# vs 3.41 GB, so ~720 MB saved by leaving out NPP, nvJPEG, cuFile and NCCL.
+# Our own binaries link only cuFFT and cuRAND; cuBLAS, cuSOLVER, cuSPARSE and
+# NVRTC are here for cupy, which loads them dynamically. cuTENSOR and NCCL are
+# optional cupy backends that nothing here uses, so they stay out.
+#
 # Ubuntu 24.04 carries t64 suffixes on several of these.
 # libgomp1 is needed by BOTH flavors: the CPU build is OpenMP, and PICSAR's
 # QED table generator links OpenMP even in the CUDA build.
@@ -528,12 +549,21 @@ RUN apt-get update \
         python3-venv \
         supervisor \
         zlib1g \
+        cuda-cudart-${CUDA_PKG} \
+        cuda-nvrtc-${CUDA_PKG} \
+        libcublas-${CUDA_PKG} \
+        libcufft-${CUDA_PKG} \
+        libcurand-${CUDA_PKG} \
+        libcusolver-${CUDA_PKG} \
+        libcusparse-${CUDA_PKG} \
+        libnvjitlink-${CUDA_PKG} \
  && rm -rf /var/lib/apt/lists/*
 
 # Non-root user to run the tutorial
 RUN useradd --create-home --shell /bin/bash ${USER}
 
 COPY --from=build-cpu /opt/deps      /opt/deps
+COPY --from=build-cpu /opt/venv      /opt/venv
 COPY --from=build-cpu /opt/warpx-cpu /opt/warpx-cpu
 COPY --from=build-cpu /opt/venv-cpu  /opt/venv-cpu
 COPY --from=build-gpu /opt/warpx-gpu /opt/warpx-gpu
