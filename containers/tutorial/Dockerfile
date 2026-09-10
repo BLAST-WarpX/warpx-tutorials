@@ -327,11 +327,15 @@ RUN python3 -m venv ${VENV} \
 RUN git clone --branch ${WARPX_VERSION} --depth 1 \
         https://github.com/BLAST-WarpX/warpx.git /tmp/warpx-src
 
-# AMReX_GPU_RDC=ON: relocatable device code is not needed by WarpX or ImpactX
-# as configured here (WarpX would force it OFF for its own internal build),
-# but it keeps the shared AMReX usable by downstream device code added later
-# (e.g. CUDA LTO / IPO, Ascent, SENSEI). It costs some build time and
-# optimization headroom.
+# AMReX_GPU_RDC=OFF, matching what WarpX forces for its own internal AMReX
+# build (warpx/cmake/dependencies/AMReX.cmake:129-133). Relocatable device
+# code would be nicer for extensibility, but it does not currently work here:
+# with RDC every translation unit is device-linked together and WarpX 26.09
+# overflows the 64 KB constant bank at nvlink,
+#   "uses too much data for compiler-generated constants;
+#    please recompile with -Xptxas --disable-optimizer-constants"
+# across dozens of kernels. Enabling RDC again needs that -Xptxas workaround,
+# which disables an optimizer feature globally.
 RUN AMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/dependencies.json'))['commit_amrex'])") \
  && git clone --branch ${AMREX_TAG} --depth 1 \
         https://github.com/AMReX-Codes/amrex.git /tmp/amrex \
@@ -344,7 +348,7 @@ RUN AMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/dep
         -DAMReX_SPACEDIM="1;2;3" \
         -DAMReX_GPU_BACKEND=CUDA \
         -DCMAKE_CUDA_ARCHITECTURES=${CUDAARCHS} \
-        -DAMReX_GPU_RDC=ON \
+        -DAMReX_GPU_RDC=OFF \
         -DAMReX_OMP=OFF \
         -DAMReX_MPI=OFF \
         -DAMReX_PARTICLES=ON \
