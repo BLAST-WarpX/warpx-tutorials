@@ -195,6 +195,7 @@ RUN curl -fsSL https://github.com/icl-utk-edu/blaspp/releases/download/v${BLASPP
         -DCMAKE_INSTALL_PREFIX=${PREFIX} \
         -DCMAKE_INSTALL_RPATH="${PREFIX}/lib;/opt/deps/lib" \
         -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+        -Dgpu_backend=none \
         -Duse_cmake_find_lapack=ON \
         -DBLA_VENDOR=Generic \
         -Dbuild_tests=OFF \
