@@ -51,20 +51,23 @@ docker run --rm --gpus all -p 127.0.0.1:3000:3000 warpx-tutorial:local
 | Path | Contents |
 |---|---|
 | `/opt/deps` | ADIOS2 and openPMD-api (C++ **and** Python), shared by both flavors |
-| `/opt/warpx-cpu`, `/opt/warpx-gpu` | AMReX, WarpX (`warpx.1d`, `warpx.2d`, `warpx.3d`), ImpactX |
-| `/opt/venv-cpu`, `/opt/venv-gpu` | Python: `amrex`, `pywarpx`, `impactx` and the analysis stack (JupyterLab in the CPU venv only) |
+| `/opt/venv` | the shared Python analysis stack (numpy, scipy, matplotlib, pandas, openpmd-viewer, imageio, IPython) |
+| `/opt/warpx-cpu`, `/opt/warpx-gpu` | AMReX, WarpX (`warpx.1d`, `warpx.2d`, `warpx.3d`), ImpactX (`impactx`) |
+| `/opt/venv-cpu` | `amrex`, `pywarpx`, `impactx` for CPU, plus JupyterLab and `imageio-ffmpeg` |
+| `/opt/venv-gpu` | `amrex`, `pywarpx`, `impactx` for CUDA, plus `cupy` |
 
 The image is built in stages: a CUDA `-devel` builder compiles everything, and
-only the installed artifacts are copied into a CUDA `-runtime` final stage.
-Nothing compute-agnostic is built twice — ADIOS2 and openPMD-api are built once
-in `/opt/deps`, and within each flavor AMReX and pyAMReX are built once and
-shared by WarpX and ImpactX. Everything is built as shared libraries, so AMReX
-exists once per flavor rather than once per code and per dimensionality.
+only the installed artifacts are copied into a final stage based on the CUDA
+`-base` image plus just the CUDA libraries in use. Our binaries link only cuFFT
+and cuRAND; cuBLAS, cuSOLVER, cuSPARSE and NVRTC are there for cupy.
 
-Both venvs import the single openPMD-api Python module from `/opt/deps` via a
-`.pth` file, so the reader is always the same build as the writer. (The PyPI
-`openpmd-api` wheel would instead vendor a second, different ADIOS2 and HDF5
-into each venv.)
+Nothing compute-agnostic is built or shipped twice. ADIOS2 and openPMD-api are
+built once in `/opt/deps`; the analysis stack is installed once in `/opt/venv`;
+and within each flavor AMReX and pyAMReX are built once and shared by WarpX and
+ImpactX. The CPU and GPU venvs reach the shared pieces through a `.pth` file, so
+the openPMD-api reader is always the same build as the writer. Everything is
+built as shared libraries, so AMReX exists once per flavor rather than once per
+code and per dimensionality.
 
 WarpX is built with `WarpX_FFT=ON` (four tutorial inputs use
 `warpx.poisson_solver = fft`), QED table generation, and without MPI — no
@@ -78,9 +81,6 @@ tutorial runs multi-rank.
   describes the Conda-Forge install, not this container. Leaving RZ out also
   removes the BLAS++/LAPACK++ dependency, which WarpX needs only for RZ
   together with FFT.
-- `cupy` is installed in the GPU environment only (it is what makes pyAMReX's
-  `.to_cupy()` zero-copy GPU-array path work). The CPU environment has no
-  `cupy` and does not need one.
 - The us-fcc-2026 lesson additionally imports `xsuite` and `cpymad`, which are
   not in the image.
 - JupyterLab runs without a token or password. That is fine behind the
