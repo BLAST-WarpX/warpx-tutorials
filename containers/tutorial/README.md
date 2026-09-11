@@ -89,9 +89,9 @@ tutorial runs multi-rank.
 
 ## Automated builds
 
-A cold build of both flavors exceeds GitHub's 6 h job limit, so
 `.github/workflows/tutorial-docker-image.yml` compiles the CPU and GPU flavors
-in two parallel jobs. Each publishes its installed trees as a scratch image
+in two parallel jobs (measured cold: 54 min and 2 h 19 min), keeping wall
+clock near 2.3 h and each job well below GitHub's 6 h limit. Each publishes its installed trees as a scratch image
 (`tutorial-artifacts:<flavor>-<sha>`), and a short assemble job composes the
 final image from them using BuildKit build contexts. On `main` the result is
 pushed to `ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest` (plus a
