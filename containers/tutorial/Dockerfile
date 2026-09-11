@@ -56,10 +56,12 @@ RUN apt-get update \
         cmake \
         curl \
         git \
+        libblas-dev \
         libboost-dev \
         libbz2-dev \
         libfftw3-dev \
         libhdf5-dev \
+        liblapack-dev \
         libzstd-dev \
         ninja-build \
         pkg-config \
@@ -161,10 +163,44 @@ FROM deps AS build-cpu
 ARG NJOBS=4
 ARG WARPX_VERSION=26.09
 ARG IMPACTX_VERSION=26.09
+ARG BLASPP_VERSION=2025.05.28
 
 ENV PREFIX=/opt/warpx-cpu \
     VENV=/opt/venv-cpu \
     CMAKE_PREFIX_PATH=/opt/deps:/opt/warpx-cpu
+
+# BLAS++ / LAPACK++ are required because WarpX_FFT=ON together with RZ in
+# WarpX_DIMS pulls in the RZ spectral solver (warpx/CMakeLists.txt:242-248).
+# They come first: they change more rarely than the WarpX version, so a WarpX
+# bump does not rebuild them. OpenMP stays off here to avoid nesting inside
+# AMReX's own OpenMP regions.
+RUN curl -fsSL https://github.com/icl-utk-edu/blaspp/releases/download/v${BLASPP_VERSION}/blaspp-${BLASPP_VERSION}.tar.gz \
+        | tar -xz -C /tmp \
+ && cmake -S /tmp/blaspp-${BLASPP_VERSION} -B /tmp/blaspp-build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_RPATH="${PREFIX}/lib;/opt/deps/lib" \
+        -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+        -Dgpu_backend=none \
+        -Duse_openmp=OFF \
+        -Duse_cmake_find_blas=ON \
+        -DBLA_VENDOR=Generic \
+        -Dblas_int="int (LP64)" \
+        -Dbuild_tests=OFF \
+ && cmake --build /tmp/blaspp-build --target install -j ${NJOBS} \
+ && curl -fsSL https://github.com/icl-utk-edu/lapackpp/releases/download/v${BLASPP_VERSION}/lapackpp-${BLASPP_VERSION}.tar.gz \
+        | tar -xz -C /tmp \
+ && cmake -S /tmp/lapackpp-${BLASPP_VERSION} -B /tmp/lapackpp-build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_RPATH="${PREFIX}/lib;/opt/deps/lib" \
+        -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+        -Duse_cmake_find_lapack=ON \
+        -DBLA_VENDOR=Generic \
+        -Dbuild_tests=OFF \
+ && cmake --build /tmp/lapackpp-build --target install -j ${NJOBS} \
+ && rm -rf /tmp/blaspp-${BLASPP_VERSION} /tmp/blaspp-build \
+           /tmp/lapackpp-${BLASPP_VERSION} /tmp/lapackpp-build
 
 # The WarpX source tree stays around: it pins the AMReX/pyAMReX versions we
 # build below, and ImpactX consumes it as its ABLASTR source.
@@ -245,9 +281,9 @@ RUN PYAMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/d
  && rm -rf /tmp/pyamrex /tmp/pyamrex-build
 
 # WarpX. FFT is mandatory: four tutorial inputs use warpx.poisson_solver = fft.
-# No RZ: every tutorial input is geometry.dims 1, 2 or 3. Leaving RZ out also
-# drops the BLAS++/LAPACK++ dependency entirely, which WarpX requires only for
-# RZ together with FFT (warpx/CMakeLists.txt:242-248).
+# RZ is built although no tutorial input uses it: episodes/install.Rmd has
+# participants check for all four binaries, and RZ is a common next step.
+# RZ together with FFT is what needs the BLAS++/LAPACK++ built above.
 # QED table generation is on (header-only Boost).
 RUN cmake -S /tmp/warpx-src -B /tmp/warpx-build \
         -DCMAKE_BUILD_TYPE=Release \
@@ -259,7 +295,7 @@ RUN cmake -S /tmp/warpx-src -B /tmp/warpx-build \
         -DWarpX_pyamrex_internal=OFF \
         -DWarpX_openpmd_internal=OFF \
         -DWarpX_COMPUTE=OMP \
-        -DWarpX_DIMS="1;2;3" \
+        -DWarpX_DIMS="1;2;RZ;3" \
         -DWarpX_FFT=ON \
         -DWarpX_MPI=OFF \
         -DWarpX_PYTHON=ON \
@@ -271,6 +307,7 @@ RUN cmake -S /tmp/warpx-src -B /tmp/warpx-build \
  && cmake --build /tmp/warpx-build --target pip_install -j ${NJOBS} \
  && ln -s ${PREFIX}/bin/warpx.1d* ${PREFIX}/bin/warpx.1d \
  && ln -s ${PREFIX}/bin/warpx.2d* ${PREFIX}/bin/warpx.2d \
+ && ln -s ${PREFIX}/bin/warpx.rz* ${PREFIX}/bin/warpx.rz \
  && ln -s ${PREFIX}/bin/warpx.3d* ${PREFIX}/bin/warpx.3d \
  && rm -rf /tmp/warpx-build
 
@@ -327,10 +364,44 @@ ARG NJOBS=4
 ARG CUDAARCHS=75
 ARG WARPX_VERSION=26.09
 ARG IMPACTX_VERSION=26.09
+ARG BLASPP_VERSION=2025.05.28
 
 ENV PREFIX=/opt/warpx-gpu \
     VENV=/opt/venv-gpu \
     CMAKE_PREFIX_PATH=/opt/deps:/opt/warpx-gpu
+
+# CUDA BLAS++ / LAPACK++ for the RZ spectral solver. At runtime they need
+# cuBLAS and cuSOLVER, which the final stage already installs for cupy.
+RUN curl -fsSL https://github.com/icl-utk-edu/blaspp/releases/download/v${BLASPP_VERSION}/blaspp-${BLASPP_VERSION}.tar.gz \
+        | tar -xz -C /tmp \
+ && cmake -S /tmp/blaspp-${BLASPP_VERSION} -B /tmp/blaspp-build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_RPATH="${PREFIX}/lib;/opt/deps/lib" \
+        -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+        -DCMAKE_CUDA_ARCHITECTURES=${CUDAARCHS} \
+        -Dgpu_backend=cuda \
+        -Duse_openmp=OFF \
+        -Duse_cmake_find_blas=ON \
+        -DBLA_VENDOR=Generic \
+        -Dblas_int="int (LP64)" \
+        -Dbuild_tests=OFF \
+ && cmake --build /tmp/blaspp-build --target install -j ${NJOBS} \
+ && curl -fsSL https://github.com/icl-utk-edu/lapackpp/releases/download/v${BLASPP_VERSION}/lapackpp-${BLASPP_VERSION}.tar.gz \
+        | tar -xz -C /tmp \
+ && cmake -S /tmp/lapackpp-${BLASPP_VERSION} -B /tmp/lapackpp-build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_RPATH="${PREFIX}/lib;/opt/deps/lib" \
+        -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+        -DCMAKE_CUDA_ARCHITECTURES=${CUDAARCHS} \
+        -Dgpu_backend=cuda \
+        -Duse_cmake_find_lapack=ON \
+        -DBLA_VENDOR=Generic \
+        -Dbuild_tests=OFF \
+ && cmake --build /tmp/lapackpp-build --target install -j ${NJOBS} \
+ && rm -rf /tmp/blaspp-${BLASPP_VERSION} /tmp/blaspp-build \
+           /tmp/lapackpp-${BLASPP_VERSION} /tmp/lapackpp-build
 
 RUN git clone --branch ${WARPX_VERSION} --depth 1 \
         https://github.com/BLAST-WarpX/warpx.git /tmp/warpx-src
@@ -384,8 +455,8 @@ RUN AMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/dep
 # stage. No JupyterLab and no imageio-ffmpeg here: this venv is only ever a
 # kernel, and the mp4-writing notebooks are analysis, i.e. the CPU kernel.
 # cupy gives pyAMReX's .to_cupy() zero-copy access to GPU arrays; it is what
-# makes the final stage need cuBLAS/cuSOLVER/cuSPARSE/NVRTC on top of the
-# cuFFT and cuRAND our own binaries link.
+# makes the final stage need cuSPARSE and NVRTC (plus the CUDA headers) on top
+# of the CUDA libraries our own binaries link.
 RUN python3 -m venv ${VENV} \
  && ${VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
  && ${VENV}/bin/pip install --no-cache-dir \
@@ -423,7 +494,7 @@ RUN cmake -S /tmp/warpx-src -B /tmp/warpx-build \
         -DWarpX_pyamrex_internal=OFF \
         -DWarpX_openpmd_internal=OFF \
         -DWarpX_COMPUTE=CUDA \
-        -DWarpX_DIMS="1;2;3" \
+        -DWarpX_DIMS="1;2;RZ;3" \
         -DWarpX_FFT=ON \
         -DWarpX_MPI=OFF \
         -DWarpX_PYTHON=ON \
@@ -435,6 +506,7 @@ RUN cmake -S /tmp/warpx-src -B /tmp/warpx-build \
  && cmake --build /tmp/warpx-build --target pip_install -j ${NJOBS} \
  && ln -s ${PREFIX}/bin/warpx.1d* ${PREFIX}/bin/warpx.1d \
  && ln -s ${PREFIX}/bin/warpx.2d* ${PREFIX}/bin/warpx.2d \
+ && ln -s ${PREFIX}/bin/warpx.rz* ${PREFIX}/bin/warpx.rz \
  && ln -s ${PREFIX}/bin/warpx.3d* ${PREFIX}/bin/warpx.3d \
  && rm -rf /tmp/warpx-build
 
@@ -528,8 +600,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # The CUDA libraries are hand-picked on top of the -base image rather than
 # taking the -runtime image, which bundles a fixed superset: measured 2.69 GB
 # vs 3.41 GB, so ~720 MB saved by leaving out NPP, nvJPEG, cuFile and NCCL.
-# Our own binaries link only cuFFT and cuRAND; cuBLAS, cuSOLVER, cuSPARSE and
-# NVRTC are here for cupy, which loads them dynamically. cuTENSOR and NCCL are
+# Our own binaries link cuFFT and cuRAND (AMReX) and cuBLAS and cuSOLVER
+# (BLAS++/LAPACK++, for RZ); cuSPARSE and NVRTC are here for cupy, which loads
+# them dynamically. cuTENSOR and NCCL are
 # optional cupy backends that nothing here uses, so they stay out.
 #
 # cupy also needs the CUDA *headers* at runtime: it JIT-compiles even trivial
@@ -551,12 +624,14 @@ RUN apt-get update \
         ca-certificates \
         curl \
         git \
+        libblas3 \
         libbz2-1.0 \
         libfftw3-double3 \
         libfftw3-single3 \
         libgomp1 \
         libhdf5-103-1t64 \
         libhdf5-hl-100t64 \
+        liblapack3 \
         libzstd1 \
         python3 \
         python3-venv \
