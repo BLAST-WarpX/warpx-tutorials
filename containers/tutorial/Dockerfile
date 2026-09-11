@@ -512,6 +512,10 @@ ENV MPLCONFIGDIR=${HOME}/.config/matplotlib
 # The usual HDF5 quirk for various file systems and containers
 ENV HDF5_USE_FILE_LOCKING=FALSE
 
+# Where cupy finds the CUDA headers for its runtime kernel compilation. cupy
+# also falls back to this path on its own, but say so explicitly.
+ENV CUDA_PATH=/usr/local/cuda
+
 # The CPU flavor is the default on PATH; `source /opt/venv-gpu/bin/activate`
 # switches both Python and the warpx.* binaries to CUDA (see below).
 # /opt/deps/bin adds openpmd-ls for inspecting BP/HDF5 output.
@@ -527,6 +531,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Our own binaries link only cuFFT and cuRAND; cuBLAS, cuSOLVER, cuSPARSE and
 # NVRTC are here for cupy, which loads them dynamically. cuTENSOR and NCCL are
 # optional cupy backends that nothing here uses, so they stay out.
+#
+# cupy also needs the CUDA *headers* at runtime: it JIT-compiles even trivial
+# kernels such as cp.arange through NVRTC, which #includes cuda_fp16.h and
+# friends. Neither -base nor -runtime ships headers, so without them cupy
+# imports fine and then fails on its first operation with "Failed to find CUDA
+# headers". cuda-cccl + cuda-cudart-dev provide everything NVRTC needs for
+# 19 MB. Do NOT use cuda-crt instead: it hard-depends on build-essential and
+# drags a full gcc/g++/binutils toolchain (~260 MB) into this image; NVRTC
+# does not need its host-side crt/ headers.
 #
 # Ubuntu 24.04 carries t64 suffixes on several of these.
 # libgomp1 is needed by BOTH flavors: the CPU build is OpenMP, and PICSAR's
@@ -549,7 +562,9 @@ RUN apt-get update \
         python3-venv \
         supervisor \
         zlib1g \
+        cuda-cccl-${CUDA_PKG} \
         cuda-cudart-${CUDA_PKG} \
+        cuda-cudart-dev-${CUDA_PKG} \
         cuda-nvrtc-${CUDA_PKG} \
         libcublas-${CUDA_PKG} \
         libcufft-${CUDA_PKG} \
