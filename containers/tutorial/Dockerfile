@@ -552,8 +552,8 @@ RUN rm -rf ${PREFIX}/include ${PREFIX}/lib/cmake ${PREFIX}/lib/pkgconfig \
 # them for the build-cpu / build-gpu stages:
 #
 #   docker buildx build --target tutorial \
-#     --build-context build-cpu=docker-image://ghcr.io/<repo>/tutorial-artifacts:cpu-<sha> \
-#     --build-context build-gpu=docker-image://ghcr.io/<repo>/tutorial-artifacts:gpu-<sha> .
+#     --build-context build-cpu=docker-image://ghcr.io/<repo>/tutorial-buildcache:cpu-<sha> \
+#     --build-context build-gpu=docker-image://ghcr.io/<repo>/tutorial-buildcache:gpu-<sha> .
 #
 # A plain local `docker build` ignores these stages and builds end-to-end.
 ###############################################################################

@@ -68,7 +68,7 @@ jobs:
           # (GHCR requires a lowercase name). Pushes to the fork's own namespace.
           IMAGE="${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
           SHORT_SHA="${GITHUB_SHA:0:7}"
-          echo "artifact=${IMAGE}/tutorial-artifacts:${{ matrix.flavor }}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "artifact=${IMAGE}/tutorial-buildcache:${{ matrix.flavor }}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           echo "cache=${IMAGE}/tutorial-buildcache:${{ matrix.flavor }}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
@@ -76,9 +76,9 @@ jobs:
 
       # Registry cache, not type=gha: the Actions cache is capped at 10 GB per
       # repository, which a single CUDA builder stage exceeds on its own.
-      # Packages: `tutorial` holds only the runnable image, `tutorial-buildcache`
-      # the layer cache, and `tutorial-artifacts` the per-run hand-off to the
-      # assemble job.
+      # Packages: `tutorial` holds only runnable images; `tutorial-buildcache`
+      # holds CI internals - the layer cache (:cpu, :gpu) and the per-run
+      # hand-off to the assemble job (:<flavor>-<sha>).
       - name: Build ${{ matrix.flavor }} artifacts
         uses: docker/build-push-action@v6
         with:
@@ -120,10 +120,20 @@ jobs:
         run: |
           IMAGE="${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
           SHORT_SHA="${GITHUB_SHA:0:7}"
-          echo "latest=${IMAGE}/tutorial:latest" >> "$GITHUB_OUTPUT"
-          echo "sha=${IMAGE}/tutorial:sha-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
-          echo "cpu=${IMAGE}/tutorial-artifacts:cpu-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
-          echo "gpu=${IMAGE}/tutorial-artifacts:gpu-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          # Only main publishes :latest. Same-repository pull requests get a
+          # moving :pr-<number> tag, so an unmerged PR can never replace :latest.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "tags=${IMAGE}/tutorial:pr-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "tags<<EOF"
+              echo "${IMAGE}/tutorial:latest"
+              echo "${IMAGE}/tutorial:sha-${SHORT_SHA}"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+          echo "cpu=${IMAGE}/tutorial-buildcache:cpu-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "gpu=${IMAGE}/tutorial-buildcache:gpu-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -139,7 +149,7 @@ jobs:
           build-contexts: |
             build-cpu=docker-image://${{ steps.tags.outputs.cpu }}
             build-gpu=docker-image://${{ steps.tags.outputs.gpu }}
-          tags: |
-            ${{ steps.tags.outputs.latest }}
-            ${{ steps.tags.outputs.sha }}
-          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.tags.outputs.tags }}
+          push: >-
+            ${{ github.event_name != 'pull_request' ||
+                github.event.pull_request.head.repo.full_name == github.repository }}

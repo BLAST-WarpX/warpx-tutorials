@@ -88,18 +88,18 @@ multi-rank.
 in two parallel jobs. Measured cold, the CPU job takes about 55 min and the
 CUDA job 3 h 40–50 min, both within GitHub's 6 h job limit. Each publishes its
 installed trees as a scratch image
-(`tutorial-artifacts:<flavor>-<sha>`), and a short assemble job composes the
+(`tutorial-buildcache:<flavor>-<sha>`), and a short assemble job composes the
 final image from them using BuildKit build contexts. On `main` the result is
 pushed to `ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest` (plus a
-`:sha-<commit>` tag).
+`:sha-<commit>` tag); pull requests from branches of the same repository push
+it as `:pr-<number>`.
 
-The workflow uses three GHCR packages:
+The workflow uses two GHCR packages:
 
 | Package | Contents |
 |---|---|
-| `tutorial` | the runnable image only: `:latest` and `:sha-<commit>`, published from `main` |
-| `tutorial-buildcache` | BuildKit layer cache, `:cpu` and `:gpu`, so unchanged build steps are skipped |
-| `tutorial-artifacts` | hand-off between CI jobs: `:<flavor>-<sha>` scratch images holding the compiled `/opt` trees; not runnable |
+| `tutorial` | runnable images only: `:latest` and `:sha-<commit>` from `main`, `:pr-<number>` from same-repository pull requests |
+| `tutorial-buildcache` | CI internals, not runnable: the BuildKit layer cache (`:cpu`, `:gpu`) and the per-run hand-off to the assemble job (`:<flavor>-<sha>`, scratch images holding the compiled `/opt` trees) |
 
 Pull requests from forks cannot publish the intermediate images, so there the
 workflow stops after compiling both flavors — which is the part that can
