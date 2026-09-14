@@ -69,13 +69,16 @@ jobs:
           IMAGE="${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
           SHORT_SHA="${GITHUB_SHA:0:7}"
           echo "artifact=${IMAGE}/tutorial-artifacts:${{ matrix.flavor }}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
-          echo "cache=${IMAGE}/tutorial:buildcache-${{ matrix.flavor }}" >> "$GITHUB_OUTPUT"
+          echo "cache=${IMAGE}/tutorial-buildcache:${{ matrix.flavor }}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       # Registry cache, not type=gha: the Actions cache is capped at 10 GB per
       # repository, which a single CUDA builder stage exceeds on its own.
+      # Packages: `tutorial` holds only the runnable image, `tutorial-buildcache`
+      # the layer cache, and `tutorial-artifacts` the per-run hand-off to the
+      # assemble job.
       - name: Build ${{ matrix.flavor }} artifacts
         uses: docker/build-push-action@v6
         with:

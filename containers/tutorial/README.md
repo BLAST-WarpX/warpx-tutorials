@@ -93,6 +93,14 @@ final image from them using BuildKit build contexts. On `main` the result is
 pushed to `ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest` (plus a
 `:sha-<commit>` tag).
 
+The workflow uses three GHCR packages:
+
+| Package | Contents |
+|---|---|
+| `tutorial` | the runnable image only: `:latest` and `:sha-<commit>`, published from `main` |
+| `tutorial-buildcache` | BuildKit layer cache, `:cpu` and `:gpu`, so unchanged build steps are skipped |
+| `tutorial-artifacts` | hand-off between CI jobs: `:<flavor>-<sha>` scratch images holding the compiled `/opt` trees; not runnable |
+
 Pull requests from forks cannot publish the intermediate images, so there the
 workflow stops after compiling both flavors — which is the part that can
 actually break.
