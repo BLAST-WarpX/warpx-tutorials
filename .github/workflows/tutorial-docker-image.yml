@@ -15,9 +15,10 @@ permissions:
 
 # Each flavor is compiled in its own job, in parallel, and publishes its
 # installed trees as a scratch image; a short assemble job then composes the
-# final image from them via BuildKit build contexts. The CUDA flavor dominates;
-# splitting keeps each job well below GitHub's 6 h limit and runs the two in
-# parallel (the single-job predecessor needed 5.5 h for the CUDA flavor alone).
+# final image from them via BuildKit build contexts. Measured cold: CPU ~55 min,
+# CUDA ~3 h 40-50 min, assemble ~5 min. Running the flavors in parallel gives
+# ~3.75 h of wall clock instead of ~4.7 h back to back, and leaves the longest
+# job ~2 h of headroom under GitHub's 6 h limit.
 jobs:
   flavor:
     name: Build ${{ matrix.flavor }} flavor

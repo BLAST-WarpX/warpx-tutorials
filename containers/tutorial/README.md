@@ -85,8 +85,9 @@ multi-rank.
 ## Automated builds
 
 `.github/workflows/tutorial-docker-image.yml` compiles the CPU and GPU flavors
-in two parallel jobs, keeping each well below GitHub's 6 h job limit. Each
-publishes its installed trees as a scratch image
+in two parallel jobs. Measured cold, the CPU job takes about 55 min and the
+CUDA job 3 h 40–50 min, both within GitHub's 6 h job limit. Each publishes its
+installed trees as a scratch image
 (`tutorial-artifacts:<flavor>-<sha>`), and a short assemble job composes the
 final image from them using BuildKit build contexts. On `main` the result is
 pushed to `ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest` (plus a
