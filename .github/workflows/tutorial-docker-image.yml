@@ -13,16 +13,48 @@ permissions:
   contents: read
   packages: write
 
+# Each flavor is compiled in its own job, in parallel, and publishes its
+# installed trees as a scratch image; a short assemble job then composes the
+# final image from them via BuildKit build contexts. Measured cold: CPU ~55 min,
+# CUDA ~3 h 40-50 min, assemble ~5 min. Running the flavors in parallel gives
+# ~3.75 h of wall clock instead of ~4.7 h back to back, and leaves the longest
+# job ~2 h of headroom under GitHub's 6 h limit.
 jobs:
-  build:
+  flavor:
+    name: Build ${{ matrix.flavor }} flavor
     runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [cpu, gpu]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      # The CUDA devel base plus the nvcc object trees need more room than a
+      # stock runner has free.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+                      /usr/local/share/boost "${AGENT_TOOLSDIRECTORY}"
+          df -h /
+
+      # Artifacts can only be published when the token can write to GHCR,
+      # i.e. not for pull requests from forks.
+      - name: Determine whether artifacts can be published
+        id: publish
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ] || \
+             [ "${{ github.event.pull_request.head.repo.full_name }}" = "${{ github.repository }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
+        if: steps.publish.outputs.enabled == 'true'
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -34,25 +66,90 @@ jobs:
         run: |
           # Derive the image from the repo owner so this works on any fork
           # (GHCR requires a lowercase name). Pushes to the fork's own namespace.
-          IMAGE="${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/tutorial"
+          IMAGE="${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
           SHORT_SHA="${GITHUB_SHA:0:7}"
-          echo "latest=${IMAGE}:latest" >> "$GITHUB_OUTPUT"
-          echo "sha=${IMAGE}:sha-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "artifact=${IMAGE}/tutorial-buildcache:${{ matrix.flavor }}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "cache=${IMAGE}/tutorial-buildcache:${{ matrix.flavor }}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push docker image
+      # Registry cache, not type=gha: the Actions cache is capped at 10 GB per
+      # repository, which a single CUDA builder stage exceeds on its own.
+      # Packages: `tutorial` holds only runnable images; `tutorial-buildcache`
+      # holds CI internals - the layer cache (:cpu, :gpu) and the per-run
+      # hand-off to the assemble job (:<flavor>-<sha>).
+      - name: Build ${{ matrix.flavor }} artifacts
         uses: docker/build-push-action@v6
         with:
           context: .
           file: containers/tutorial/Dockerfile
+          target: export-${{ matrix.flavor }}
           build-args: |
             CUDAARCHS=75
             NJOBS=4
-          tags: |
-            ${{ steps.tags.outputs.latest }}
-            ${{ steps.tags.outputs.sha }}
-          push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ steps.tags.outputs.artifact }}
+          push: ${{ steps.publish.outputs.enabled == 'true' }}
+          cache-from: type=registry,ref=${{ steps.tags.outputs.cache }}
+          cache-to: ${{ steps.publish.outputs.enabled == 'true' && format('type=registry,ref={0},mode=max', steps.tags.outputs.cache) || '' }}
+
+  assemble:
+    name: Assemble tutorial image
+    runs-on: ubuntu-latest
+    needs: flavor
+    # Needs both flavor artifacts in the registry; fork pull requests cannot
+    # publish them, so there they stop after compiling both flavors.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: tags
+        run: |
+          IMAGE="${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          # Only main publishes :latest. Same-repository pull requests get a
+          # moving :pr-<number> tag, so an unmerged PR can never replace :latest.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "tags=${IMAGE}/tutorial:pr-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "tags<<EOF"
+              echo "${IMAGE}/tutorial:latest"
+              echo "${IMAGE}/tutorial:sha-${SHORT_SHA}"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+          echo "cpu=${IMAGE}/tutorial-buildcache:cpu-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "gpu=${IMAGE}/tutorial-buildcache:gpu-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Substituting the two builder stages means nothing is recompiled here:
+      # only the final runtime stage runs.
+      - name: Assemble and push tutorial image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: containers/tutorial/Dockerfile
+          target: tutorial
+          build-contexts: |
+            build-cpu=docker-image://${{ steps.tags.outputs.cpu }}
+            build-gpu=docker-image://${{ steps.tags.outputs.gpu }}
+          tags: ${{ steps.tags.outputs.tags }}
+          push: >-
+            ${{ github.event_name != 'pull_request' ||
+                github.event.pull_request.head.repo.full_name == github.repository }}
