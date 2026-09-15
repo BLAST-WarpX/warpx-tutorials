@@ -320,13 +320,25 @@ RUN cmake -S /tmp/warpx-src -B /tmp/warpx-build \
  && rm -rf /tmp/warpx-build
 
 # ImpactX, reusing this flavor's AMReX and pyAMReX, the shared openPMD-api,
-# and the WarpX source tree as ABLASTR. FFT stays off: the only ImpactX
-# tutorial sets simulation.space_charge = False.
+# and - at runtime - WarpX's ABLASTR.
+# ImpactX 26.09 cannot build against an installed ABLASTR: WarpX 26.09 installs
+# no ABLASTR headers or CMake package, and ImpactX's pre-installed-ABLASTR path
+# stops with "Not yet supported!". So it compiles its own copy from the WarpX
+# source tree, and that copy must not replace the libablastr_3d.so warpx.3d was
+# linked against (it did once, and warpx.3d then failed at its first FFT solve
+# with "undefined symbol: ablastr::fields::computePhiIGF"). ImpactX is installed
+# into a scratch prefix and only files WarpX did not already install are copied
+# over, so the shipped libablastr_3d.so is WarpX's and libimpactx resolves to it
+# through its RPATH. The build fails if ImpactX would overwrite any other
+# binary or library.
+# ImpactX_FFT=ON keeps ImpactX's compiled code consistent with that library,
+# which is built with ABLASTR_FFT=ON, and enables ImpactX's FFT space charge and
+# CSR solvers.
 RUN git clone --branch ${IMPACTX_VERSION} --depth 1 \
         https://github.com/BLAST-ImpactX/impactx.git /tmp/impactx-src \
  && cmake -S /tmp/impactx-src -B /tmp/impactx-build \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_PREFIX=/tmp/impactx-install \
         -DCMAKE_INSTALL_RPATH="${PREFIX}/lib;/opt/deps/lib" \
         -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
         -DBUILD_SHARED_LIBS=ON \
@@ -335,15 +347,38 @@ RUN git clone --branch ${IMPACTX_VERSION} --depth 1 \
         -DImpactX_pyamrex_internal=OFF \
         -DImpactX_openpmd_internal=OFF \
         -DImpactX_COMPUTE=OMP \
-        -DImpactX_FFT=OFF \
+        -DImpactX_FFT=ON \
         -DImpactX_MPI=OFF \
         -DImpactX_PYTHON=ON \
         -DImpactX_PYTHON_IPO=OFF \
         -DPython_EXECUTABLE=${VENV}/bin/python \
  && cmake --build /tmp/impactx-build --target install -j ${NJOBS} \
+ && cd /tmp/impactx-install \
+ && collisions=$(find . \( -type f -o -type l \) | while read -r f; do \
+        if [ -e "${PREFIX}/$f" ] || [ -L "${PREFIX}/$f" ]; then echo "$f"; fi; \
+    done) \
+ && unexpected=$(echo "$collisions" | grep -E '^\./(bin/|lib/[^/]*\.so)' | grep -v '^\./lib/libablastr_' || true) \
+ && if [ -n "$unexpected" ]; then echo "ImpactX would overwrite: $unexpected"; exit 1; fi \
+ && echo "keeping WarpX's copies of: $(echo $collisions)" \
+ && echo "$collisions" | while read -r f; do [ -z "$f" ] || rm -f "$f"; done \
+ && cp -a /tmp/impactx-install/. ${PREFIX}/ \
  && cmake --build /tmp/impactx-build --target pip_install -j ${NJOBS} \
  && ln -s ${PREFIX}/bin/impactx.* ${PREFIX}/bin/impactx \
- && rm -rf /tmp/impactx-src /tmp/impactx-build /tmp/warpx-src
+ && cd / \
+ && rm -rf /tmp/impactx-src /tmp/impactx-build /tmp/impactx-install /tmp/warpx-src
+
+# Fail the build if any installed binary or library has unresolved symbols.
+# Plain ldd only reports missing libraries; ldd -r also resolves symbols, which
+# catches one project's install replacing another's same-named library with an
+# incompatible build. Python C-API symbols in pybind modules are expected to be
+# unresolved outside an interpreter and are skipped.
+RUN undefined=$(for f in ${PREFIX}/bin/* ${PREFIX}/lib/*.so*; do \
+        [ -f "$f" ] && [ ! -L "$f" ] || continue; \
+        ldd -r "$f" 2>&1 | grep "undefined symbol" | grep -vE "undefined symbol: _?Py" | sed "s|^|$f: |"; \
+    done) \
+ && if [ -n "$undefined" ]; then echo "$undefined"; exit 1; fi \
+ && echo "no unresolved symbols in ${PREFIX}" \
+ && ${VENV}/bin/python -c "import amrex.space3d, pywarpx, impactx; print('imports ok: amrex', amrex.space3d.__version__, 'impactx', impactx.__version__)"
 
 # Build-time leftovers. Headers and CMake/pkg-config metadata are only needed
 # by the builds above, which are done. The *_pybind*.so are Python extension
@@ -522,7 +557,7 @@ RUN git clone --branch ${IMPACTX_VERSION} --depth 1 \
         https://github.com/BLAST-ImpactX/impactx.git /tmp/impactx-src \
  && cmake -S /tmp/impactx-src -B /tmp/impactx-build \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_PREFIX=/tmp/impactx-install \
         -DCMAKE_INSTALL_RPATH="${PREFIX}/lib;/opt/deps/lib" \
         -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
         -DBUILD_SHARED_LIBS=ON \
@@ -532,15 +567,38 @@ RUN git clone --branch ${IMPACTX_VERSION} --depth 1 \
         -DImpactX_pyamrex_internal=OFF \
         -DImpactX_openpmd_internal=OFF \
         -DImpactX_COMPUTE=CUDA \
-        -DImpactX_FFT=OFF \
+        -DImpactX_FFT=ON \
         -DImpactX_MPI=OFF \
         -DImpactX_PYTHON=ON \
         -DImpactX_PYTHON_IPO=OFF \
         -DPython_EXECUTABLE=${VENV}/bin/python \
  && cmake --build /tmp/impactx-build --target install -j ${NJOBS} \
+ && cd /tmp/impactx-install \
+ && collisions=$(find . \( -type f -o -type l \) | while read -r f; do \
+        if [ -e "${PREFIX}/$f" ] || [ -L "${PREFIX}/$f" ]; then echo "$f"; fi; \
+    done) \
+ && unexpected=$(echo "$collisions" | grep -E '^\./(bin/|lib/[^/]*\.so)' | grep -v '^\./lib/libablastr_' || true) \
+ && if [ -n "$unexpected" ]; then echo "ImpactX would overwrite: $unexpected"; exit 1; fi \
+ && echo "keeping WarpX's copies of: $(echo $collisions)" \
+ && echo "$collisions" | while read -r f; do [ -z "$f" ] || rm -f "$f"; done \
+ && cp -a /tmp/impactx-install/. ${PREFIX}/ \
  && cmake --build /tmp/impactx-build --target pip_install -j ${NJOBS} \
  && ln -s ${PREFIX}/bin/impactx.* ${PREFIX}/bin/impactx \
- && rm -rf /tmp/impactx-src /tmp/impactx-build /tmp/warpx-src
+ && cd / \
+ && rm -rf /tmp/impactx-src /tmp/impactx-build /tmp/impactx-install /tmp/warpx-src
+
+# Fail the build if any installed binary or library has unresolved symbols.
+# Plain ldd only reports missing libraries; ldd -r also resolves symbols, which
+# catches one project's install replacing another's same-named library with an
+# incompatible build. Python C-API symbols in pybind modules are expected to be
+# unresolved outside an interpreter and are skipped.
+RUN undefined=$(for f in ${PREFIX}/bin/* ${PREFIX}/lib/*.so*; do \
+        [ -f "$f" ] && [ ! -L "$f" ] || continue; \
+        ldd -r "$f" 2>&1 | grep "undefined symbol" | grep -vE "undefined symbol: _?Py" | sed "s|^|$f: |"; \
+    done) \
+ && if [ -n "$undefined" ]; then echo "$undefined"; exit 1; fi \
+ && echo "no unresolved symbols in ${PREFIX}" \
+ && ${VENV}/bin/python -c "import amrex.space3d, pywarpx, impactx; print('imports ok: amrex', amrex.space3d.__version__, 'impactx', impactx.__version__)"
 
 RUN rm -rf ${PREFIX}/include ${PREFIX}/lib/cmake ${PREFIX}/lib/pkgconfig \
  && rm -f ${PREFIX}/lib/*.a \

@@ -90,7 +90,9 @@ code and per dimensionality.
 WarpX is built for 1D, 2D, RZ and 3D with `WarpX_FFT=ON` (four tutorial
 inputs use `warpx.poisson_solver = fft`; RZ with FFT is what needs BLAS++ and
 LAPACK++), QED table generation, and without MPI — no tutorial runs
-multi-rank.
+multi-rank. ImpactX is built with FFT as well, which enables its FFT-based
+space charge and CSR solvers. ImpactX compiles its own copy of ABLASTR, but the
+image ships only WarpX's `libablastr_3d.so`, which ImpactX uses at runtime.
 
 ### Known limitations
 
