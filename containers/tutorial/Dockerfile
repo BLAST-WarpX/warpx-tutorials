@@ -253,11 +253,18 @@ RUN AMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/dep
 # only ever a kernel. imageio-ffmpeg (a ~77 MB bundled encoder) likewise: the
 # notebooks that write libx264 mp4 are analysis notebooks and run on the CPU
 # kernel.
+# tornado<6.5.9: Tornado 6.5.9 changed StaticFileHandler in a way jupyter_server
+# 2.21's FileFindHandler does not handle, so every static file request fails
+# with "'FileFindHandler' object has no attribute 'allowed_symlink_directory'"
+# and JupyterLab loads as a blank page. The pin sits in this venv only, because
+# it is the one running the server. Drop it once Tornado or jupyter_server ships
+# a fix: tornadoweb/tornado#3724, jupyterlab/jupyterlab#19767.
 RUN python3 -m venv ${VENV} \
  && ${VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
  && ${VENV}/bin/pip install --no-cache-dir \
         imageio-ffmpeg \
         jupyterlab \
+        "tornado<6.5.9" \
  && ${VENV}/bin/python -c "import site, sys, pathlib; v=f'python{sys.version_info.major}.{sys.version_info.minor}'; pathlib.Path(site.getsitepackages()[0], 'shared-deps.pth').write_text(f'/opt/venv/lib/{v}/site-packages\n/opt/deps/python\n')" \
  && ${VENV}/bin/python -c "import openpmd_api, openpmd_viewer, numpy, scipy, matplotlib, ipykernel; print('shared stack visible')"
 
