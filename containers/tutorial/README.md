@@ -4,7 +4,16 @@ A Docker image that serves the WarpX tutorials as a browser-based **JupyterLab**
 session: notebooks, a terminal, and ready-to-use CPU and CUDA environments with
 WarpX and ImpactX.
 
-## Run it locally
+## Run it
+
+The image is published on GitHub's container registry and needs no login:
+
+```bash
+docker pull ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest
+docker run --rm -p 127.0.0.1:3000:3000 ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest
+```
+
+To build it yourself instead, from the repository root:
 
 ```bash
 docker build -f containers/tutorial/Dockerfile -t warpx-tutorial:local .
@@ -43,8 +52,17 @@ GPU use requires an NVIDIA GPU and the NVIDIA Container Toolkit. Start the
 image with GPU access when available:
 
 ```bash
-docker run --rm --gpus all -p 127.0.0.1:3000:3000 warpx-tutorial:local
+docker run --rm --gpus all -p 127.0.0.1:3000:3000 ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest
 ```
+
+The CUDA build targets compute capability 7.5 (`sm_75`, e.g. the T4 in AWS
+g4dn instances) and runs on 7.5 and newer GPUs. On 8.0 and newer (Ampere and
+later) the driver first compiles the GPU kernels for that architecture, so the
+first GPU run in a new container starts noticeably slower, by one to two
+minutes in our tests. The result is cached inside the container: later runs in
+the same container start normally, but with `--rm` every new container compiles
+again. To avoid this for a specific GPU, build the image yourself with, e.g.,
+`--build-arg CUDAARCHS=86`.
 
 ## What is inside
 
@@ -85,9 +103,9 @@ multi-rank.
 ## Automated builds
 
 `.github/workflows/tutorial-docker-image.yml` compiles the CPU and GPU flavors
-in two parallel jobs. Measured cold, the CPU job takes about 55 min and the
-CUDA job 3 h 40–50 min, both within GitHub's 6 h job limit. Each publishes its
-installed trees as a scratch image
+in two parallel jobs. Measured cold, the CPU job takes 55–70 min and the CUDA
+job 3–4 h, both within GitHub's 6 h job limit. Each publishes its installed
+trees as a scratch image
 (`tutorial-buildcache:<flavor>-<sha>`), and a short assemble job composes the
 final image from them using BuildKit build contexts. On `main` the result is
 pushed to `ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest` (plus a
