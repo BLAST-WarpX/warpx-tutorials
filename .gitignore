@@ -60,3 +60,8 @@ episodes/files/us-fcc-2026/tutorial_3/warpx_read/
 episodes/files/us-fcc-2026/tutorial_3/warpx_dump/
 episodes/files/us-fcc-2026/tutorial_3/warpx_runtime_input.txt
 episodes/files/us-fcc-2026/tutorial_3/warpx_used_inputs_tutorial_3.txt
+
+# Generated LLNL HPC 2026 tutorial data
+episodes/files/llnl-hpc-2026/**/diags/
+episodes/files/llnl-hpc-2026/**/warpx_used_inputs.txt
+episodes/files/llnl-hpc-2026/**/warpx_bunch.npz
