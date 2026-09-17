@@ -1,0 +1,135 @@
+####################
+### MY CONSTANTS ###
+####################
+# Laser-wakefield acceleration (LWFA) stage, loosely modeled on the
+# geometry of LBNL BELLA Center's Hundred Terawatt Undulator (HTU)
+# beamline: a self-injected, quasi-monoenergetic electron bunch is
+# produced by a downramp density transition and then accelerated in the
+# following lower-density plateau.
+#
+# These are TUTORIAL-SCALE parameters: the real HTU laser delivers about
+# 2.5 J in <40 fs (100 TW class) onto a several-mm gas jet. Reproducing
+# that exactly would need a much bigger box and a much longer run than
+# fits in a hands-on tutorial. Instead we use a higher plasma density
+# (shorter dephasing length) so that the *same qualitative regime*
+# (self-injection at a density downramp, quasi-monoenergetic acceleration
+# to several tens of MeV) is reached in minutes on a laptop.
+
+my_constants.pico  = 1.e-12
+my_constants.nano  = 1.e-9
+my_constants.micro = 1.e-6
+my_constants.femto = 1.e-15
+
+# LASER
+my_constants.lambda0 = 0.8*micro         # laser wavelength
+my_constants.a0       = 3.0              # normalized vector potential
+my_constants.w0       = 2.7*micro        # laser waist, matched to n_up: w0 ~ 2*sqrt(a0)/kp
+my_constants.tau      = 8.*femto         # profile_duration (E ~ exp(-(t/tau)^2))
+my_constants.z_foc    = 20.*micro        # focal distance from the antenna
+my_constants.z_antenna = 0.*micro        # antenna position (laser injection plane)
+my_constants.t_peak   = z_foc/clight     # time at which the laser peaks at the antenna
+
+# PLASMA: downramp injection.
+# Density is a sigmoid transition from n_up (injection region) down to
+# n_down (acceleration region), similar to Geddes et al. downramp
+# injection. Electrons are trapped near the transition and then
+# accelerated over the lower-density plateau that follows.
+my_constants.n_up      = 4.e19*1.e6      # upstream (injection) density [m^-3], from 4e19 cm^-3
+my_constants.n_down     = 1.e19*1.e6     # downstream (acceleration) density [m^-3], from 1e19 cm^-3
+my_constants.z_entrance = 10.*micro      # start of the initial up-ramp from vacuum
+my_constants.L_entrance = 5.*micro       # length of the initial up-ramp from vacuum
+my_constants.z_transition = 40.*micro    # center of the downramp injection transition (a few lambda_p downstream, so the wake is fully formed)
+my_constants.L_transition = 3.*micro     # width of the downramp injection transition
+my_constants.z_plasma_end = 350.*micro   # end of the plasma (start of vacuum exit ramp)
+my_constants.L_exit     = 10.*micro      # length of the exit down-ramp to vacuum
+
+#################
+### GEOMETRY  ###
+#################
+my_constants.Lx = 24.*micro
+my_constants.Ly = 24.*micro
+my_constants.Lz = 40.*micro
+my_constants.z_margin = 10.*micro        # room ahead of the antenna, so the laser has space to exist before the upstream PML
+my_constants.nx = 48
+my_constants.ny = 48
+my_constants.nz = 256
+
+warpx.used_inputs_file = warpx_used_inputs.txt
+
+##########################
+### GENERAL PARAMETERS ###
+##########################
+max_step = 3000
+amr.n_cell = nx ny nz
+amr.max_grid_size = 128
+amr.blocking_factor = 16
+amr.max_level = 0
+geometry.dims = 3
+geometry.prob_lo = -0.5*Lx -0.5*Ly -Lz+z_antenna
+geometry.prob_hi =  0.5*Lx  0.5*Ly  z_antenna+z_margin
+
+###########################
+### BOUNDARY CONDITIONS ###
+###########################
+boundary.field_lo = periodic periodic pml
+boundary.field_hi = periodic periodic pml
+boundary.particle_lo = periodic periodic absorbing
+boundary.particle_hi = periodic periodic absorbing
+
+################
+### NUMERICS ###
+################
+algo.maxwell_solver = ckc
+warpx.cfl = 0.99
+warpx.use_filter = 1
+warpx.do_dive_cleaning = 0
+algo.particle_shape = 3
+warpx.do_moving_window = 1
+warpx.moving_window_dir = z
+warpx.moving_window_v = 1.0        # units of clight
+
+#################
+### PARTICLES ###
+#################
+particles.species_names = electrons
+
+electrons.charge = -q_e
+electrons.mass = m_e
+electrons.injection_style = "NUniformPerCell"
+electrons.num_particles_per_cell_each_dim = 1 1 1
+electrons.xmin = -0.5*Lx
+electrons.xmax =  0.5*Lx
+electrons.ymin = -0.5*Ly
+electrons.ymax =  0.5*Ly
+electrons.zmin = z_entrance
+electrons.zmax = z_plasma_end + L_exit
+electrons.profile = parse_density_function
+# Entrance ramp (vacuum -> n_up) * downramp injection transition (n_up -> n_down) * exit ramp (n_down -> vacuum)
+electrons.density_function(x,y,z) = "n_up * 0.5*(1 + tanh((z-z_entrance)/L_entrance)) * (1 - 0.5*(1-n_down/n_up)*(1 + tanh((z-z_transition)/L_transition))) * 0.5*(1 - tanh((z-z_plasma_end)/L_exit))"
+electrons.momentum_distribution_type = "at_rest"
+electrons.do_continuous_injection = 1
+
+#################
+### LASER     ###
+#################
+lasers.names        = laser1
+laser1.profile      = Gaussian
+laser1.position     = 0. 0. z_antenna
+laser1.direction    = 0. 0. 1.
+laser1.polarization = 0. 1. 0.
+laser1.a0           = a0
+laser1.profile_waist = w0
+laser1.profile_duration = tau
+laser1.profile_t_peak = t_peak
+laser1.profile_focal_distance = z_foc
+laser1.wavelength = lambda0
+
+##################
+### DIAGNOSTICS ##
+##################
+diagnostics.diags_names = diag1
+diag1.intervals = 300
+diag1.diag_type = Full
+diag1.fields_to_plot = Ex Ey Ez Bx By Bz jx jy jz rho
+diag1.format = openpmd
+diag1.species = electrons
