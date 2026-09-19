@@ -1,65 +1,71 @@
-####################
-### MY CONSTANTS ###
-####################
-# Laser-wakefield acceleration (LWFA) stage, loosely modeled on the
-# geometry of LBNL BELLA Center's Hundred Terawatt Undulator (HTU)
-# beamline: a self-injected, quasi-monoenergetic electron bunch is
-# produced by a downramp density transition and then accelerated in the
-# following lower-density plateau.
-#
-# These are TUTORIAL-SCALE parameters: the real HTU laser delivers about
-# 2.5 J in <40 fs (100 TW class) onto a several-mm gas jet. Reproducing
-# that exactly would need a much bigger box and a much longer run than
-# fits in a hands-on tutorial. Instead we use a higher plasma density
-# (shorter dephasing length) so that the *same qualitative regime*
-# (self-injection at a density downramp, quasi-monoenergetic acceleration
-# to several tens of MeV) is reached in minutes on a laptop.
+# Reduced 3D wakefield demonstration, independent of the ImpactX HTU example.
+# Small, dense plasma and short pulse for visualization on an 8 GB GPU.
+# Demonstrates wake excitation/downramp dynamics, not an HTU source prediction.
+# No required output beam energy and no automatic handoff to ImpactX.
+# See HTU_PARAMETERS.md for assumptions, plots and runtime measurements.
 
-my_constants.pico  = 1.e-12
-my_constants.nano  = 1.e-9
 my_constants.micro = 1.e-6
 my_constants.femto = 1.e-15
+my_constants.cfl = 0.99
+my_constants.moving_window_v = 1.0
 
-# LASER
-my_constants.lambda0 = 0.8*micro         # laser wavelength
-my_constants.a0       = 3.0              # normalized vector potential
-my_constants.w0       = 2.7*micro        # laser waist, matched to n_up: w0 ~ 2*sqrt(a0)/kp
-my_constants.tau      = 8.*femto         # profile_duration (E ~ exp(-(t/tau)^2))
-my_constants.z_foc    = 20.*micro        # focal distance from the antenna
-my_constants.z_antenna = 0.*micro        # antenna position (laser injection plane)
-my_constants.t_peak   = z_foc/clight     # time at which the laser peaks at the antenna
+# Compact Gaussian driver. Widths below are INTENSITY FWHM.
+# a0 is the independent strength knob; energy is derived consistently.
+my_constants.lambda0 = 0.8*micro
+my_constants.a0 = 3.0
+my_constants.spot_fwhm = 3.*micro*sqrt(2*log(2))
+my_constants.duration_fwhm = 6.*femto
+my_constants.w0 = spot_fwhm/sqrt(2*log(2))
+my_constants.tau = duration_fwhm/sqrt(2*log(2))
+my_constants.peak_intensity = 0.5*epsilon0*clight*(a0*m_e*clight*(2*pi*clight/lambda0)/q_e)^2
+my_constants.peak_power = peak_intensity*pi*w0*w0/2
+my_constants.energy = peak_power*tau*sqrt(pi/2)
+my_constants.z_antenna = 0.
+my_constants.z_foc = 10.*micro
+my_constants.t_peak = 3*tau
 
-# PLASMA: downramp injection.
-# Density is a sigmoid transition from n_up (injection region) down to
-# n_down (acceleration region), similar to Geddes et al. downramp
-# injection. Electrons are trapped near the transition and then
-# accelerated over the lower-density plateau that follows.
-my_constants.n_up      = 4.e19*1.e6      # upstream (injection) density [m^-3], from 4e19 cm^-3
-my_constants.n_down     = 1.e19*1.e6     # downstream (acceleration) density [m^-3], from 1e19 cm^-3
-my_constants.z_entrance = 10.*micro      # start of the initial up-ramp from vacuum
-my_constants.L_entrance = 5.*micro       # length of the initial up-ramp from vacuum
-my_constants.z_transition = 40.*micro    # center of the downramp injection transition (a few lambda_p downstream, so the wake is fully formed)
-my_constants.L_transition = 3.*micro     # width of the downramp injection transition
-my_constants.z_plasma_end = 350.*micro   # end of the plasma (start of vacuum exit ramp)
-my_constants.L_exit     = 10.*micro      # length of the exit down-ramp to vacuum
+# Simple finite target: entrance ramp, high plateau, sharp density drop,
+# low plateau, exit ramp. All densities are electron number densities [m^-3].
+my_constants.n_up = 4.e25
+my_constants.n_down = 2.e25
+my_constants.z_entrance = 0.
+my_constants.L_entrance = 3.*micro
+my_constants.z_transition = 20.*micro
+my_constants.L_transition = 2.*micro
+my_constants.z_plasma_end = 50.*micro  # START of the exit ramp
+my_constants.L_exit = 5.*micro
 
 #################
 ### GEOMETRY  ###
 #################
-my_constants.Lx = 24.*micro
-my_constants.Ly = 24.*micro
-my_constants.Lz = 40.*micro
-my_constants.z_margin = 10.*micro        # room ahead of the antenna, so the laser has space to exist before the upstream PML
-my_constants.nx = 48
-my_constants.ny = 48
-my_constants.nz = 256
-
-warpx.used_inputs_file = warpx_used_inputs.txt
+# Small moving box; dz = 0.0390625 um (20.48 cells per laser wavelength).
+my_constants.Lx = 16.*micro
+my_constants.Ly = 16.*micro
+my_constants.Lz = 16.*micro
+my_constants.z_margin = 4.*micro
+my_constants.nx = 32
+my_constants.ny = 32
+my_constants.nz = 512
 
 ##########################
 ### GENERAL PARAMETERS ###
 ##########################
-max_step = 3000
+warpx.verbose = 1
+warpx.limit_verbose_step = 100
+
+# CKC timestep is cfl*min(dx,dy,dz)/c. Stop after the rear of the
+# moving box clears the entire target, retaining the exiting bunch.
+my_constants.dz = (Lz+z_margin)/nz
+my_constants.dt = cfl*min(Lx/nx,min(Ly/ny,dz))/clight
+my_constants.t_sim = (z_plasma_end+L_exit+Lz-z_antenna)/(moving_window_v*clight)
+max_step = ceil(t_sim/dt)
+
+# Start the GPU pool at 1 GiB instead of reserving 75% of device memory.
+# This is a growing pool, not a memory cap. Avoid host-memory spillover.
+amrex.the_arena_init_size = 1073741824
+amrex.the_arena_is_managed = 0
+amrex.abort_on_out_of_gpu_memory = 1
+
 amr.n_cell = nx ny nz
 amr.max_grid_size = 128
 amr.blocking_factor = 16
@@ -71,27 +77,27 @@ geometry.prob_hi =  0.5*Lx  0.5*Ly  z_antenna+z_margin
 ###########################
 ### BOUNDARY CONDITIONS ###
 ###########################
-boundary.field_lo = periodic periodic pml
-boundary.field_hi = periodic periodic pml
-boundary.particle_lo = periodic periodic absorbing
-boundary.particle_hi = periodic periodic absorbing
+boundary.field_lo = pml pml pml
+boundary.field_hi = pml pml pml
+boundary.particle_lo = absorbing absorbing absorbing
+boundary.particle_hi = absorbing absorbing absorbing
 
 ################
 ### NUMERICS ###
 ################
 algo.maxwell_solver = ckc
-warpx.cfl = 0.99
+warpx.cfl = cfl
 warpx.use_filter = 1
 warpx.do_dive_cleaning = 0
-algo.particle_shape = 3
+algo.particle_shape = 1
 warpx.do_moving_window = 1
 warpx.moving_window_dir = z
-warpx.moving_window_v = 1.0        # units of clight
+warpx.moving_window_v = moving_window_v   # units of clight
 
 #################
 ### PARTICLES ###
 #################
-particles.species_names = electrons
+particles.species_names = electrons helium
 
 electrons.charge = -q_e
 electrons.mass = m_e
@@ -102,12 +108,32 @@ electrons.xmax =  0.5*Lx
 electrons.ymin = -0.5*Ly
 electrons.ymax =  0.5*Ly
 electrons.zmin = z_entrance
-electrons.zmax = z_plasma_end + L_exit
+electrons.zmax = z_plasma_end+L_exit
 electrons.profile = parse_density_function
-# Entrance ramp (vacuum -> n_up) * downramp injection transition (n_up -> n_down) * exit ramp (n_down -> vacuum)
-electrons.density_function(x,y,z) = "n_up * 0.5*(1 + tanh((z-z_entrance)/L_entrance)) * (1 - 0.5*(1-n_down/n_up)*(1 + tanh((z-z_transition)/L_transition))) * 0.5*(1 - tanh((z-z_plasma_end)/L_exit))"
+# Three factors: entrance fraction * plateau/downramp density * exit fraction.
+# Each clipped ramp runs from 0 to 1; the product vanishes outside the target.
+electrons.density_function(x,y,z) = "max(0,min(1,(z-z_entrance)/L_entrance)) * (n_up+(n_down-n_up)*max(0,min(1,(z-z_transition)/L_transition))) * max(0,min(1,(z_plasma_end+L_exit-z)/L_exit))"
 electrons.momentum_distribution_type = "at_rest"
 electrons.do_continuous_injection = 1
+
+# Fully preionized helium approximation: stationary He2+ neutralizes electrons.
+# Equal particle locations/shapes ensure initial charge cancellation.
+helium.charge = 2*q_e
+helium.mass = 4*m_p
+helium.injection_style = NUniformPerCell
+helium.num_particles_per_cell_each_dim = 1 1 1
+helium.xmin = -0.5*Lx
+helium.xmax = 0.5*Lx
+helium.ymin = -0.5*Ly
+helium.ymax = 0.5*Ly
+helium.zmin = z_entrance
+helium.zmax = z_plasma_end+L_exit
+helium.profile = parse_density_function
+helium.density_function(x,y,z) = "0.5*(max(0,min(1,(z-z_entrance)/L_entrance)) * (n_up+(n_down-n_up)*max(0,min(1,(z-z_transition)/L_transition))) * max(0,min(1,(z_plasma_end+L_exit-z)/L_exit)))"
+helium.momentum_distribution_type = at_rest
+helium.do_continuous_injection = 1
+helium.do_not_push = 1
+helium.do_not_gather = 1
 
 #################
 ### LASER     ###
@@ -128,8 +154,11 @@ laser1.wavelength = lambda0
 ### DIAGNOSTICS ##
 ##################
 diagnostics.diags_names = diag1
-diag1.intervals = 300
+# Frequent snapshots to see the wake evolve, including at the density drop.
+diag1.intervals = 200
+diag1.dump_last_timestep = 1
 diag1.diag_type = Full
-diag1.fields_to_plot = Ex Ey Ez Bx By Bz jx jy jz rho
+diag1.fields_to_plot = Ey Ez rho_electrons
 diag1.format = openpmd
 diag1.species = electrons
+diag1.file_prefix = diags/diag1

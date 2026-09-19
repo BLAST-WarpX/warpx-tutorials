@@ -1072,7 +1072,7 @@ $$
 For the supplied parameters, $\Phi\simeq31.34$: the crossing angle therefore
 dominates the effective horizontal overlap.
 
-![The crossing angle increases the effective horizontal overlap of the two bunches.](./files/us-fcc-2026/tutorial_1/img/tilted_beam_ellipse.png)
+![The crossing angle increases the effective horizontal overlap of the two bunches.](./files/us-fcc-2026/tutorial_1/img/tilted_beam_ellipse.png){alt="The crossing angle increases the effective horizontal overlap of the two bunches."}
 
 The notebook evaluates the linearized beam-beam parameters
 
@@ -1489,9 +1489,9 @@ with the Twiss functions from the other two codes. Because the codes record
 values at different longitudinal locations, any quantitative comparison would
 first require an explicit matching or interpolation convention.
 
-![Horizontal beta functions from MAD-X, ImpactX, and Xsuite over the first 2 km of the FCC-ee lattice.](./files/us-fcc-2026/tutorial_2/img/beta-x-first-2km.png)
+![Horizontal beta functions from MAD-X, ImpactX, and Xsuite over the first 2 km of the FCC-ee lattice.](./files/us-fcc-2026/tutorial_2/img/beta-x-first-2km.png){alt="Horizontal beta functions from MAD-X, ImpactX, and Xsuite over the first 2 km of the FCC-ee lattice."}
 
-![Vertical beta functions from MAD-X, ImpactX, and Xsuite over the first 2 km of the FCC-ee lattice.](./files/us-fcc-2026/tutorial_2/img/beta-y-first-2km.png)
+![Vertical beta functions from MAD-X, ImpactX, and Xsuite over the first 2 km of the FCC-ee lattice.](./files/us-fcc-2026/tutorial_2/img/beta-y-first-2km.png){alt="Vertical beta functions from MAD-X, ImpactX, and Xsuite over the first 2 km of the FCC-ee lattice."}
 
 The curves from the tested setup overlap closely in both planes. The final
 ImpactX beta functions also return to within about 0.1 percent of their
@@ -1917,7 +1917,7 @@ Open [the Tutorial 3 notebook](./files/us-fcc-2026/tutorial_3/tutorial_3_plots.i
 and run its cells after producing one or more output directories. It plots the
 beam moments, the handoff checks, and windowed centroid spectra.
 
-![Evolution of normalized beam moments for the arc-only, classical WarpX, and WarpX-with-beamstrahlung runs.](./files/us-fcc-2026/tutorial_3/img/beam-moment-evolution.png)
+![Evolution of normalized beam moments for the arc-only, classical WarpX, and WarpX-with-beamstrahlung runs.](./files/us-fcc-2026/tutorial_3/img/beam-moment-evolution.png){alt="Evolution of normalized beam moments for the arc-only, classical WarpX, and WarpX-with-beamstrahlung runs."}
 
 The following diagram illustrates the physical transverse displacement of the
 two beams at successive collision samples. In the $\sigma$ mode the beams move
@@ -1925,7 +1925,7 @@ together, whereas in the $\pi$ mode they move oppositely. The diagram's
 "Turn" labels are schematic: this tutorial records one superperiod and one IP
 encounter per sample, so four samples correspond to one full-ring turn.
 
-![Physical motion of two colliding bunches in the coherent sigma and pi modes at successive collision encounters.](./files/us-fcc-2026/tutorial_3/img/coherent-modes.png)
+![Physical motion of two colliding bunches in the coherent sigma and pi modes at successive collision encounters.](./files/us-fcc-2026/tutorial_3/img/coherent-modes.png){alt="Physical motion of two colliding bunches in the coherent sigma and pi modes at successive collision encounters."}
 
 Without beam-beam interaction, the centroid has one peak at the unperturbed
 superperiod tune. Two identical interacting beams instead have two coherent
