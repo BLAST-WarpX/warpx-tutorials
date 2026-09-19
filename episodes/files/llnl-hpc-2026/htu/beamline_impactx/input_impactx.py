@@ -1,20 +1,44 @@
-"""Define the HTU beamline lattice for ImpactX.
+#!/usr/bin/env python3
+"""ImpactX input: follow one example electron beam through fixed HTU magnets.
 
-This is a trimmed port of the HTU lattice used for LBNL BELLA Center's
-Hundred Terawatt Undulator (HTU) beamline modeling. It keeps only the
-``impactx`` element definitions (drifts, quadrupoles, dipoles, and
-beam-monitor screens at the same locations as the real diagnostics), and
-drops experiment-specific pieces that don't matter for this tutorial:
-steering-magnet currents (kickers ``S1``-``S4`` and ``VS1``-``VS8`` are
-kept in the lattice but hardcoded to zero current, since we have no
-control-system settings to plug in), and the screen image
-calibration/misalignment logic that requires an experiment configuration
-file.
+Run twice with --energy-MeV 100 and --energy-MeV 20, in separate output
+folders. Open ../htu_transport.ipynb to run both cases and analyze the results.
+All source and magnet settings are in this file. No plotting runs here.
 """
-
+import argparse
+from pathlib import Path
+import os
+import numpy as np
 from scipy.constants import c, e, m_e
 
-from impactx import elements
+MASS_MEV = m_e * c**2 / e / 1e6
+
+def make_bunch(energy_MeV, count=5000, seed=2026):
+    """Same sampled geometry/angles and relative energy spread in both cases.
+
+    An illustrative Gaussian source, not a measured or matched HTU bunch.
+    Coordinates are already at fixed s in ImpactX conventions.
+    """
+    if not np.isfinite(energy_MeV) or energy_MeV <= 0 or count < 2:
+        raise ValueError("Energy must be positive and finite; count must be >= 2.")
+    rng = np.random.default_rng(seed)
+    samples = rng.normal(size=(6, count))
+    samples -= samples.mean(axis=1, keepdims=True)
+    gamma0 = 1 + energy_MeV / MASS_MEV
+    bg0 = np.sqrt(gamma0**2 - 1)
+    gamma = 1 + energy_MeV * (1 + 0.01 * samples[5]) / MASS_MEV
+    if np.any(gamma <= 1):
+        raise ValueError("Sampled kinetic energy must be positive.")
+    bg = np.sqrt(gamma**2 - 1)
+    # Choose actual slopes, then normalize momenta by reference beta*gamma.
+    xp, yp = 2e-3 * samples[3], 2e-3 * samples[4]
+    pz = bg / np.sqrt(1 + xp**2 + yp**2)
+    return dict(dx=2e-6*samples[0], dy=2e-6*samples[1],
+                dt=3e-6*samples[2], dpx=xp*pz/bg0, dpy=yp*pz/bg0,
+                dpt=-(gamma-gamma0)/bg0, w=np.full(count, 80e-12/e/count),
+                qm_eev=-1/(MASS_MEV*1e6), ref_kin_energy_MeV=energy_MeV,
+                bunch_charge_C=80e-12, source="synthetic Gaussian; independent of WarpX")
+
 
 # Reference kinetic energy used for magnetic rigidity in this beamline, in eV.
 REFERENCE_ENERGY_EV = 100e6
@@ -177,7 +201,10 @@ def quadrupole(name, L, k1=None, current=None, design=None, bore_radius=None, B=
         Bgradient = peakfield_to_Bgradient(bore_radius, B)
     elif k1 is None:
         Bgradient = current_to_Bgradient(current, design)
-    return elements.ChrQuad(name=name, ds=L, k=-Bgradient, unit=1, nslice=20)
+    # Apply known bore radii at each slice. EMQ bores are unspecified here.
+    aperture = bore_radius if bore_radius is not None else 0.0
+    return elements.ChrQuad(name=name, ds=L, k=-Bgradient, unit=1,
+                            aperture_x=aperture, aperture_y=aperture, nslice=20)
 
 
 def drift(name, L):
@@ -221,3 +248,60 @@ def dipole(name, L, angle=None, r56=None, bend=None, reference_energy_eV=REFEREN
 
     angle_deg = angle * 180.0 / math.pi
     return elements.ExactSbend(name=name, ds=L, phi=angle_deg, B=Bfield, nslice=10)
+
+
+def track(bunch):
+    from impactx import ImpactX
+    sim = ImpactX()
+    sim.particle_shape = 2
+    sim.space_charge = False
+    sim.slice_step_diagnostics = True
+    sim.init_grids()
+
+    ref = sim.particle_container().ref_particle()
+    ref.set_charge_qe(-1.0).set_mass_MeV(ELECTRON_MASS_MEV).set_kin_energy_MeV(
+        float(bunch["ref_kin_energy_MeV"])
+    )
+
+    pc = sim.particle_container()
+    pc.add_n_particles(
+        bunch["dx"],
+        bunch["dy"],
+        bunch["dt"],
+        bunch["dpx"],
+        bunch["dpy"],
+        bunch["dpt"],
+        float(bunch["qm_eev"]),
+        w=bunch["w"],
+    )
+
+    monitor = elements.BeamMonitor("monitor", backend="h5")
+    sim.lattice.extend([monitor, *get_lattice(), monitor])
+
+    sim.track_particles()
+    sim.finalize()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--energy-MeV', type=float, default=100.)
+    parser.add_argument('--particles', type=int, default=5000)
+    parser.add_argument('--output', type=Path, default=Path('impactx-output'),
+                        help='New output folder; must not already exist')
+    parser.add_argument('--bunch', type=Path,
+                        help='Optional converted WarpX NPZ; replaces the synthetic source')
+    args = parser.parse_args()
+    bunch = (dict(np.load(args.bunch)) if args.bunch else
+             make_bunch(args.energy_MeV, args.particles))
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    os.chdir(output)
+    # Import ImpactX only when running, so source settings can be inspected alone.
+    global elements
+    from impactx import elements
+    track(bunch)
+    print(f'Results: {output}')
+
+
+if __name__ == '__main__':
+    main()

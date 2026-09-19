@@ -51,7 +51,7 @@ conda create -n warpx -c conda-forge warpx
 conda activate warpx 
 ```
 
-::: note
+::: callout
 The first `warpx` (after `-n`) is the name of the conda environment; 
 the second `warpx` is the name of the package to be installed from the conda-forge channel.
 :::

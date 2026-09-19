@@ -240,10 +240,10 @@ Finite temperature tends to stabilize short-wavelength modes.
 
 ### Gallery
 
-![Magnetic field structures induced by the Weibel instability.](https://gist.github.com/user-attachments/assets/06318207-831b-4aa3-99bc-e4ca267fc8bc)
+![Magnetic field structures induced by the Weibel instability.](https://gist.github.com/user-attachments/assets/06318207-831b-4aa3-99bc-e4ca267fc8bc){alt="Magnetic field structures induced by the Weibel instability."}
 
 
-![Evolution of the energy stored in the electric and magnetic fields.](https://gist.github.com/user-attachments/assets/216dd776-ab5f-4fa0-a2b0-e5aecdaa0ae4)
+![Evolution of the energy stored in the electric and magnetic fields.](https://gist.github.com/user-attachments/assets/216dd776-ab5f-4fa0-a2b0-e5aecdaa0ae4){alt="Evolution of the energy stored in the electric and magnetic fields."}
 
 
 <iframe src="https://drive.google.com/file/d/1qWE7rHhq-UadaUbXK9gwWAPEeqd9e__3/preview" width="100%" height="500" allow="autoplay"></iframe>
