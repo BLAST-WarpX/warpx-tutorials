@@ -89,7 +89,7 @@ def to_global_t_from_ref_part_t(ref_part, dx, dy, dz, dpx, dpy, dpz):
 
 def to_s_from_t(ref_part, dx, dy, dz, dpx, dpy, dpz):  # data_arr_t):
     """
-    Transform from fixed-s to fixed-t coordinates
+    Transform from fixed-t to fixed-s coordinates
 
     This function takes particle bunch data relative to a reference particle
     at a fixed time t and returns data at a fixed longitudinal position s.
@@ -109,10 +109,10 @@ def to_s_from_t(ref_part, dx, dy, dz, dpx, dpy, dpz):  # data_arr_t):
     -------
     dxs: array-like, beam particle x-positions relative to reference particle at fixed s
     dys: array-like, beam particle y-positions relative to reference particle at fixed s
-    dt: array-like, beam particle time delay relative to reference particle at fixed s
+    dt: array-like, c times the particle time delay relative to the reference, in meters
     dpx: array-like, beam particle x-momenta relative to reference particle at fixed s
     dpy: array-like, beam particle y-momenta relative to reference particle at fixed s
-    dpz: array-like, beam particle t-momenta (-gamma) relative to reference particle at fixed s
+    dpt: array-like, negative gamma difference divided by reference beta*gamma at fixed s
     """
     ref_pz = ref_part.pz
     ref_pt = ref_part.pt
@@ -128,7 +128,7 @@ def to_s_from_t(ref_part, dx, dy, dz, dpx, dpy, dpz):  # data_arr_t):
 
 def to_t_from_s(ref_part, dx, dy, dt, dpx, dpy, dpt):  # data_arr_t):
     """
-    Transform from fixed-t to fixed-s coordinates
+    Transform from fixed-s to fixed-t coordinates
 
     This function takes particle bunch data relative to a reference particle
     at a fixed longitudinal position s and returns data at a fixed time t.

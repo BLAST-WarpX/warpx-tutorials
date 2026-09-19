@@ -1,32 +1,31 @@
 #!/usr/bin/env python3
 """Convert the WarpX LWFA output (lwfa_warpx) into an ImpactX bunch (beamline_impactx).
 
-WarpX and ImpactX cannot run in the same Python process (each calls its own
-AMReX/MPI init), so this script is a separate, in-between step: it reads the
+The workflow runs WarpX and ImpactX in separate processes to isolate their
+AMReX/MPI lifetimes. This script is an in-between step: it reads the
 self-injected electron bunch from the WarpX openPMD diagnostics, picks out
 the accelerated population with an energy cut, and writes the particle
 coordinates ImpactX needs (already transformed from WarpX's lab-frame,
 fixed-time convention to ImpactX's reference-relative, fixed-s convention)
-to a small ``.npz`` file that ``run_beamline_impactx.py`` loads directly.
+to a small ``.npz`` file that ``input_impactx.py`` loads directly.
 
 WarpX's ``momentum/x,y,z`` openPMD records are true SI momentum (mass *
 gamma * velocity), but ``openpmd_viewer``'s ``ux,uy,uz`` convenience
 quantities are that momentum normalized by ``m_e * c`` -- i.e. proper
-velocity, gamma*beta. ImpactX's reference-relative momenta (``px,py,pz``)
-use the exact same normalization (by the reference particle's mass), so for
-an electron bunch handed to an electron reference particle no unit
-conversion is needed here at all: WarpX's ``ux,uy,uz`` plug directly into
-the coordinate-transform utilities ImpactX ships for exactly this purpose.
+velocity, gamma*beta. The transform utilities then normalize relative
+momenta by the reference momentum. ImpactX's longitudinal coordinate is
+c*delta_t in meters, and its longitudinal momentum is -delta_gamma/(beta*gamma)_ref.
 """
 
 import argparse
 
 import numpy as np
 from openpmd_viewer import OpenPMDTimeSeries
-from scipy.constants import e
+from scipy.constants import c, e, m_e
 
-from htu_lattice import ELECTRON_MASS_MEV
 from transformation_utilities import to_ref_part_t_from_global_t, to_s_from_t
+
+ELECTRON_MASS_MEV = m_e * c**2 / e / 1e6
 
 
 class RefParticle:
@@ -52,17 +51,20 @@ def convert(diags_dir, energy_cut_MeV=20.0, iteration=None):
         Path to the WarpX ``diag1`` openPMD series directory (lwfa_warpx's
         ``diags/diag1``).
     energy_cut_MeV : float
-        Kinetic energy threshold, in MeV, used to separate the self-injected
-        accelerated bunch from the cold background plasma electrons.
+        Nonnegative kinetic energy threshold, in MeV, used to separate the
+        accelerated bunch from the background plasma. Only forward-going
+        electrons with positive weights are retained.
     iteration : int or None
         Which openPMD iteration to read. Defaults to the last one written.
 
     Returns
     -------
     dict with keys ``dx, dy, dt, dpx, dpy, dpt, w, qm_eev, ref_kin_energy_MeV``
-    -- everything ``run_beamline_impactx.py`` needs to build the ImpactX bunch.
+    -- everything ``input_impactx.py`` needs to build the ImpactX bunch.
     """
-    ts = OpenPMDTimeSeries(diags_dir)
+    if not np.isfinite(energy_cut_MeV) or energy_cut_MeV < 0:
+        raise ValueError("The kinetic-energy cut must be finite and nonnegative.")
+    ts = OpenPMDTimeSeries(str(diags_dir))
     it = ts.iterations[-1] if iteration is None else iteration
 
     x, y, z, ux, uy, uz, w = ts.get_particle(
@@ -71,13 +73,18 @@ def convert(diags_dir, energy_cut_MeV=20.0, iteration=None):
 
     gamma = np.sqrt(1.0 + ux**2 + uy**2 + uz**2)
     kinetic_energy_MeV = (gamma - 1.0) * ELECTRON_MASS_MEV
-    mask = kinetic_energy_MeV > energy_cut_MeV
+    if not len(w):
+        raise RuntimeError(f"No electrons in WarpX iteration {it}; check the run and diagnostic selection.")
+    if not all(np.all(np.isfinite(a)) for a in (x, y, z, ux, uy, uz, w)) or np.any(w < 0):
+        raise ValueError("WarpX particles contain nonfinite values or negative weights.")
+    # Fixed-s transport requires forward-going particles and nonzero weights.
+    mask = (kinetic_energy_MeV > energy_cut_MeV) & (uz > 0) & (w > 0)
     n_selected = int(mask.sum())
     if n_selected == 0:
         raise RuntimeError(
-            f"No electrons found above the {energy_cut_MeV} MeV energy cut "
+            f"No forward-going electrons found above the {energy_cut_MeV} MeV energy cut "
             f"at iteration {it}. Highest kinetic energy present: "
-            f"{kinetic_energy_MeV.max():.3f} MeV."
+            f"{kinetic_energy_MeV.max():.6g} MeV."
         )
 
     x, y, z, ux, uy, uz, w = (
@@ -90,12 +97,12 @@ def convert(diags_dir, energy_cut_MeV=20.0, iteration=None):
         w[mask],
     )
 
-    # Reference particle: mean position/momentum of the selected bunch, at
+    # Reference particle: weighted mean position/energy of the selected bunch, at
     # this fixed lab-frame time, moving purely along z.
-    ref_x = x.mean()
-    ref_y = y.mean()
-    ref_z = z.mean()
-    ref_gamma = gamma[mask].mean()
+    ref_x = np.average(x, weights=w)
+    ref_y = np.average(y, weights=w)
+    ref_z = np.average(z, weights=w)
+    ref_gamma = np.average(gamma[mask], weights=w)
     ref_pz = np.sqrt(ref_gamma**2 - 1.0)
     ref_kin_energy_MeV = (ref_gamma - 1.0) * ELECTRON_MASS_MEV
     ref_pt = -ref_gamma
@@ -120,13 +127,16 @@ def convert(diags_dir, energy_cut_MeV=20.0, iteration=None):
         ref_kin_energy_MeV=ref_kin_energy_MeV,
         bunch_charge_C=bunch_charge_C,
         n_selected=n_selected,
+        iteration=int(it),
+        energy_cut_MeV=energy_cut_MeV,
     )
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("diags_dir", help="WarpX openPMD series directory (e.g. ../lwfa_warpx/diags/diag1)")
-    parser.add_argument("output_npz", help="Output .npz file for run_beamline_impactx.py")
+    parser.add_argument("output_npz", help="Output .npz file for input_impactx.py")
+    parser.add_argument("--iteration", type=int, default=None, help="WarpX iteration (default: last written)")
     parser.add_argument(
         "--energy-cut-MeV",
         type=float,
@@ -135,7 +145,7 @@ def main():
     )
     args = parser.parse_args()
 
-    result = convert(args.diags_dir, energy_cut_MeV=args.energy_cut_MeV)
+    result = convert(args.diags_dir, energy_cut_MeV=args.energy_cut_MeV, iteration=args.iteration)
     np.savez(args.output_npz, **result)
 
     print(f"Selected {result['n_selected']} macroparticles above {args.energy_cut_MeV} MeV")
