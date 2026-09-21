@@ -17,6 +17,7 @@ my_constants.n0 = 1.e17          # electron density of each beam [m^-3]
 my_constants.T0 = 5.*q_e         # thermal energy of each beam [J], from 5 eV
 my_constants.v_te = sqrt(T0 / m_e)
 my_constants.beta0 = 0.1         # drift velocity of each beam, in units of c
+my_constants.gamma0 = 1 / sqrt(1 - beta0**2) 
 my_constants.omega_pe = sqrt(n0*q_e**2/(m_e*epsilon0))
 
 # BOX: sized to fit ~16 wavelengths of the fastest-growing mode,
@@ -27,7 +28,7 @@ my_constants.dx = Lx/nx
 
 # TIME: long enough for the instability to grow and saturate
 my_constants.cfl = 0.9
-my_constants.T = 100./omega_pe
+my_constants.T = 80./omega_pe
 my_constants.dt = cfl * dx / clight
 my_constants.nt = floor(T/dt)
 
@@ -68,24 +69,30 @@ ele1.injection_style = NRandomPerCell
 ele1.num_particles_per_cell = 200
 ele1.profile = constant
 ele1.density = n0
-ele1.momentum_distribution_type = maxwell_boltzmann
-ele1.theta_distribution_type = constant
-ele1.theta = T0 / (m_e * clight**2)
-ele1.beta_distribution_type = parser
-ele1.beta_function(x,y,z) = beta0
-ele1.bulk_vel_dir = +z
+ele1.momentum_distribution_type = maxwellian
+ele1.maxwellian_u_mean_distribution_type = constant
+ele1.ux_mean = 0
+ele1.uy_mean = 0
+ele1.uz_mean = beta0*gamma0
+ele1.maxwellian_u_std_distribution_type = constant
+ele1.ux_std = sqrt(T0 / (m_e * clight**2))
+ele1.ux_std = sqrt(T0 / (m_e * clight**2))
+ele1.ux_std = sqrt(T0 / (m_e * clight**2))
 
 ele2.species_type = electron
 ele2.injection_style = NRandomPerCell
 ele2.num_particles_per_cell = 200
 ele2.profile = constant
 ele2.density = n0
-ele2.momentum_distribution_type = maxwell_boltzmann
-ele2.theta_distribution_type = constant
-ele2.theta = T0 / (m_e * clight**2)
-ele2.beta_distribution_type = constant
-ele2.beta = beta0
-ele2.bulk_vel_dir = -z
+ele2.momentum_distribution_type = maxwellian
+ele2.maxwellian_u_mean_distribution_type = constant
+ele2.ux_mean = 0
+ele2.uy_mean = 0
+ele2.uz_mean = -beta0*gamma0
+ele2.maxwellian_u_std_distribution_type = constant
+ele2.ux_std = sqrt(T0 / (m_e * clight**2))
+ele2.ux_std = sqrt(T0 / (m_e * clight**2))
+ele2.ux_std = sqrt(T0 / (m_e * clight**2))
 
 ###################
 ### DIAGNOSTICS ###
