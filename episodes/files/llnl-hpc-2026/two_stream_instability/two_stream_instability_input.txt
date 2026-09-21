@@ -76,8 +76,8 @@ ele1.uy_mean = 0
 ele1.uz_mean = beta0*gamma0
 ele1.maxwellian_u_std_distribution_type = constant
 ele1.ux_std = sqrt(T0 / (m_e * clight**2))
-ele1.ux_std = sqrt(T0 / (m_e * clight**2))
-ele1.ux_std = sqrt(T0 / (m_e * clight**2))
+ele1.uy_std = sqrt(T0 / (m_e * clight**2))
+ele1.uz_std = sqrt(T0 / (m_e * clight**2))
 
 ele2.species_type = electron
 ele2.injection_style = NRandomPerCell
@@ -91,8 +91,8 @@ ele2.uy_mean = 0
 ele2.uz_mean = -beta0*gamma0
 ele2.maxwellian_u_std_distribution_type = constant
 ele2.ux_std = sqrt(T0 / (m_e * clight**2))
-ele2.ux_std = sqrt(T0 / (m_e * clight**2))
-ele2.ux_std = sqrt(T0 / (m_e * clight**2))
+ele2.uy_std = sqrt(T0 / (m_e * clight**2))
+ele2.uz_std = sqrt(T0 / (m_e * clight**2))
 
 ###################
 ### DIAGNOSTICS ###
