@@ -6,4 +6,4 @@ repos:
     - id: nbqa-pyupgrade
       args: ["--py37-plus"]
     - id: nbqa-isort
-      args: ["--float-to-top"]
+      args: ["--float-to-top", "--profile=black"]
