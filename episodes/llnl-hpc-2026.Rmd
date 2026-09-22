@@ -7,460 +7,460 @@ exercises: 0
 
 :::::::::::::::::::::::::::::::::::::: questions
 
-- What happens when two groups of electrons move through each other?
-- How can a laser create a wave that accelerates electrons?
-- Why do the same magnets affect beams of different energies differently?
-- How could we pass a beam from one simulation to another?
+- 🔬 What can WarpX and ImpactX reveal about plasmas and particle beams?
+- 🧩 How do particles, grid cells, and simulation steps turn into computing work?
+- 🚀 How do we launch, measure, and explore a simulation on a remote CPU or GPU?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: objectives
 
-- Set up the software environment shared by all three exercises.
-- Run a small one-dimensional (1D) simulation and plot how the electrons move.
-- Run a small three-dimensional (3D) plasma simulation and plot electron
-  density, electric fields and the distribution of electron energies.
-- Use ImpactX to follow two example electron beams through accelerator magnets.
-- Recognize when particles are lost and when a simulation stops giving valid results.
-- Describe the extra steps needed to pass a beam from WarpX to ImpactX.
+- 💡 Connect each physical system to the numerical model used by the code.
+- 🚀 Run a small WarpX example and a 3D wakefield example on GPU.
+- ⏱️ Read simulation logs and tell physical simulation time apart from elapsed runtime.
+- 📊 Visualize plasma dynamics and beam transport using saved diagnostics.
+- 🔍 Measure what changes when we track more particles in ImpactX.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Overview
+## Your route through the tutorial 🗺️
 
+Today you will make electron streams form a wave, launch a laser into a
+plasma, and send a beam through magnets. Along the way, keep an eye on what
+the computer is doing: how long it takes, which hardware is working, and
+how much data it saves. 🔬 💻
 
-This tutorial starts with a small warm-up, followed by two independent visual
-examples: a plasma wake in WarpX and beam transport in ImpactX. An optional
-section explains how the two codes can be coupled for a more detailed study.
+Read [Introduction to WarpX](introduction.Rmd) for the particle-in-cell
+(PIC) method and the physical questions WarpX can help answer. Read
+[Introduction to ImpactX](introduction-impactx.Rmd) for beam dynamics,
+accelerator elements, and the questions ImpactX can help answer. These pages
+provide the background for the slides and remain available after the workshop.
+You do not need to derive the equations or write a simulation from scratch.
 
-We will use two simulation tools. **WarpX** models charged particles and the
-electric and magnetic fields that act on them. Its **particle-in-cell (PIC)**
-method represents many real particles with each simulated particle and computes
-fields on a grid. **ImpactX** follows a beam through a sequence of accelerator
-components, such as magnets.
+Our three stops connect the physics to the computing:
 
-1. **Two streams of electrons** (`two_stream_instability`). Start with a
-   quick 1D run: two groups of electrons move in opposite directions and
-   develop a wave. This also checks that your simulation and plotting tools
-   work. The standalone [Two-Stream Instability](a-two-stream-instability.Rmd)
-   episode lets you explore the parameters in more detail.
-2. **A laser-driven plasma wake** (`htu/lwfa_warpx`). Watch a short laser
-   pulse push electrons aside and leave a wave behind it. Plot where the
-   electrons are, the electric field and their energies.
-3. **An electron beam passing through magnets** (`htu/beamline_impactx`).
-   Compare two computer-generated beams with energies of 100 MeV and 20 MeV.
-   MeV means million electronvolts, a unit of particle energy. The magnets
-   come from a model of the **Hundred Terawatt Undulator (HTU)** experiment.
-   Watch the beam shapes change and see which particles reach the end.
+| Example | Physical system and numerical model | Computing activity |
+| --- | --- | --- |
+| 🎢 Two-stream instability | Two electron populations interacting through fields on a 1D grid | Practice running WarpX, reading its log, and plotting output |
+| 🏄 Laser wakefield | A laser and plasma evolving on a 3D grid with computational particles | Run on a CPU and GPU; connect grid size, time steps, and diagnostics to cost |
+| 🧲 HTU beam transport | A bunch of electrons tracked through a sequence of magnets | Run on CPU and GPU; compare particle counts, runtime, output size, and beam plots |
 
-The wakefield and magnet examples run independently; neither needs output
-from the other. Coupling them is an optional extension.
+The wakefield and transport examples illustrate two stages of an accelerator:
+creating an energetic beam in plasma and transporting it through magnets.
+They run independently here, although in principle WarpX can supply the incoming ImpactX bunch.
 
-WarpX reads the settings from a plain-text input file using a short Python
-script. ImpactX uses a Python script to define the sequence of magnets,
-called a **lattice**, following the
-[ImpactX HTU beamline example](https://impactx.readthedocs.io/en/latest/usage/examples/htu_beamline/README.html).
-You can run both examples from the supplied notebooks without writing code.
+## Meet your remote machine 💻
 
-Use the [WarpX notebook](./files/llnl-hpc-2026/htu/wakefield.ipynb) and the
-[ImpactX notebook](./files/llnl-hpc-2026/htu/htu_transport.ipynb) independently.
-Each focuses on running one example and visualizing its result. Optional
-coupling is explained at the end of this lesson.
+Registered participants receive an AWS-hosted JupyterLab link through Slack.
+Open that link; the software and tutorial files are already installed.
+Your browser is the interface: the simulation and its files live on the
+remote machine.
 
-## Access and installation 💻
-
-### Registered participants: open the AWS link from Slack
-
-**Registered participants will receive a link in Slack that opens the
-AWS-hosted tutorial session directly in their browser.** Open that link to
-start JupyterLab; you do not need to install software on your own computer.
-If you registered but cannot find your link, ask the organizers in Slack.
-
-1. Open your session link from Slack.
-2. In JupyterLab's file browser, navigate to
-   `warpx-tutorials/episodes/files/llnl-hpc-2026/`.
-3. Start with `two_stream_instability/two_stream_instability_plots.ipynb`
-   after running the warm-up below, or open `htu/wakefield.ipynb` and
-   `htu/htu_transport.ipynb` for the two main examples.
-4. Select **WarpX GPU** for the wakefield notebook and **WarpX CPU** for the
-   ImpactX notebook using **Kernel > Change Kernel**. In the hosted wakefield
-   notebook, leave `warpx_executable = None` to use its GPU Python kernel.
-
-The tutorial files and software are provided on the instance. No download is
-needed there. If you do not have a session link, or want to work later on your
-own machine, keep reading for Docker and Conda instructions.
-
-### Files for your own machine
-
-With Git installed, open a terminal and run these commands to download the
-tutorial folder without the other lessons' contents:
-
-```bash
-git clone --depth 1 --filter=blob:none --sparse \
-  https://github.com/BLAST-WarpX/warpx-tutorials.git
-cd warpx-tutorials
-git sparse-checkout set episodes/files/llnl-hpc-2026
-cd episodes/files/llnl-hpc-2026
-```
-
-This is called **sparse checkout**. It keeps the tutorial's directory structure
-and includes files in its parent directories. You do not need a packaging
-script. The folder contains the notebooks, input files, plotting helpers and
-optional converter. Open `htu/wakefield.ipynb` or `htu/htu_transport.ipynb`.
-Simulation output files are created when you run the examples.
-
-These commands download the files; use one of the installation options below
-to get the software. AWS and Docker users already have the tutorial files.
-
-### Alternative A: run the tutorial Docker image yourself
-
-The image contains WarpX, ImpactX and the Python analysis tools, served as
-a browser-based JupyterLab session. To run it locally:
-
-```bash
-docker pull ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest
-docker run --rm -p 127.0.0.1:3000:3000 ghcr.io/blast-warpx/warpx-tutorials/tutorial:latest
-```
-
-Open `http://localhost:3000/lab`, launch a **Terminal**, and go to:
+Start by finding out where you landed. Open **File > New > Terminal** in
+JupyterLab and run:
 
 ```bash
 cd ~/warpx-tutorials/episodes/files/llnl-hpc-2026
+pwd
+lscpu
+nvidia-smi
 ```
 
-For a local NVIDIA GPU with the NVIDIA Container Toolkit installed, add
-`--gpus all` to the `docker run` command. Select the notebook kernels as above.
-In a terminal, switch to the GPU environment with:
+`pwd` shows the working directory. `lscpu` describes the CPU; `nvidia-smi`
+shows the NVIDIA GPU and its memory. Record the CPU and GPU models so your
+runtime measurements have context. Available resources may be shared with
+other work on the instance.
+
+📝 Keep a small run record as you go: **hardware, input settings, elapsed
+time, output size, and one observation from the plots**. Those notes will
+help you explain differences between runs.
+
+The hosted image provides two Python environments:
+
+| Where you work | CPU | GPU |
+| --- | --- | --- |
+| Jupyter notebook: **Kernel > Change Kernel** | **WarpX CPU** | **WarpX GPU** |
+| Terminal activation command | `source /opt/venv-cpu/bin/activate` | `source /opt/venv-gpu/bin/activate` |
+
+💡 **Two places to choose your environment:** both environments include
+ImpactX as well as WarpX. Selecting a notebook kernel does **not** change
+the environment in an already open terminal.
+For the exercises below, run WarpX from the terminal and analyze its output
+in notebooks. The ImpactX notebook launches its own simulation processes.
+Before repeating a WarpX exercise, preserve its completed `diags/` folder
+and `run.log` under new, unused names; the drivers reuse those output paths.
+
+### Joining from your own machine? 🏠
+
+Follow the [Docker or Conda setup instructions](./files/llnl-hpc-2026/README.md)
+before continuing. Keep the complete tutorial folder together. The `/opt/venv-*`
+activation commands apply to the hosted image and Docker; use your installed
+environment on other systems. The 3D exercise requires a GPU-enabled WarpX
+build to use the GPU. CPU execution is possible but can take substantially
+longer. The [container documentation](https://github.com/BLAST-WarpX/warpx-tutorials/blob/main/containers/tutorial/README.md)
+describes GPU access and the provided software.
+
+## Exercise 1: run and inspect a two-stream simulation
+
+🎢 Start with two electron populations moving in opposite directions at one tenth of the
+speed of light. Small density variations create an electric field, which
+changes the electron motion and can make those variations grow. This
+feedback is the **two-stream instability**. Eventually particles become
+trapped in the wave and the rapid growth levels off.
+
+WarpX follows this interaction along one spatial direction, **z**, on a
+periodic grid: particles leaving one end re-enter at the other. A stationary
+positive background is assumed; ions are not tracked explicitly. This small
+example introduces the same particle–field update cycle used in the larger
+wakefield calculation.
+
+### Launch your first run 🚀
+
+Your first run is ready to go. From the tutorial directory in the terminal:
 
 ```bash
-source /opt/venv-gpu/bin/activate
+source /opt/venv-cpu/bin/activate
+cd two_stream_instability
+ls
+export OMP_NUM_THREADS=2
+time python run_two_stream_instability.py > run.log 2>&1
 ```
 
-The files are included in the image. See the
-[tutorial container README](https://github.com/BLAST-WarpX/warpx-tutorials/blob/main/containers/tutorial/README.md)
-for GPU access and other image details.
-
-:::::::::::::::::::::::::::::::::::::::::: spoiler
-
-### Alternative B: install locally with Conda
-
-Use this if you want to run the tutorial on your own machine outside of the
-Docker image -- e.g. a laptop with no Docker available, or a cluster where
-you'd rather use your own Conda installation.
-
-We assume you have a Conda installation available on your machine.
-Download the [Conda environment file](./files/llnl-hpc-2026/environment_setup.yml),
-open a terminal in the directory containing it, and create the environment:
+The [Python driver](./files/llnl-hpc-2026/two_stream_instability/run_two_stream_instability.py)
+loads the [input file](./files/llnl-hpc-2026/two_stream_instability/two_stream_instability_input.txt)
+and starts WarpX. `OMP_NUM_THREADS=2` requests two CPU threads where the
+build uses OpenMP. `time` reports elapsed time as **real**; `user` and `sys`
+are CPU accounting times. The simulation's messages are saved in `run.log`.
+A quiet terminal is expected here: the messages are going to the file.
+Wait for the terminal prompt to return before running the next commands.
 
 ```bash
-conda env create -f environment_setup.yml
+tail -n 30 run.log
+du -sh diags
 ```
 
-Activate it with:
+`tail` displays the end of the log; check for normal completion rather than
+assuming that a returned prompt means success. `du` reports the disk space
+used by the saved diagnostics. Record elapsed time and output size. Runtime
+depends on the machine; this is the short warm-up, not a performance benchmark.
 
-```bash
-conda activate llnlhpc26-warpx-tutorial
-```
+### Peek under the hood 🔧
 
-The environment installs WarpX and ImpactX from Conda Forge, together with
-the Python packages used by the simulations and the analysis notebook. This
-tutorial has been tested with WarpX 26.09 and ImpactX 26.09. GPU execution
-requires a CUDA-enabled WarpX build; installing this environment alone does
-not establish GPU support. The warm-up and ImpactX example also run on CPU.
+Open the input file in JupyterLab's editor and find the settings below.
+You do not need to decipher every line: first locate the grid, particles,
+and output controls. Keep their values unchanged for this run.
 
-```{r engine='bash', echo=FALSE, comment=''}
-cat ./files/llnl-hpc-2026/environment_setup.yml
-```
+| Setting | Meaning in this run |
+| --- | --- |
+| `geometry.dims = 1` | Fields vary along one spatial direction |
+| `my_constants.nx = 256` | The domain has 256 grid cells |
+| `ele1.num_particles_per_cell = 200` and the equivalent `ele2` setting | Each cell initially samples each electron population with 200 macroparticles |
+| `stop_time = T` | End at the specified physical simulation time |
+| `particles.intervals` | How often particle snapshots are written |
 
-When you have finished working, deactivate the environment:
+That little input describes 256 × 200 × 2 = **102,400 macroparticles**. They
+represent many more physical electrons. At each step, WarpX updates particle
+motion and fields; writing a snapshot adds a separate output operation.
 
-```bash
-conda deactivate
-```
+### Spot the instability 📈
 
-To remove it completely at a later date, run:
-
-```bash
-conda env remove -n llnlhpc26-warpx-tutorial
-```
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-## Tutorial 1: two-stream instability warm-up
-
-### What we will simulate
-
-Two groups of electrons move through each other in opposite directions at
-one tenth of the speed of light ($\pm 0.1c$, where $c$ is the speed of light).
-We follow motion along one direction, $z$. The simulation box is **periodic**:
-an electron leaving one end re-enters at the other.
-
-Small variations in electron density create an electric field. That field
-changes the electron motion, which can make the density variations grow.
-This feedback is the **two-stream instability**. As the wave grows, it can
-trap electrons, making them oscillate within the wave. Eventually the rapid
-growth levels off, or **saturates**.
-
-All settings are supplied. This small run lets you practice running a
-simulation and reading its plots before trying the 3D example. For a closer
-look at the physics and how to choose the settings, see the standalone
-[Two-Stream Instability](a-two-stream-instability.Rmd) episode.
-
-### Download the files
-
-If you are running from the tutorial Docker image, this is already present
-at `~/warpx-tutorials/episodes/files/llnl-hpc-2026/two_stream_instability/`
--- `cd` there and skip to [Read the input file](#read-the-input-file).
-
-Otherwise, create a `two_stream_instability` directory and place the
-following files in it:
-
-- [WarpX input file](./files/llnl-hpc-2026/two_stream_instability/two_stream_instability_input.txt)
-- [Python driver script](./files/llnl-hpc-2026/two_stream_instability/run_two_stream_instability.py)
-
-### Read the input file
-
-The Python script below loads the settings and starts WarpX:
-
-```{r engine='bash', echo=FALSE, comment=''}
-cat ./files/llnl-hpc-2026/two_stream_instability/run_two_stream_instability.py
-```
-
-:::::::::::::::::::::::::::::::::::::::::: spoiler
-
-### View the WarpX input file
-
-```{r engine='bash', echo=FALSE, comment=''}
-cat ./files/llnl-hpc-2026/two_stream_instability/two_stream_instability_input.txt
-```
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-The labels `ele1` and `ele2` distinguish the two electron groups. They have
-the same density and temperature, but move in opposite directions. Their
-random thermal motion is small compared with their initial streaming speed.
-
-We assume a stationary positive background balances the initially uniform
-negative charge. The input does not track ions explicitly, and the electric
-field starts at zero. The saved **diagnostics** are simply measurements from
-the simulation: electron positions and momenta, plus field energies and
-maximum field values. The notebook uses these to show how the instability grows.
-
-### Run WarpX
-
-```bash
-python run_two_stream_instability.py
-```
-
-(If you are running locally with Conda, activate the environment first:
-`conda activate llnlhpc26-warpx-tutorial`.)
-
-This small 1D simulation should finish in seconds on a single CPU process.
-When it is done, your directory should contain a `diags/` subfolder with
-the saved particle data and field measurements.
-
-### Analyze the results
-
-If you are running from the tutorial Docker image, the notebook is already
-present at
-`~/warpx-tutorials/episodes/files/llnl-hpc-2026/two_stream_instability/two_stream_instability_plots.ipynb`.
-Otherwise, download the
-[analysis notebook](./files/llnl-hpc-2026/two_stream_instability/two_stream_instability_plots.ipynb)
-into the `two_stream_instability` directory, alongside the input file and
-driver script.
-
-Open it with Jupyter:
-
-```bash
-jupyter lab two_stream_instability_plots.ipynb
-```
-
-You can also [preview the warm-up notebook in your browser](https://nbviewer.org/github/BLAST-WarpX/warpx-tutorials/blob/main/episodes/files/llnl-hpc-2026/two_stream_instability/two_stream_instability_plots.ipynb).
-
-
-### What to look for 📊
+Open [two_stream_instability_plots.ipynb](./files/llnl-hpc-2026/two_stream_instability/two_stream_instability_plots.ipynb)
+from the `two_stream_instability` folder and select **WarpX CPU**. Run its
+cells after the simulation finishes.
 
 A **phase-space plot** shows position on one axis and momentum on the other.
-Here the horizontal coordinate is $z$, and the vertical coordinate is
-$u_z = p_z/(m_e c)$: electron momentum along $z$, divided by the electron mass
-and the speed of light. Positive and negative values indicate opposite
-directions of motion. At these initial speeds, $u_z$ is approximately $v_z/c$.
+Here they are z and longitudinal momentum divided by the electron mass and
+the speed of light. The initially separate streams bend and roll into loops
+as particles become trapped in the wave. These are loops in position–momentum
+space, not circular paths in the simulation box.
 
-![An example of the rolled-up electron streams from the related two-stream episode.](https://gist.github.com/user-attachments/assets/0160a10a-9a08-443c-84a3-610a9a5eeb73){alt="Electron position versus longitudinal momentum: the two initially separate streams have rolled into cat-eye-shaped vortices as electrons become trapped in the wave."}
+![Example phase space from the related two-stream lesson.](https://gist.github.com/user-attachments/assets/0160a10a-9a08-443c-84a3-610a9a5eeb73){alt="Two electron streams roll into loops in position–momentum space as particles become trapped in a wave."}
 
-This reference plot is reused from the
-[Two-Stream Instability episode](a-two-stream-instability.Rmd); your run may
-show different fine details. Initially, the two groups form nearly horizontal
-bands. As the instability grows, the bands bend and roll into the loops often
-called **cat-eye vortices**. These are loops in position–momentum space, not
-circular paths in the physical simulation box.
+This reference image comes from the [two-stream lesson](a-two-stream-instability.Rmd);
+your run can differ in fine detail. The notebook also plots field energy over
+**physical time**. Look for the electric field energy to rise and then level
+off. This time axis describes the plasma's evolution, not how long the
+computer ran.
 
-The notebook plots the last saved particle snapshot and the electric and
-magnetic field energies over time. The energy plot uses a logarithmic vertical
-axis: exponential growth appears as a straight rising section. Look for the
-electric field energy to rise and then level off.
+::::::::::::::::::::::::::::::::::::: challenge
 
-💡 **Try reading the plots together:** the phase-space plot shows how the
-electrons move; the field-energy plot shows how much energy the growing wave
-stores. Can you identify evidence of the instability in both?
+### Checkpoint: follow the evidence 🕵️
 
-Once both plots work, continue to the laser-driven wake below.
+Find the loops in phase space and the rise in electric field energy. Can
+you identify evidence of the instability in both plots?
 
-## Tutorial 2: watch a wake in WarpX
+Then point to the input file, execution log, particle output, and analysis
+notebook. You now have the four parts of a simulation workflow—and will
+use them again in the next exercise.
 
-A **plasma** contains free electrons and ions. A strong laser pulse pushes
-electrons away from its path, leaving the heavier ions behind. The electrons
-are pulled back, creating a wake behind the pulse. Its electric field can
-accelerate electrons, rather like a water wave carrying a surfer. This is
-**laser-wakefield acceleration (LWFA)**.
+::::::::::::::::::::::::::::::::::::::::::::::::
 
+## Exercise 2: run a 3D laser wakefield on a GPU
 
-![Three electron-density slices from the reduced WarpX run show a cavity forming and evolving behind the laser at 52, 103 and 155 femtoseconds.](./files/llnl-hpc-2026/htu/images/wake-density-evolution.png){alt="Three electron-density slices from the reduced WarpX run show a cavity forming and evolving behind the laser at 52, 103 and 155 femtoseconds."}
+🏄 Next stop: a laser-driven plasma wave. Read the [Laser-Wakefield Acceleration lesson](a-laser-wakefield.Rmd) for
+the laser–plasma setup, numerical representation, and interpretation of the
+plots. In this example a laser drives a plasma wave whose electric field can
+accelerate electrons; WarpX evolves the particles and fields on a 3D grid.
+Now put the hosted GPU to work and measure what it takes to produce those
+wakefield pictures.
 
-*Snapshots from the completed reduced 3D simulation. Read left to right: the
-wake forms, crosses the density drop, and continues through the lower-density
-plasma. All panels use the same density scale. The horizontal coordinate $z-ct$ moves at the speed of light, keeping the
-wake in view; dark regions contain fewer plasma electrons. A femtosecond is
-$10^{-15}$ seconds.*
+**AWS participants: keep working in `llnl-hpc-2026/htu/`.** The workshop
+and the wakefield lesson use the same input, Python driver, notebook, and
+shared helper script in this folder.
 
+### Launch the laser and watch the GPU 🔦
 
-Open [wakefield.ipynb](./files/llnl-hpc-2026/htu/wakefield.ipynb) from the `htu`
-folder. Run the simulation, then plot a central slice of electron density,
-the electric field along the direction of travel and the energy spectrum
-(how many electrons have each energy). Choose a different
-saved step to watch the wake develop and pass through the density drop. The
-notebook also puts three density snapshots side by side so the evolution is
-visible without changing the step manually.
-
-The small 3D model uses a short laser and a dense, short plasma target. It
-illustrates wakefield dynamics, not the measured HTU beam. It does not need
-to produce a 100 MeV bunch for the next example.
-
-### Files and run commands
-
-Keep these files together (the sparse-checkout commands above do this for you):
-
-- [Wakefield notebook](./files/llnl-hpc-2026/htu/wakefield.ipynb)
-- [WarpX input](./files/llnl-hpc-2026/htu/lwfa_warpx/lwfa_warpx_input.txt)
-- [Python driver](./files/llnl-hpc-2026/htu/lwfa_warpx/run_lwfa_warpx.py)
-- [Plotting helper](./files/llnl-hpc-2026/htu/lwfa_warpx/plot_wakefield.py)
-
-From `htu/lwfa_warpx/`, in the GPU Python environment:
+In the terminal, navigate to the wakefield directory and activate the GPU
+environment explicitly:
 
 ```bash
-python run_lwfa_warpx.py
-python plot_wakefield.py diags/diag1 --evolution --output wake-evolution.png
-python plot_wakefield.py diags/diag1 --iteration 800 --output wake-snapshot.png
+cd ~/warpx-tutorials/episodes/files/llnl-hpc-2026/htu/lwfa_warpx
+source /opt/venv-gpu/bin/activate
+time python run_lwfa_warpx.py > run.log 2>&1
 ```
 
-If you built a native executable, you can instead run
-`warpx.3d lwfa_warpx_input.txt` (use its full path if necessary). The two
-plotting commands save a density sequence and one field/spectrum snapshot.
-The reference run took about 8 minutes 25 seconds on an RTX A2000 8 GB laptop
-GPU; runtime on the provided AWS instance may differ.
-
-In the input file, try changing `a0` (a dimensionless measure of laser
-strength), or set `n_up = n_down` to remove the drop in plasma density. Rerun
-the simulation. What changes in the electron-depleted region, the electric
-field and the electron energies?
-
-## Tutorial 3: independent beam transport in ImpactX
-
-Magnets steer and focus an electron beam. Their effect depends on particle
-momentum, so a set of magnets that works for one energy may spread out a beam
-at another energy. Here we keep the magnets fixed and change the beam energy.
-The **PMQ triplet** is a group of three permanent-magnet quadrupoles used to
-focus the beam. The **chicane** is a sequence of bending magnets that takes
-the beam along a sideways detour.
-
-
-![Particle-density maps at the source, after the PMQ triplet and in the chicane show the 100 MeV beam remaining much narrower than the 20 MeV beam.](./files/llnl-hpc-2026/htu/images/htu-beam-density.png){alt="Particle-density maps at the source, after the PMQ triplet and in the chicane show the 100 MeV beam remaining much narrower than the 20 MeV beam."}
-
-*Each row follows one synthetic beam downstream. Read the axis scales:
-source panels use micrometers; downstream panels use millimeters, with a
-separate range for each panel. Colors show the amount of electric charge in each small square of the plot,
-and labels show the charge still in the beam. The large spread of the 20 MeV
-beam shows that these magnet settings do not suit its energy. The model only
-removes particles at the magnet openings specified in the input; it does not
-include every wall of the real beam pipe.*
-
-
-Open [htu_transport.ipynb](./files/llnl-hpc-2026/htu/htu_transport.ipynb).
-Two computer-generated beams, at 100 MeV and 20 MeV, pass through the same
-HTU magnets. Each starts with a Gaussian (bell-shaped) distribution. Neither
-beam is taken from the WarpX run. The notebook shows cross-sections
-perpendicular to the direction of travel, the charge remaining and the beam
-size at successive positions along the beamline.
-
-### Files and run commands
-
-- [ImpactX notebook](./files/llnl-hpc-2026/htu/htu_transport.ipynb)
-- [ImpactX input](./files/llnl-hpc-2026/htu/beamline_impactx/input_impactx.py): the beam settings, magnets and simulation in one file.
-
-The notebook runs this input at both energies and contains all the analysis:
-beam-density snapshots, remaining charge and beam size. Change `energies_MeV`
-in the notebook to `[100, 50]` to try another pair.
-
-To run just one simulation from `htu/`, use:
+This uses the [driver](./files/llnl-hpc-2026/htu/lwfa_warpx/run_lwfa_warpx.py)
+and [input](./files/llnl-hpc-2026/htu/lwfa_warpx/lwfa_warpx_input.txt) in that
+directory. In a **second terminal**, inspect progress while it runs:
 
 ```bash
-python beamline_impactx/input_impactx.py --energy-MeV 100 --output runs/100MeV
+cd ~/warpx-tutorials/episodes/files/llnl-hpc-2026/htu/lwfa_warpx
+tail -n 20 run.log
+nvidia-smi
 ```
 
-Choose a new output directory for each run. Use the notebook to run and plot
-both beams together; it saves `beam_density.png`, `comparison.png` and
-`summary.json` in the run folder.
+⏱️ Follow the log's step count, physical time, and step timings as the run advances. GPU memory use
+and utilization in `nvidia-smi` are snapshots; a single observation is not
+a peak-memory measurement or an average utilization. The completed reference
+run took about **8 minutes 25 seconds** on an RTX A2000 8 GB laptop GPU;
+this is context, not an expected time on your instance.
 
-Both beams start with the same size, spread in travel directions and
-fractional spread in energy. The magnet fields are also kept fixed. Particles
-are removed when they hit a modeled **aperture**, the opening through a
-magnet. The model includes known openings in the PMQs and in the focusing
-magnets of the undulator (a device with alternating magnetic fields).
-Other pipe dimensions are unspecified.
-
-These are teaching examples, not measured HTU beams or beams specially
-prepared for these magnets. We also neglect **space charge**, the electric
-repulsion between electrons in the beam.
-
-![Charge survival and horizontal and vertical beam sizes versus distance; the 20 MeV curves stop where tracking becomes invalid.](./files/llnl-hpc-2026/htu/images/htu-transmission.png){alt="Charge survival and horizontal and vertical beam sizes versus distance; the 20 MeV curves stop where tracking becomes invalid."}
-
-A falling charge curve means particles have hit modeled apertures. If the
-calculation produces invalid particle coordinates, the plot stops at a dotted
-line and the final fraction reaching the end is marked unknown. The
-calculation has broken down at that point; we cannot conclude that all the
-electrons were physically lost.
-
-## Optional: couple WarpX to ImpactX
-
-To connect the examples, we would replace the computer-generated ImpactX
-beam with electrons from WarpX. This requires a simulation with enough spatial
-and time resolution to describe the accelerated beam reliably. First inspect
-the positions and momenta and identify a compact group of electrons moving
-forward together after leaving the plasma. This group is called a **bunch**.
-
-The [converter](./files/llnl-hpc-2026/htu/coupling/warpx_to_beamline_impactx.py)
-uses the [coordinate utilities](./files/llnl-hpc-2026/htu/coupling/transformation_utilities.py)
-to select electrons above an energy threshold and change coordinate conventions.
-WarpX saves particles at the same time; ImpactX describes their arrival at a
-shared position along the beamline, relative to a reference particle. The
-converter preserves how much real charge each simulated particle represents.
-
-From `htu/`, for standalone WarpX output:
+Once the run finishes, record the elapsed time and output size:
 
 ```bash
-python coupling/warpx_to_beamline_impactx.py \
-  lwfa_warpx/diags/diag1 warpx_bunch.npz --energy-cut-MeV 20
-python beamline_impactx/input_impactx.py --bunch warpx_bunch.npz --output coupled_test
+tail -n 30 run.log
+du -sh diags
 ```
 
-Use the diagnostic path of your actual run. The converter selects the final
-snapshot by default. Choose the energy cut from the observed bunch. The tiny
-teaching example may have no suitable electrons above the illustrative 20 MeV
-cut; the converter then stops. Lowering the cut just to produce a file does
-not establish a usable bunch.
+The driver uses the same `diags/` location each time. Before repeating a run,
+preserve the output and log under new names, for example `diags-baseline`
+and `run-baseline.log`, using JupyterLab's file browser. Do this only after
+the run finishes, and choose unused names.
 
-Converting the file does not adjust the magnets. Their strengths and positions
-need to suit the incoming beam's energy, size and spread in travel directions.
-A low-energy beam sent through magnets set for 100 MeV can hit the openings
-or move at angles too large for the tracking model to describe reliably.
-See [the coupling instructions](./files/llnl-hpc-2026/htu/README.md#optional-coupling).
+### Tiny physics, plenty of computing 🧩
+
+The input uses **32 × 32 × 512 = 524,288 grid cells** in a moving box
+16 × 16 × 20 µm in size. The longitudinal spacing is about 0.039 µm,
+which samples the 0.8 µm laser wavelength with about 20 cells. There is one
+initial macroparticle per cell per species where plasma is loaded; electrons
+move while helium ions stay fixed. The moving window follows the laser,
+limiting the volume that must be simulated at once.
+
+The time step is approximately **0.129 femtoseconds**, with **1,836 steps**
+in the default run. A femtosecond is one millionth of a billionth of a second.
+Resolving these short physical scales requires many repeated grid and particle
+updates. The GPU executes many of those similar operations concurrently.
+
+💭 While the GPU works, try a cost estimate on paper. Imagine halving the
+spacing in **all three directions**
+while keeping the physical box, duration, and particles per cell fixed.
+There would be eight times as many cells and approximately eight times as
+many particles. With this solver's time-step constraint, approximately twice
+as many steps would also be needed. That suggests about sixteen times the
+update work, before communication and output effects. It is not a measured
+runtime prediction; do not launch that larger case during this exercise.
+
+### Find the wake 🏄
+
+Open [wakefield.ipynb](./files/llnl-hpc-2026/htu/wakefield.ipynb) from the
+`htu` folder. The notebook analyzes the terminal run; it does not launch it.
+Its default `out_folder = "lwfa_warpx/diags/diag1"` matches the output above.
+The hosted **WarpX GPU** kernel includes the analysis packages; plotting the
+saved output itself does not require GPU acceleration.
+
+Use the [standalone lesson's plot guide](a-laser-wakefield.Rmd#interpret-the-results)
+to identify the electron-depleted cavity, the accelerating field, and the
+energy distribution. Both copies of the example use the same physical and
+numerical settings. Inspect a snapshot during propagation; the final frame
+is after the moving window has left the plasma.
+
+📸 The default takes a snapshot every **200 steps** and at the end. This
+connects an HPC choice to what you can learn: sparse output saves disk space,
+but you cannot inspect an unsaved stage of the wake. Full field and particle
+snapshots are more expensive to store than a few reduced quantities, such
+as the field-energy history in the warm-up.
+
+If time permits, try taking fewer snapshots: preserve the baseline output,
+change only `diag1.intervals` from `200` to `400`, and rerun. Compare elapsed
+time, disk use, and the available snapshots. Which stages of the wake can
+you still inspect? The physics settings are unchanged, but the history is
+sampled less frequently. Do not expect total runtime to halve: computation
+still proceeds through every step. For an optional physics variation, change
+only `a0`, the laser strength, and compare the wake at the same saved step.
+
+## Exercise 3: track the HTU beam with ImpactX
+
+🧲 Once a beam is created, the magnets take over: we need to steer and focus it.
+Here an independent, computer-generated electron bunch passes through the
+**Hundred Terawatt Undulator (HTU)** beamline. We use the
+[upstream HTU example](https://impactx.readthedocs.io/en/latest/usage/examples/htu_beamline/README.html)
+with **100 MeV total energy** and **25 pC charge**. MeV is a unit of particle
+energy and pC is a unit of electric charge; total energy includes the
+approximately 0.511 MeV electron rest energy.
+
+Quadrupole magnets focus the beam, and a sequence of bending magnets called
+a **chicane** takes it along a sideways detour. ImpactX advances particles
+through the mathematical models of these components. **Space charge is off**:
+particles respond to the prescribed magnets without interacting through
+their own fields. This run therefore does not repeat the plasma field solve
+used in the WarpX example.
+
+### Run the beam transport simulation 🧲
+
+Open [htu_transport.ipynb](./files/llnl-hpc-2026/htu/htu_transport.ipynb) from
+`htu/` and select **WarpX CPU**. The setup cell exposes these settings:
+
+```python
+particles = 10000
+total_energies_MeV = [100]
+chicane_r56_um = 200.0
+```
+
+Keep these defaults for your first HTU run and run notebook steps 1–3. The notebook calls the
+[shared helper script](./files/llnl-hpc-2026/htu/tutorial_helpers.py), which
+contains the HTU lattice, source, simulation setup, and plotting functions.
+It creates a fresh run folder, saves a log, and reports elapsed runtime and
+the size of the simulation output. The measured time includes process
+startup, tracking, and writing diagnostics; notebook plotting is excluded.
+Measurements are also saved in `performance.json`.
+
+### Explore the beam screens 🔍
+
+Press **Play screens** in the notebook or drag the slider to follow the bunch.
+Find the first focusing screen (`TCPhosphor`), the middle of the chicane
+(`ChicaneSlit`), and the exit. Does the beam stay round?
+
+
+The maps look across the beam, perpendicular to its direction of travel.
+Turn off **Zoom to fit** to compare snapshots on fixed axes. With zoom on,
+read the units: a similar-looking spot may be micrometers or millimeters
+across. Color shows charge per bin; changing bin areas means color alone
+does not compare physical density per unit area. The saved `beam_explorer.html`
+also opens directly in a browser.
+
+![Horizontal and vertical beam sizes along HTU.](./files/llnl-hpc-2026/htu/images/htu-transmission.png){alt="Horizontal and vertical rms beam sizes versus distance, with screen landmarks identifying focusing, the chicane, and the undulator."}
+
+Follow x and y separately. Their **rms sizes** measure the spread of particle
+positions around their means. Where is the beam narrowest in each plane?
+Can you find a matching screen in the viewer?
+
+The **lattice strip** below the curves places the magnets and screens on the
+same distance axis. Use it to connect beam focusing and expansion to the
+nearby elements. Gaps are drifts. Element lengths are to scale; symbol
+heights represent neither the beam size nor a physical aperture. Symbols
+also include magnets whose field is set to zero.
+
+The lattice has no modeled apertures. The notebook prints a remaining-charge
+check, but that does not prove a real beam fits through every opening.
+Invalid tracking is flagged and affected curves stop; numerical failure is
+not interpreted as physical beam loss.
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Ten times the particles—what changes? 🔍
+
+Make a prediction first: which will change most visibly—the beam-size curve,
+the detail in the density maps, or the amount of data saved?
+
+Run notebook **step 4**. It launches a second simulation with ten times as
+many particles, keeping the energy, magnets, and thread setting fixed. Two
+bar charts compare runtime and output size; the next cells show the new
+beam maps and beam-size curves. Both runs remain in separate folders.
+
+| Run | Macroparticles | Elapsed time (s) | Output (MiB) | Observation about the beam plots |
+| --- | --- | --- | --- | --- |
+| Baseline | 10,000 | | | |
+| More particles | 100,000 | | | |
+
+The physical bunch charge remains **25 pC**: each macroparticle represents
+a smaller share of it. This changes the sampling of the same beam model,
+not the physical number of electrons in the bunch. Compare the beam-size
+curves and the detail in the density maps as well as the cost. More samples
+do not correct missing physics or guarantee that all numerical errors are small.
+
+Ten times as many particles means more tracking work and particle output,
+but total runtime need not increase by ten. Startup, file operations, and
+other fixed costs can be significant in a small run. This is a workload-size
+comparison on fixed hardware, not a parallel scaling measurement.
+
+Compare your measurements with your prediction. If the runtime did not grow
+tenfold, which parts of the run might account for the difference?
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Optional: change the beam energy
+
+Return to `particles = 10000`. Set `total_energies_MeV = [100, 150]` and
+`chicane_r56_um = 0.0`, then rerun the settings cell and **steps 1–3 only**. Both beams now use
+zero chicane field, following the upstream off-energy example. Compare the
+horizontal and vertical beam sizes at equal distances.
+
+The magnets and 100 MeV reference stay fixed. The 150 MeV case shifts the
+mean energy while preserving sampled positions and absolute momentum
+spreads; its initial angular divergence and relative energy spread are
+therefore smaller. The shared helper script records the conventions and upstream provenance.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## From this instance to a supercomputer 🌍
+
+You have now run two codes and explored three physical systems. The
+warm-up, wakefield, and HTU runs use different physical models and
+workloads. Their times cannot establish a CPU-to-GPU speedup. For that,
+you would run the **same input and diagnostics** on each device and record
+the hardware, software, initialization costs, and repeated timings.
+
+A compute **node** is one machine, with CPU cores, memory, and possibly GPUs.
+On larger installations, MPI processes divide work across nodes and exchange
+data. This introduces communication and workload-distribution costs as well
+as more computing capacity. The tutorial container is built without MPI;
+these exercises run on one node and do not demonstrate multi-node scaling.
+On a scheduled cluster, simulations run on allocated compute nodes, using
+the site's job-submission instructions, rather than on its login node.
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Your HPC takeaways 💬
+
+Use your plots and run notes to explain:
+
+- Which run needed a 3D field grid, and which tracked particles through
+  prescribed magnets?
+- What did you save to disk, and what could you learn from it?
+- Which numerical choice changed the computing cost? Which physical choice
+  would change the system being simulated?
+
+Bring one observation or surprise to the group discussion.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Keep exploring: connect the codes 🔗
+
+A larger study can pass a plasma-generated bunch from WarpX to ImpactX.
+That requires a resolved source, a suitable particle selection, and consistent
+coordinate conventions. It is outside these exercises: a high-energy tail alone does not establish
+a usable beam. The two notebooks use independent sources.
+
+::::::::::::::::::::::::::::::::::::: keypoints
+
+- 🧩 Physics and numerical representation determine the workload; hardware
+  determines how that workload is executed.
+- 📝 Record the input, hardware, elapsed runtime, and output alongside the plots.
+- 💾 More particles, finer grids, and more frequent diagnostics have different
+  scientific benefits and computational costs.
+- 🔍 Compare the same problem to measure a hardware speedup; compare physical
+  observables to judge whether a numerical change matters scientifically.
+
+::::::::::::::::::::::::::::::::::::::::::::::::

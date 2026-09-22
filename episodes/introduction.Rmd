@@ -10,6 +10,7 @@ exercises: 0
 - 🤌 What is WarpX? 
 - 🤔 What is a PIC code?
 - 🧐 What can I use WarpX for?
+- 🏋️ Why does it need HPC?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -18,12 +19,13 @@ exercises: 0
 - 💡 Understand the basics of PIC codes
 - 🧑‍💻 Learn about the features of WarpX 
 - 🎯 Figure out if WarpX can be useful for you!
+- 💰 Connect numerics to computational cost.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Overview of PIC  
 
-[WarpX][warpx] is a general purpose **open-source** **high-performance** **Particle-In-Cell** (PIC) code.   
+[WarpX][warpx] is a general purpose **open-source** **high-performance** **multi-physics** **Particle-In-Cell** (PIC) code.
 The PIC method is a very popular approach to **simulate the dynamics of physical systems governed by relativistic electrodynamics**.
 **Plasmas ⭐ and beams ☄️**, which are often made of charged particles that may travel almost at the speed of light, fall into this category.
 Additionally, other physical effects can be integrated into the PIC algorithm, such as different **quantum** 🎲 processes.
@@ -32,23 +34,38 @@ Here is a picture that condenses the core idea: there are _particles_ and _field
 The particles are approximated as _macroparticles_ (usually each representative of many real particles), while the fields are approximated on a _grid_ in space.
 The particles and the fields are updated, self-consistently, in a temporal loop.  
 
+🔎 **What does one macroparticle represent?** A macroparticle samples the
+positions and momenta of many physical particles. Its **weight** tells us
+how many particles it represents and therefore how much charge it contributes
+to the grid. For the same plasma density, we can use more macroparticles with
+smaller weights. This improves sampling and generally reduces statistical
+noise; it does not make the physical plasma denser.
+
 ![Some macroparticles traveling in space, across the cells of a grid.](https://gist.github.com/user-attachments/assets/50726d37-2b72-4664-9435-f90d7d2f0043
 ){alt="macroparticles in the cells of a grid"}
 
 Here is a more informative image that explains the core algorithmic steps.
-As the particles travel in space, they generate currents, which in turn generate an electromagnetic field. 
-The electromagnetic field then push the particles via the Lorentz force. 
-Therefore, the current density $\textbf{J}$ and the force $\textbf{F}_L$ are the quantitieis that connect the particles and the fields, or in PIC lingo, the macroparticles and the grid.
+As the particles travel in space, they generate current densities, which in turn generate an electromagnetic field.
+The electromagnetic field then pushes the particles via the Lorentz force.
+Therefore, the current density $\textbf{J}$ and the force $\textbf{F}_L$ are the quantities that connect the particles and the fields, or in PIC lingo, the macroparticles and the grid.
 Hence, the idea is the following.
 First, define a well-posed initial condition, and then iterate the following:
+
 * Interpolate the fields from the grid to the particles' positions and compute the Lorentz force that acts on each macroparticle,
 * Advance the position and momenta of the macroparticles using Newton equations,
-* Project while cumulating the contribution to the current density of each macroparticles,
+* Project while cumulating the contribution to the current density of each macroparticle,
 * Solve Maxwell's equations.
 
 In some cases, one can choose to solve Poisson's equation instead of Maxwell's. 
 In that case, the current $\textbf{J}$ calculation is replaced with the charge density $\rho$ calculation.
-Once $\rho$ is known, the electrostic potential is computed to then find the electric field.
+Once $\rho$ is known, the electrostatic potential is computed to then find the electric field.
+
+🔄 **Self-consistent means feedback.** A small excess of electrons in one
+region changes the electric field. That field changes electron motion,
+which changes the charge distribution and the field again. In the
+[two-stream example](a-two-stream-instability.Rmd), this feedback can amplify
+an initial disturbance into a growing wave. The evolving fields are part
+of the answer, rather than just a prescribed force on the particles.
 
 ![The loop at the basis of standard PIC codes.](https://gist.github.com/user-attachments/assets/659c0816-3c13-4375-b17d-03b894e17b93
 ){alt="pic loop"}
@@ -60,14 +77,39 @@ If you want to know more about PIC, here are a few **references**:
      *  [C. K. Birdsall and A. B. Langdon. Plasma Physics Via Computer Simulation.](https://doi.org/10.1201/9781315275048)  
      *  [R. W. Hockney and J. W. Eastwood. Computer simulation using particles.](https://doi.org/10.1201/9780367806934)  
 *  An old review written by one of the pioneers: [John M. Dawson, Particle simulation of plasmas, Rev. Mod. Phys. 55, 403](https://doi.org/10.1103/RevModPhys.55.403)  
-*  Browse our docs for [many, many more references about advanced algorithms and methods](https://warpx.readthedocs.io/en/latest/theory/pic.html).
+*  Browse WarpX docs for [many, many more references about advanced algorithms and methods](https://warpx.readthedocs.io/en/latest/theory/intro.html).
 
+
+## What goes in, what comes out?
+
+The input describes the geometry, particle species and their initial
+distributions, applied fields or lasers, and boundary conditions. It also
+sets the grid, time stepping, and which results to save. WarpX produces
+**diagnostics**: particle snapshots, fields on the grid, and reduced
+quantities such as total field energy. The log tells you how the run
+progressed; analysis notebooks turn the saved diagnostics into physical
+observations. The [wakefield example](a-laser-wakefield.Rmd) walks through
+this input-to-plot workflow.
 
 ## Features and applications of WarpX
 
-WarpX is developed and used by a wide range of researchers working in different fields, from beam physics to nuclear fusion and a lot more.
+WarpX is developed and used by a wide range of researchers working in different fields, from accelerator physics to nuclear fusion and a lot more.
 To learn about what WarpX can be used for, [check out our examples](https://warpx.readthedocs.io/en/latest/usage/examples.html)
 and the [scientific publications that acknowledged WarpX](https://warpx.readthedocs.io/en/latest/highlights.html).
+
+
+### What physical questions can WarpX help answer?
+
+WarpX can help investigate how charged particles and fields influence one another.
+For example:
+
+- 🎢 **Plasma instabilities:** how can electrons moving through a plasma excite waves, and how do those waves change the particle motion?
+  The [two-stream example](a-two-stream-instability.Rmd) introduces this feedback.
+- 🏎️ **Plasma-based acceleration:** how does a laser pulse or a particle beam drive a plasma wake, and which electrons gain energy from it?
+- 🔦 **Laser–matter interaction:** how does an intense laser transfer energy to a target and accelerate ions? See the [laser-driven ion accelerator](a-laser-driven-ion-accelerator.Rmd).
+- ☄️ **Beam interactions:** how do the fields of colliding particle beams change their trajectories? See the [beam–beam example](a-beam-beam-collision.Rmd).
+
+The [WarpX application examples](https://warpx.readthedocs.io/en/latest/usage/examples.html) provide starting points for these studies. Each calculation still needs a choice of physical model, initial conditions, and numerical resolution appropriate to the system being studied.
 
 
 
@@ -85,24 +127,70 @@ Some cool features of WarpX:
  
  💾 Standards: [openPMD][openpmd] for input/output data, [PICMI][picmi] for inputs  
 
- 🤸 Active development and mainteinance: check out our [GitHub repo][warpx-github]  
+ 🤸 Active development and maintenance: check out our [GitHub repo][warpx-github]
 
  🗺️ International, cross-disciplinary community: plasma physics, fusion devices, laser-plasma interactions, beam physics, plasma-based acceleration, astrophysics, others? 
  
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-We will add here more details soon!
+## From the PIC model to high-performance computing 🏋️
+
+The PIC loop explains where the computing work comes from: update many
+particles, transfer information between particles and the grid, and update
+fields on many cells. These operations repeat at every time step.
+
+| Simulation choice | Connection to the physics | Connection to computing |
+| --- | --- | --- |
+| Grid spacing | Determines which spatial structures can be resolved | Finer grids have more cells and require more memory |
+| Time step | Resolves evolution and must satisfy the chosen solver's stability constraints | More steps are needed to cover the same physical duration |
+| Macroparticles per cell | Controls how densely the particle distribution is sampled | More particles require more work and memory |
+| Saved diagnostics | Determine which changes can be inspected after the run | Writing and reading data take time and storage |
+
+For example, a laser-wakefield simulation must resolve the laser as well as
+the surrounding plasma. A three-dimensional grid can therefore become large,
+even though the physical experiment is small. More macroparticles improve
+sampling, but do not compensate for an inadequately resolved grid.
+
+📏 **Resolution is a choice to check.** Grid spacing resolves spatial
+structures, time steps resolve their evolution, and particle count controls
+sampling noise. A successful run alone does not establish accuracy. Repeat
+with finer numerical settings and check whether the quantities you care
+about—such as wave growth or electron energy—change appreciably. This is a
+**convergence study**: its purpose is to establish adequate resolution for
+your observable, rather than simply to make the calculation larger.
+
+**High-performance computing (HPC)** distributes this work across computing
+resources. A CPU has cores that can work concurrently; a GPU can carry out
+many similar particle or grid operations in parallel. On larger machines,
+work is also distributed across processes using **MPI**, a system for
+exchanging data between processes. Communication, uneven workloads, and
+writing diagnostics can limit the speedup. Using more hardware does not
+change which physics the input asks the code to solve. The
+[WarpX parallelization settings](https://warpx.readthedocs.io/en/latest/usage/parameters.html#distribution-across-mpi-ranks-and-parallelization)
+describe how the grid is divided among processes and threads.
+
+🧩 **How is the work shared?** WarpX divides the spatial grid into blocks.
+Processes can work on different blocks, while CPU threads or GPU threads
+update particles and fields within them. Neighboring blocks exchange field
+data, and particles crossing a block boundary must be passed to their new
+owner. If particles concentrate in one region, some processes have more work
+than others. This is why both communication and balancing the work matter
+when moving from one device to a large machine.
+
+The [HPC Innovation Center tutorial](llnl-hpc-2026.Rmd) connects these ideas
+to actual runs: a small two-stream simulation on a CPU and a 3D wakefield
+simulation on a GPU. For transport through accelerator components, also read
+[Introduction to ImpactX](introduction-impactx.Rmd).
 
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
  🔮 **The particle-in-cell** method is used to simulate the self-consistent dynamics of relativistic charged particles
 
- 🚀 [**WarpX**][warpx] is a open-source high-performance particle-in-cell code  
+ 🚀 [**WarpX**][warpx] is an open-source high-performance particle-in-cell code
 
- ✨ [**WarpX**][warpx] is used in a variety of scientif domains   
+ ✨ [**WarpX**][warpx] is used in a variety of scientific domains
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
-
 

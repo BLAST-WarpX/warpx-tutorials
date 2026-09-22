@@ -66,6 +66,7 @@ contact: 'ariannaformenti@lbl.gov'
 # Order of episodes in your lesson
 episodes: 
 - introduction.Rmd
+- introduction-impactx.Rmd
 - install.Rmd
 - set-up-a-simulation-from-scratch.Rmd
 - a-two-stream-instability.Rmd
@@ -73,6 +74,7 @@ episodes:
 - a-magnetic-mirror.Rmd
 - a-fodo-cell.Rmd
 - a-laser-driven-ion-accelerator.Rmd
+- a-laser-wakefield.Rmd
 - a-beam-beam-collision.Rmd
 # --- Events and workshops ---
 - ossfe2025.Rmd
