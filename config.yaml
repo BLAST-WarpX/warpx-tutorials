@@ -75,6 +75,7 @@ episodes:
 - a-fodo-cell.Rmd
 - a-laser-driven-ion-accelerator.Rmd
 - a-laser-wakefield-accelerator.Rmd
+- a-beam-transport-line.Rmd
 - a-beam-beam-collision.Rmd
 # --- Events and workshops ---
 - ossfe2025.Rmd
