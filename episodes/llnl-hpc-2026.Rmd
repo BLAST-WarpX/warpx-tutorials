@@ -74,7 +74,7 @@ help you explain differences between runs.
 
 The hosted image provides two Python environments:
 
-| Where you work | CPU | GPU |
+| Where you work | CPU (default) | GPU |
 | --- | --- | --- |
 | Jupyter notebook:<br>**Kernel > Change Kernel** | **WarpX CPU** | **WarpX GPU** |
 | Terminal activation command | `source /opt/venv-cpu/bin/activate` | `source /opt/venv-gpu/bin/activate` |
@@ -132,7 +132,7 @@ In a terminal with the CPU environment active, start from the
 ```bash
 cd two_stream_instability
 ls
-export OMP_NUM_THREADS=4  # matches the 4 vCPUs on the AWS instance.
+export OMP_NUM_THREADS=2  # one thread per physical core (4 vCPUs = 2 cores)
 ```
 
 You can launch the same simulation using either the
