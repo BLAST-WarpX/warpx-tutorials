@@ -386,6 +386,14 @@ plot alone does not demonstrate greater physical accuracy.
 How do the cell count and workload change?
 2. Run the same case on CPU. How does the time per step compare with GPU?
 
+::: callout
+
+On HPC for highly parallel simulations, grid cells are blocked together for parallel [Domain Decomposition](https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html).
+The example's inputs set `amr.blocking_factor = 16`, thus use multiples of 16 for grid cells `nx`, `ny`, and `nz`.
+A smaller `dz` also shortens the time step, so the run needs more steps.
+
+:::
+
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 
