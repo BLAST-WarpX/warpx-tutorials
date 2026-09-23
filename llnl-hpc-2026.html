@@ -118,7 +118,7 @@
     <a id="search-button" class="btn btn-primary" href="aio.html" role="button" aria-label="Search the All In One page">Search the All In One page</a>
   </div><!--/div.container-fluid -->
 </nav><aside class="col-md-12 lesson-progress"><div class="progress incubator">
-    <div class="progress-bar incubator" role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson Progress">70%</div>
+    <div class="progress-bar incubator" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson Progress">72%</div>
   </div>
 </aside><div class="container">
       <div class="row">
@@ -289,7 +289,7 @@
 <div class="accordion accordion-flush" id="accordionFlush12">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading12">
-        <a href="a-beam-beam-collision.html">11. A Beam-Beam Collision</a>
+        <a href="a-beam-transport-line.html">11. A Beam Transport Line</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -298,7 +298,7 @@
 <div class="accordion accordion-flush" id="accordionFlush13">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading13">
-        <a href="ossfe2025.html">12. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
+        <a href="a-beam-beam-collision.html">12. A Beam-Beam Collision</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -307,7 +307,7 @@
 <div class="accordion accordion-flush" id="accordionFlush14">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading14">
-        <a href="ucb-2026-twostream.html">13. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
+        <a href="ossfe2025.html">13. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -316,7 +316,16 @@
 <div class="accordion accordion-flush" id="accordionFlush15">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading15">
-        <a href="us-fcc-2026.html">14. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
+        <a href="ucb-2026-twostream.html">14. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
+    </div><!--/div.accordion-header-->
+
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush16">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading16">
+        <a href="us-fcc-2026.html">15. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -328,7 +337,7 @@
       <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapsecurrent" aria-expanded="true" aria-controls="flush-collapsecurrent">
         <span class="visually-hidden">Current Chapter</span>
         <span class="current-chapter">
-        15. LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial
+        16. LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial
         </span>
       </button>
     </div><!--/div.accordion-header-->
@@ -461,8 +470,8 @@ hardware is working, and how much data it saves. 🔬 💻</p>
 for the particle-in-cell (PIC) method and the physical questions WarpX
 can help answer. Refer to the <a href="introduction-impactx.html">introduction to ImpactX</a> for beam
 dynamics, accelerator elements, and the questions ImpactX can help
-answer. These pages provide the background for the slides and remain
-available after the workshop.</p>
+answer. These pages provide the background and remain available after
+the workshop.</p>
 <p>Our three stops connect the physics to the computing:</p>
 <table class="table"><colgroup><col width="25%"><col width="25%"><col width="25%"><col width="25%"></colgroup><thead><tr><th>Exercise</th>
 <th>Physical system</th>
@@ -473,15 +482,14 @@ available after the workshop.</p>
 <td>1D grid with computational particles</td>
 <td>Practice running WarpX, reading its log, and plotting output</td>
 </tr><tr><td>🏄 Laser wakefield</td>
-<td>A laser and plasma evolving</td>
+<td>A laser and plasma interacting</td>
 <td>3D grid with computational particles</td>
 <td>Run on CPU and GPU; connect grid size, time steps, and diagnostics
 to cost</td>
-</tr><tr><td>🧲 HTU beam transport</td>
+</tr><tr><td>🧲 Beam transport</td>
 <td>A bunch of electrons tracked through a sequence of magnets</td>
 <td>Computational particles</td>
-<td>Practice running ImpactX; compare particle counts, runtime, output
-size, and beam plots</td>
+<td>Practice running ImpactX; compare beam plots</td>
 </tr></tbody></table></section><section><h2 class="section-heading" id="meet-your-remote-machine">Meet your remote machine 💻<a class="anchor" aria-label="anchor" href="#meet-your-remote-machine"></a></h2>
 <hr class="half-width"><p>Registered participants receive an AWS-hosted JupyterLab link through
 Slack. Open that link to access it. Your remote instance runs a Docker
@@ -501,6 +509,16 @@ remote machine.</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1" aria-label="code-block-1-6"></a><span class="fu">which</span> warpx.1d  <span class="co"># see if and where the 1D executable is</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1" aria-label="code-block-1-7"></a><span class="fu">which</span> warpx.3d  <span class="co"># see if and where the 3D executable is</span></span></code></pre>
 </div>
+<p>🎬 As a first step, prepare your working copies:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="bu">cd</span> ~/warpx-tutorials/episodes/files/llnl-hpc-2026</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="fu">bash</span> startup.sh</span></code></pre>
+</div>
+<p>The script copies the necessary files into the workshop folders.
+Existing files are left untouched; rerunning only fills in missing
+files.</p>
 <p>📝 Keep a small run record as you go: <strong>hardware, input
 settings, elapsed time, output size, and one observation from the
 plots</strong>. Those notes will help you explain differences between
@@ -528,9 +546,11 @@ open terminal.</p>
 <div id="keep-your-previous-results" class="callout-inner">
 <h3 class="callout-title">Keep your previous results</h3>
 <div class="callout-content">
-<p>The codes reuse <code>diags/</code> for output. Before repeating a
-run, rename that folder or copy the exercise files into a separate run
-folder. Keep a copy of the input settings with each result.</p>
+<p>WarpX writes the requested diagnostics to a <code>diags/</code>
+folder and reuses it when rerun. Before repeating a run, copy the input
+file and Python driver into a separate run folder and rerun there. This
+keeps the input settings with each result. The ImpactX notebook already
+creates a separate folder for each run.</p>
 </div>
 </div>
 </div>
@@ -558,7 +578,7 @@ at one tenth of the speed of light. Small density variations create an
 electric field, which influences the electron motion and can make those
 variations grow. This feedback is the <strong>two-stream
 instability</strong>. Eventually particles become trapped in the wave
-and the rapid growth levels off.</p>
+and the rapid growth saturates.</p>
 <p>WarpX simulates this motion along one spatial direction,
 <strong>z</strong>, on a periodic grid: particles leaving one end
 re-enter at the other. A stationary positive background is assumed; ions
@@ -568,34 +588,34 @@ particle–field update cycle.</p>
 <h3 id="launch-your-first-run">Launch your first run 🚀<a class="anchor" aria-label="anchor" href="#launch-your-first-run"></a></h3>
 <p>In a terminal with the CPU environment active, start from the
 <code>llnl-hpc-2026</code> tutorial directory:</p>
-<div class="codewrapper sourceCode" id="cb2">
+<div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="bu">cd</span> two_stream_instability</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="fu">ls</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1" aria-label="code-block-2-3"></a><span class="bu">export</span> <span class="va">OMP_NUM_THREADS</span><span class="op">=</span>2  <span class="co"># one thread per physical core (4 vCPUs = 2 cores)</span></span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="bu">cd</span> two_stream_instability</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="fu">ls</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="bu">export</span> <span class="va">OMP_NUM_THREADS</span><span class="op">=</span>2  <span class="co"># one thread per physical core (4 vCPUs = 2 cores)</span></span></code></pre>
 </div>
 <p>You can launch the same simulation using either the <a href="./files/llnl-hpc-2026/two_stream_instability/run_two_stream_instability.py">Python
 script</a> or the <code>warpx.1d</code> executable. Both read the same
 <a href="./files/llnl-hpc-2026/two_stream_instability/two_stream_instability_input.txt">input
 file</a>. Choose <strong>one</strong> of the commands below for your
 first run.</p>
-<div class="codewrapper sourceCode" id="cb3">
+<div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="co"># Option 1: Python</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="ex">python</span> run_two_stream_instability.py</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1" aria-label="code-block-3-4"></a><span class="co"># Option 2: WarpX executable</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1" aria-label="code-block-3-5"></a><span class="ex">warpx.1d</span> two_stream_instability_input.txt</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="co"># Option 1: Python</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="ex">python</span> run_two_stream_instability.py</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1" aria-label="code-block-4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1" aria-label="code-block-4-4"></a><span class="co"># Option 2: WarpX executable</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1" aria-label="code-block-4-5"></a><span class="ex">warpx.1d</span> two_stream_instability_input.txt</span></code></pre>
 </div>
 <p>Wait for the simulation to finish. Check the output for errors and
 find the <strong>TinyProfiler total time</strong> near the end. Then
 check the disk space used by the diagnostics:</p>
-<div class="codewrapper sourceCode" id="cb4">
+<div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="fu">du</span> <span class="at">-sh</span> diags</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="fu">du</span> <span class="at">-sh</span> diags</span></code></pre>
 </div>
 <p>Record the TinyProfiler total time and output size.</p>
 <div id="accordionSpoiler1" class="accordion spoiler-accordion accordion-flush">
@@ -606,26 +626,26 @@ check the disk space used by the diagnostics:</p>
   💡 Optional: timing and saving output
   </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p>To include Python startup in the timing, launch your run with:</p>
-<div class="codewrapper sourceCode" id="cb5">
+<div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="bu">time</span> python run_two_stream_instability.py</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="bu">time</span> python run_two_stream_instability.py</span></code></pre>
 </div>
 <p>The <strong>real</strong> value in the terminal is the elapsed
 wall-clock time.</p>
 <p>To save standard output and errors to <code>run.log</code>, choose
 one command:</p>
-<div class="codewrapper sourceCode" id="cb6">
+<div class="codewrapper sourceCode" id="cb7">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="co"># Option 1: Python</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1" aria-label="code-block-6-2"></a><span class="ex">python</span> run_two_stream_instability.py <span class="op">&gt;</span> run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1" aria-label="code-block-6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1" aria-label="code-block-6-4"></a><span class="co"># Option 2: WarpX executable</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1" aria-label="code-block-6-5"></a><span class="ex">warpx.1d</span> two_stream_instability_input.txt <span class="op">&gt;</span> run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="co"># Option 1: Python</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1" aria-label="code-block-7-2"></a><span class="ex">python</span> run_two_stream_instability.py <span class="op">&gt;</span> run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1" aria-label="code-block-7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1" aria-label="code-block-7-4"></a><span class="co"># Option 2: WarpX executable</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1" aria-label="code-block-7-5"></a><span class="ex">warpx.1d</span> two_stream_instability_input.txt <span class="op">&gt;</span> run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre>
 </div>
 <p><code>&gt; run.log 2&gt;&amp;1</code> sends both to the file,
 overwriting any existing log.</p>
@@ -700,6 +720,13 @@ of steps, runtime, and output size change?</li>
 <li>Restore the baseline, then change <code>my_constants.cfl</code>. How
 do runtime and the plots compare at the same physical time? Can you
 trust the results just because the run finishes?</li>
+<li>Restore the baseline input and compare CPU runs with <strong>1, 2,
+and 4 OpenMP threads</strong> by setting
+<code>export OMP_NUM_THREADS=</code> accordingly. Calculate the speedup
+as <span class="math inline">\(T_1/T_N\)</span>, where <span class="math inline">\(T_N\)</span> is the time with <span class="math inline">\(N\)</span> threads.</li>
+<li>Restore the baseline input and run on GPU after
+<code>source /opt/venv-gpu/bin/activate</code>. What is the speedup with
+respect to the CPU runs?</li>
 </ol></div>
 </div>
 </div>
@@ -742,32 +769,31 @@ that beam-transport example; its output is not passed to ImpactX.</p>
 <h3 id="launch-your-first-run-1">Launch your first run 🔦<a class="anchor" aria-label="anchor" href="#launch-your-first-run-1"></a></h3>
 <p>Start from the <code>llnl-hpc-2026</code> tutorial directory. If you
 are still in <code>two_stream_instability/</code>, run
-<code>cd ..</code> first. The wakefield files are included in this
-tutorial; no separate download is needed.</p>
-<div class="codewrapper sourceCode" id="cb7">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="bu">cd</span> htu/lwfa_warpx</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1" aria-label="code-block-7-2"></a><span class="bu">source</span> /opt/venv-gpu/bin/activate</span></code></pre>
-</div>
-<p>Choose one command. Both use the same <a href="./files/llnl-hpc-2026/htu/lwfa_warpx/lwfa_warpx_input.txt">input
-file</a>:</p>
+<code>cd ..</code> first. The startup script already prepared the
+wakefield files; no separate download is needed.</p>
 <div class="codewrapper sourceCode" id="cb8">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1" aria-label="code-block-8-1"></a><span class="co"># Option 1: Python</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1" aria-label="code-block-8-2"></a><span class="ex">python</span> run_lwfa_warpx.py</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1" aria-label="code-block-8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1" aria-label="code-block-8-4"></a><span class="co"># Option 2: WarpX executable</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1" aria-label="code-block-8-5"></a><span class="ex">warpx.3d</span> lwfa_warpx_input.txt</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1" aria-label="code-block-8-1"></a><span class="bu">cd</span> htu/lwfa_warpx</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1" aria-label="code-block-8-2"></a><span class="bu">source</span> /opt/venv-gpu/bin/activate</span></code></pre>
+</div>
+<p>Choose one command. Both use the same <a href="./files/laser-wakefield/lwfa_warpx_input.txt">input file</a>:</p>
+<div class="codewrapper sourceCode" id="cb9">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1" aria-label="code-block-9-1"></a><span class="co"># Option 1: Python</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1" aria-label="code-block-9-2"></a><span class="ex">python</span> run_lwfa_warpx.py</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1" aria-label="code-block-9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1" aria-label="code-block-9-4"></a><span class="co"># Option 2: WarpX executable</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1" aria-label="code-block-9-5"></a><span class="ex">warpx.3d</span> lwfa_warpx_input.txt</span></code></pre>
 </div>
 <p>In a second terminal, inspect GPU usage with <code>nvidia-smi</code>
 while the run progresses. Once it finishes, check for errors and record
 the <strong>TinyProfiler total time</strong> and output size:</p>
-<div class="codewrapper sourceCode" id="cb9">
+<div class="codewrapper sourceCode" id="cb10">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1" aria-label="code-block-9-1"></a><span class="fu">du</span> <span class="at">-sh</span> diags</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1" aria-label="code-block-10-1"></a><span class="fu">du</span> <span class="at">-sh</span> diags</span></code></pre>
 </div>
 <p>GPU execution requires a GPU-enabled WarpX build. CPU execution is
 also possible but can take substantially longer.</p>
@@ -799,8 +825,8 @@ approximately <strong>0.129 femtoseconds</strong> each.</p>
 </div>
 <div class="section level3">
 <h3 id="find-the-wake">Find the wake 🏄<a class="anchor" aria-label="anchor" href="#find-the-wake"></a></h3>
-<p>Open <a href="./files/llnl-hpc-2026/htu/lwfa_warpx/wakefield.ipynb">wakefield.ipynb</a>
-from the <code>llnl-hpc-2026/htu/lwfa_warpx</code> folder and select
+<p>Open <a href="./files/laser-wakefield/wakefield.ipynb">wakefield.ipynb</a> from
+the <code>llnl-hpc-2026/htu/lwfa_warpx</code> folder and select
 <strong>WarpX GPU</strong>. It analyzes the completed run; it does not
 launch a simulation or require GPU acceleration.</p>
 <p>Use the <a href="a-laser-wakefield-accelerator.html#interpret-the-results">plot
@@ -819,30 +845,8 @@ the final frame is after the moving window has left the plasma.</p>
 <p>Describe what you see 👀. Where is the wake relative to the laser?
 What evidence do you see that electrons gain energy? How does the wake
 change as it crosses the plasma?</p>
-<p><strong>Optional: regular versus random particle
-placement</strong></p>
-<p>The raw electron histogram can show horizontal stripes: the baseline
-places one macroparticle per cell on a regular grid, and the histogram
-bins resolve those rows. Try randomizing the electron positions within
-each cell. In <code>lwfa_warpx_input.txt</code>, replace</p>
-<pre class="text"><code>electrons.injection_style = "NUniformPerCell"
-electrons.num_particles_per_cell_each_dim = 1 1 1</code></pre>
-<p>with</p>
-<pre class="text"><code><span><span class="va">electrons.injection_style</span> <span class="op">=</span> <span class="st">"NRandomPerCell"</span></span>
-<span><span class="va">electrons.num_particles_per_cell</span> <span class="op">=</span> <span class="fl">1</span></span></code></pre>
-<p>Remove the old <code>num_particles_per_cell_each_dim</code> line.
-Keep the density, grid, momentum distribution, and other settings fixed.
-These two loading styles use <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html#particle-initialization" class="external-link">different
-particle-count parameters</a>.</p>
-<p>Preserve the baseline diagnostics before rerunning. Compare the
-electron histogram and deposited-density plot at the same saved step. Do
-the regular bands disappear? How much random variation appears
-instead?</p>
-<p>This keeps one macroparticle per cell but changes its position.
-Random loading can replace regular sampling patterns with statistical
-noise and can affect the simulated fields, especially at this low
-particle count. A less striped plot alone does not demonstrate greater
-physical accuracy.</p>
+<p>For an optional particle-loading experiment, see <a href="a-laser-wakefield-accelerator.html#regular-versus-random-particle-placement">regular
+versus random placement</a>.</p>
 <p><strong>Computing</strong></p>
 <ol style="list-style-type: decimal"><li>Change the grid spacing in all three directions, keeping the
 physical box size and other settings fixed. How do the cell count and
@@ -871,18 +875,13 @@ steps.</p>
 </div>
 </div>
 </section><section><h2 class="section-heading" id="exercise-3-track-an-electron-beam-through-a-real-beamline">Exercise 3: track an electron beam through a real beamline<a class="anchor" aria-label="anchor" href="#exercise-3-track-an-electron-beam-through-a-real-beamline"></a></h2>
-<hr class="half-width"><p>🧲 Once a beam is created, magnets steer and focus it. Here, ImpactX
-tracks an independent electron bunch through the <strong>HTU
-beamline</strong>, using the <a href="https://impactx.readthedocs.io/en/latest/usage/examples/htu_beamline/README.html" class="external-link">upstream
-example</a> with <strong>100 MeV total energy</strong> and <strong>25 pC
-charge</strong>.</p>
-<p>Quadrupole magnets focus the beam, while a <strong>chicane</strong>
-of bending magnets sends it along a sideways detour. ImpactX tracks
-particles through these prescribed magnets. <strong>Space charge is
-off</strong>: particles do not interact through their own fields.</p>
+<hr class="half-width"><p>🧲 Track an independent electron bunch through the <strong>HTU
+beamline</strong> with ImpactX. Read <a href="a-beam-transport-line.html">A Beam Transport Line</a> for the
+initial bunch, magnet sequence, and modeling assumptions. This example
+uses its own source; it does not read the wakefield output.</p>
 <div class="section level3">
 <h3 id="launch-your-first-run-2">Launch your first run 🧲<a class="anchor" aria-label="anchor" href="#launch-your-first-run-2"></a></h3>
-<p>Open <a href="./files/llnl-hpc-2026/htu/beamline_impactx/htu_transport.ipynb">htu_transport.ipynb</a>
+<p>Open <a href="./files/beam-transport/htu_transport.ipynb">htu_transport.ipynb</a>
 from <code>llnl-hpc-2026/htu/beamline_impactx/</code> in JupyterLab and
 select <strong>WarpX CPU</strong>. This notebook launches the simulation
 as well as plotting its results. Keep the default settings and run steps
@@ -896,32 +895,15 @@ folder under <code>llnl-hpc-2026/htu/runs/</code>.</p>
 <th>Meaning in this run</th>
 </tr></thead><tbody><tr><td><code>particles = 10000</code></td>
 <td>Number of macroparticles sampling the bunch</td>
-</tr><tr><td><code>total_energies_MeV = [100]</code></td>
-<td>Beam total energy, including rest energy, in MeV</td>
-</tr><tr><td><code>chicane_r56_um = 200.0</code></td>
-<td>Chicane control setting, in µm</td>
-</tr></tbody></table><p>The notebook shows the ImpactX setup, reference particle, Gaussian
-bunch, lattice, and tracking calls in a function that runs directly in
-the notebook kernel. It downloads the upstream
-<code>htu_lattice.py</code> for the magnet sequence. The <a href="./files/llnl-hpc-2026/htu/beamline_impactx/impactx_helpers.py">helper
-script</a> handles analysis and plots. Increasing the macroparticle
-count samples the same <strong>25 pC</strong> bunch more finely; it does
-not increase its charge.</p>
-</div>
+</tr><tr><td><code>reference_total_energy_MeV = 100.0</code></td>
+<td>Reference and bunch total energy, including rest energy, in MeV</td>
+</tr></tbody></table></div>
 <div class="section level3">
 <h3 id="explore-the-beam-screens">Explore the beam screens 🔍<a class="anchor" aria-label="anchor" href="#explore-the-beam-screens"></a></h3>
-<p>First use the notebook’s diagnostic-reading cells to open a saved
-screen, extract particle coordinates and weights, and plot a charge
-histogram with Matplotlib. Then use <strong>Play screens</strong> or the
-slider to follow the transverse beam shape. Turn off <strong>Zoom to
-fit</strong> to compare sizes on fixed axes.</p>
-<figure><img src="./files/llnl-hpc-2026/htu/images/htu-transmission.png" alt="Horizontal and vertical rms beam sizes versus distance, with screen landmarks identifying focusing, the chicane, and the undulator." class="figure mx-auto d-block"><div class="figcaption">Horizontal and vertical beam sizes along
-HTU.</div>
-</figure><p>The <strong>rms sizes</strong> describe the spread of particle
-positions in x and y. The magnet diagram below the curves shows where
-the beamline elements sit. Apertures are not modeled, so the charge
-check does not tell you whether this beam would fit through real
-openings.</p>
+<p>Run the diagnostic-reading and plotting cells, then use <strong>Play
+screens</strong> or the slider to follow the beam. Use the <a href="a-beam-transport-line.html#interpret-the-results">HTU plot
+guide</a> to connect screen images and rms sizes to the magnets. Turn
+off <strong>Zoom to fit</strong> when comparing beam sizes.</p>
 <div id="experiments-2" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -943,30 +925,13 @@ keeping the other settings fixed, then rerun the simulation and beam
 viewer. How does the beam’s sampled shape change? Record the runtime and
 output size, without assuming either scales in direct proportion to
 particle count.</p>
+<p>Switch the notebook kernel to <strong>WarpX GPU</strong> and rerun.
+How does the performance differ from CPU?</p>
 </div>
 </div>
 </div>
-<div id="accordionSpoiler2" class="accordion spoiler-accordion accordion-flush">
-<div class="accordion-item">
-<button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
-  <h3 class="accordion-header" id="headingSpoiler2">
-  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div>
-  Optional: change the beam energy
-  </h3>
-</button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
-<div class="accordion-body">
-<p>Set <code>particles = 10000</code>,
-<code>total_energies_MeV = [100, 150]</code>, and
-<code>chicane_r56_um = 0.0</code>, then rerun the settings cell,
-simulation, and beam viewer. How does beam transport change with energy
-when the magnets stay fixed?</p>
-<p>Both runs have zero chicane field. The 150 MeV bunch also starts with
-smaller angular divergence and relative energy spread.</p>
-</div>
-</div>
-</div>
-</div>
+<p>For an optional physics extension, try the <a href="a-beam-transport-line.html#change-the-beam-energy">beam-energy
+experiment</a>.</p>
 </div>
 </section><section><h2 class="section-heading" id="what-changes-when-the-simulation-gets-larger">What changes when the simulation gets larger? 🌍<a class="anchor" aria-label="anchor" href="#what-changes-when-the-simulation-gets-larger"></a></h2>
 <hr class="half-width"><p>These examples fit on one machine. A larger plasma, finer grid, or

@@ -212,7 +212,7 @@
         <ul><li><a href="#overview-of-pic">Overview of PIC</a></li>
 <li><a href="#what-goes-in-what-comes-out">What goes in, what comes out?</a></li>
 <li><a href="#features-and-applications-of-warpx">Features and applications of WarpX</a></li>
-<li><a href="#from-the-pic-model-to-high-performance-computing">From the PIC model to high-performance computing 🏋️</a></li>
+<li><a href="#from-pic-to-hpc">From PIC to HPC</a></li>
         </ul></div><!--/div.accordion-body-->
     </div><!--/div.accordion-collapse-->
 
@@ -303,7 +303,7 @@
 <div class="accordion accordion-flush" id="accordionFlush12">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading12">
-        <a href="a-beam-beam-collision.html">11. A Beam-Beam Collision</a>
+        <a href="a-beam-transport-line.html">11. A Beam Transport Line</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -312,7 +312,7 @@
 <div class="accordion accordion-flush" id="accordionFlush13">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading13">
-        <a href="ossfe2025.html">12. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
+        <a href="a-beam-beam-collision.html">12. A Beam-Beam Collision</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -321,7 +321,7 @@
 <div class="accordion accordion-flush" id="accordionFlush14">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading14">
-        <a href="ucb-2026-twostream.html">13. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
+        <a href="ossfe2025.html">13. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -330,7 +330,7 @@
 <div class="accordion accordion-flush" id="accordionFlush15">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading15">
-        <a href="us-fcc-2026.html">14. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
+        <a href="ucb-2026-twostream.html">14. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -339,7 +339,16 @@
 <div class="accordion accordion-flush" id="accordionFlush16">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading16">
-        <a href="llnl-hpc-2026.html">15. LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial</a>
+        <a href="us-fcc-2026.html">15. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
+    </div><!--/div.accordion-header-->
+
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush17">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading17">
+        <a href="llnl-hpc-2026.html">16. LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -481,17 +490,16 @@ define a well-posed initial condition, and then iterate the
 following:</p>
 <ul><li>Interpolate the fields from the grid to the particles’ positions and
 compute the Lorentz force that acts on each macroparticle,</li>
-<li>Advance the position and momenta of the macroparticles using Newton
-equations,</li>
-<li>Project while cumulating the contribution to the current density of
-each macroparticle,</li>
+<li>Advance the position and momenta of the macroparticles using the
+relativistic equations of motion,</li>
+<li>Deposit the macroparticles’ current contributions onto the
+grid,</li>
 <li>Solve Maxwell’s equations.</li>
-</ul><p>In some cases, one can choose to solve Poisson’s equation instead of
-Maxwell’s. In that case, the current <span class="math inline">\(\textbf{J}\)</span> calculation is replaced with
-the charge density <span class="math inline">\(\rho\)</span>
-calculation. Once <span class="math inline">\(\rho\)</span> is known,
-the electrostatic potential is computed to then find the electric
-field.</p>
+</ul><p>In some cases, one can adopt an electrostatic approximation and solve
+Poisson’s equation instead of the full Maxwell equations. In that case,
+the current <span class="math inline">\(\textbf{J}\)</span> calculation
+is replaced with the charge density <span class="math inline">\(\rho\)</span> calculation. Once <span class="math inline">\(\rho\)</span> is known, the electrostatic
+potential is computed to then find the electric field.</p>
 <p>🔄 <strong>Self-consistent means feedback.</strong> A small excess of
 electrons in one region changes the electric field. That field changes
 electron motion, which changes the charge distribution and the field
@@ -575,7 +583,7 @@ acceleration, astrophysics, others?</p>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="from-the-pic-model-to-high-performance-computing">From the PIC model to high-performance computing 🏋️<a class="anchor" aria-label="anchor" href="#from-the-pic-model-to-high-performance-computing"></a></h2>
+</section><section><h2 class="section-heading" id="from-pic-to-hpc">From PIC to HPC<a class="anchor" aria-label="anchor" href="#from-pic-to-hpc"></a></h2>
 <hr class="half-width"><p>The PIC loop explains where the computing work comes from: update
 many particles, transfer information between particles and the grid, and
 update fields on many cells. These operations repeat at every time
@@ -587,29 +595,30 @@ step.</p>
 <td>Determines which spatial structures can be resolved</td>
 <td>Finer grids have more cells and require more memory</td>
 </tr><tr><td>Time step</td>
-<td>Resolves evolution and must satisfy the chosen solver’s stability
-constraints</td>
-<td>More steps are needed to cover the same physical duration</td>
-</tr><tr><td>Macroparticles per cell</td>
-<td>Controls how densely the particle distribution is sampled</td>
+<td>Determines which time scales can be resolved and must satisfy the
+chosen solver’s stability constraints, if any</td>
+<td>Shorter steps require more computing time to cover the same physical
+duration</td>
+</tr><tr><td>Macroparticles</td>
+<td>Controls how densely the particle distribution is sampled and the
+noise</td>
 <td>More particles require more work and memory</td>
 </tr><tr><td>Saved diagnostics</td>
 <td>Determine which changes can be inspected after the run</td>
 <td>Writing and reading data take time and storage</td>
-</tr></tbody></table><p>For example, a laser-wakefield simulation must resolve the laser as
-well as the surrounding plasma. A three-dimensional grid can therefore
-become large, even though the physical experiment is small. More
-macroparticles improve sampling, but do not compensate for an
-inadequately resolved grid.</p>
+</tr></tbody></table><p>A simulation must resolve the characteristic spatial and time scales
+of interest. A three-dimensional grid can therefore become large, even
+though the physical experiment is small. More macroparticles improve
+sampling, but do not compensate for an inadequately resolved grid.</p>
 <p>📏 <strong>Resolution is a choice to check.</strong> Grid spacing
 resolves spatial structures, time steps resolve their evolution, and
 particle count controls sampling noise. A successful run alone does not
 establish accuracy. Repeat with finer numerical settings and check
-whether the quantities you care about—such as wave growth or electron
-energy—change appreciably. This is a <strong>convergence study</strong>:
-its purpose is to establish adequate resolution for your observable,
-rather than simply to make the calculation larger.</p>
-<p><strong>High-performance computing (HPC)</strong> distributes this
+whether the quantities you care about change appreciably. This is a
+<strong>convergence study</strong>: its purpose is to establish adequate
+resolution for your observable, rather than simply to make the
+calculation larger.</p>
+<p>🏎️ <strong>High-performance computing (HPC)</strong> distributes this
 work across computing resources. A CPU has cores that can work
 concurrently; a GPU can carry out many similar particle or grid
 operations in parallel. On larger machines, work is also distributed
@@ -623,14 +632,12 @@ processes and threads.</p>
 grid into blocks. Processes can work on different blocks, while CPU
 threads or GPU threads update particles and fields within them.
 Neighboring blocks exchange field data, and particles crossing a block
-boundary must be passed to their new owner. If particles concentrate in
-one region, some processes have more work than others. This is why both
-communication and balancing the work matter when moving from one device
-to a large machine.</p>
-<p>The <a href="llnl-hpc-2026.html">HPC Innovation Center tutorial</a>
-connects these ideas to actual runs: a small two-stream simulation on a
-CPU and a 3D wakefield simulation on a GPU. For transport through
-accelerator components, also read <a href="introduction-impactx.html">Introduction to ImpactX</a>.</p>
+boundary must be passed to their new owner (we call it
+<strong>redistribution</strong>). If particles concentrate in one
+region, some processes may have more work than others and the simulation
+can be <strong>unbalanced</strong>. This is why both communication and
+balancing the workload matter when moving from one device to a large
+machine.</p>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -639,11 +646,13 @@ accelerator components, also read <a href="introduction-impactx.html">Introducti
 <div class="callout-inner">
 <div class="callout-content">
 <p>🔮 <strong>The particle-in-cell</strong> method is used to simulate
-the self-consistent dynamics of relativistic charged particles</p>
+the dynamics of charged particles and their self-consistent fields</p>
 <p>🚀 <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
-is an open-source high-performance particle-in-cell code</p>
+is an open-source particle-in-cell code</p>
 <p>✨ <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
 is used in a variety of scientific domains</p>
+<p>🏎️ <a href="https://ecp-warpx.github.io/" class="external-link"><strong>WarpX</strong></a>
+is a high-performance code and can leverage HPC</p>
 </div>
 </div>
 </div>

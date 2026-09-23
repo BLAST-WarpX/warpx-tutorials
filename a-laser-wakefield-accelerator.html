@@ -118,7 +118,7 @@
     <a id="search-button" class="btn btn-primary" href="aio.html" role="button" aria-label="Search the All In One page">Search the All In One page</a>
   </div><!--/div.container-fluid -->
 </nav><aside class="col-md-12 lesson-progress"><div class="progress incubator">
-    <div class="progress-bar incubator" role="progressbar" style="width: 34%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson Progress">34%</div>
+    <div class="progress-bar incubator" role="progressbar" style="width: 32%" aria-valuenow="32" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson Progress">32%</div>
   </div>
 </aside><div class="container">
       <div class="row">
@@ -307,7 +307,7 @@
 <div class="accordion accordion-flush" id="accordionFlush12">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading12">
-        <a href="a-beam-beam-collision.html">11. A Beam-Beam Collision</a>
+        <a href="a-beam-transport-line.html">11. A Beam Transport Line</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -316,7 +316,7 @@
 <div class="accordion accordion-flush" id="accordionFlush13">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading13">
-        <a href="ossfe2025.html">12. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
+        <a href="a-beam-beam-collision.html">12. A Beam-Beam Collision</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -325,7 +325,7 @@
 <div class="accordion accordion-flush" id="accordionFlush14">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading14">
-        <a href="ucb-2026-twostream.html">13. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
+        <a href="ossfe2025.html">13. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -334,7 +334,7 @@
 <div class="accordion accordion-flush" id="accordionFlush15">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading15">
-        <a href="us-fcc-2026.html">14. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
+        <a href="ucb-2026-twostream.html">14. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -343,7 +343,16 @@
 <div class="accordion accordion-flush" id="accordionFlush16">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading16">
-        <a href="llnl-hpc-2026.html">15. LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial</a>
+        <a href="us-fcc-2026.html">15. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
+    </div><!--/div.accordion-header-->
+
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush17">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading17">
+        <a href="llnl-hpc-2026.html">16. LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -392,7 +401,7 @@
   <div class="col-xl-8 col-lg-12 primary-content">
     <nav class="lesson-content mx-md-4" aria-label="Previous and Next Chapter Top"><!-- content for small screens --><div class="d-block d-sm-block d-md-none">
         <a class="chapter-link" href="a-laser-driven-ion-accelerator.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
-        <a class="chapter-link float-end" href="a-beam-beam-collision.html" rel="next">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="a-beam-transport-line.html" rel="next">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
@@ -400,8 +409,8 @@
           <i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>
           Previous: A Laser-Driven Ion Accelerator...
         </a>
-        <a class="chapter-link float-end" href="a-beam-beam-collision.html" rel="next">
-          Next: A Beam-Beam Collision...
+        <a class="chapter-link float-end" href="a-beam-transport-line.html" rel="next">
+          Next: A Beam Transport Line...
           <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i>
         </a>
       </div>
@@ -578,15 +587,17 @@ container</a> provides the software and instructions for GPU access. For
 other systems, see the <a href="https://warpx.readthedocs.io/en/latest/install/users.html" class="external-link">WarpX
 installation documentation</a>. CPU execution is also possible, but can
 take substantially longer.</p>
-<p>Use these files in <code>episodes/files/laser-wakefield/</code>:</p>
+<p>For the hosted workshop, follow the <a href="llnl-hpc-2026.html#exercise-2-accelerate-electrons-with-a-laser">LLNL
+launch instructions</a> and use the included files. For independent use,
+the same example is in <code>episodes/files/laser-wakefield/</code>:</p>
 <ul><li>
-<a href="./files/laser-wakefield/lwfa_warpx/wakefield.ipynb">Analysis
-notebook</a> and <a href="./files/laser-wakefield/lwfa_warpx/warpx_helpers.py">helper
-script</a> in <code>laser-wakefield/lwfa_warpx/</code>.</li>
+<a href="./files/laser-wakefield/wakefield.ipynb">Analysis
+notebook</a> and <a href="./files/laser-wakefield/warpx_helpers.py">helper script</a> in
+<code>laser-wakefield/</code>.</li>
 <li>
-<a href="./files/laser-wakefield/lwfa_warpx/lwfa_warpx_input.txt">Input
-file</a> and <a href="./files/laser-wakefield/lwfa_warpx/run_lwfa_warpx.py">Python
-driver</a> together in <code>laser-wakefield/lwfa_warpx/</code>.</li>
+<a href="./files/laser-wakefield/lwfa_warpx_input.txt">Input
+file</a> and <a href="./files/laser-wakefield/run_lwfa_warpx.py">Python
+driver</a> together in <code>laser-wakefield/</code>.</li>
 </ul><div class="section level3">
 <h3 id="download-the-example">Download the example<a class="anchor" aria-label="anchor" href="#download-the-example"></a></h3>
 <p>In a JupyterLab terminal, start in a folder visible in the file
@@ -618,8 +629,7 @@ and run:</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="bu">cd</span> lwfa_warpx</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="bu">time</span> python run_lwfa_warpx.py <span class="op">&gt;</span> run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="bu">time</span> python run_lwfa_warpx.py <span class="op">&gt;</span> run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre>
 </div>
 <p>In the tutorial container, activate the GPU environment with
 <code>source /opt/venv-gpu/bin/activate</code> before this command. On
@@ -643,13 +653,13 @@ for successful completion before opening the diagnostics.</p>
 has the smallest grid spacing? How does that choice help us follow the
 laser?</p>
 </section><section><h2 class="section-heading" id="interpret-the-results">Interpret the results<a class="anchor" aria-label="anchor" href="#interpret-the-results"></a></h2>
-<hr class="half-width"><p>Open <a href="./files/laser-wakefield/lwfa_warpx/wakefield.ipynb">wakefield.ipynb</a>
-from the <code>laser-wakefield/lwfa_warpx</code> folder after the run
-finishes. Select the kernel containing the analysis packages; in the
-tutorial container, <strong>WarpX GPU</strong> provides them. Plotting
-saved data itself does not require a GPU. The notebook reads
-<code>diags/diag1</code> and does not launch the simulation.</p>
-<p>Time to see what happened! 🔍 Use the three plots together:</p>
+<hr class="half-width"><p>Open <a href="./files/laser-wakefield/wakefield.ipynb">wakefield.ipynb</a> from
+the <code>laser-wakefield</code> folder after the run finishes. Select
+the kernel containing the analysis packages; in the tutorial container,
+<strong>WarpX GPU</strong> provides them. Plotting saved data itself
+does not require a GPU. The notebook reads <code>diags/diag1</code> and
+does not launch the simulation.</p>
+<p>Time to see what happened! 🔍 Use the plots together:</p>
 <ol style="list-style-type: decimal"><li>🫧 <strong>Find the cavity — electron density:</strong> a slice at y
 = 0 reveals the electron-depleted cavity and the surrounding
 concentration of electrons. The three-frame figure uses a shared color
@@ -680,8 +690,22 @@ the cavity behind it. Find a region where the electric field would
 accelerate a forward-moving electron. Finally, inspect the energy
 spectrum. These views tell different parts of the same story; the
 spectrum alone does not show where those electrons are.</p>
+<p>The notebook starts with a raw electron-charge histogram and a slice
+of the total transverse field <code>Ey</code>, which includes both laser
+and plasma fields. Its density-evolution plots use the moving coordinate
+<code>z-ct</code>. In the single-snapshot figure, white contours show
+<code>|Ey|</code>; the spectrum includes all electrons still in the
+moving box, including untrapped plasma electrons.</p>
+<p>The fourth snapshot panel reads <code>ParticleEnergy.txt</code> and
+<code>FieldEnergy.txt</code> from <code>diags/reducedfiles/</code>,
+saved every simulation step. It compares total particle kinetic energy
+(all species) and electromagnetic field energy in mJ versus physical
+time in fs; the dashed line marks the selected snapshot. Laser injection
+and particles and fields crossing the moving box boundaries mean their
+sum need not stay constant. If these files are missing from an older
+run, preserve its diagnostics and rerun with the current input.</p>
 <p>To save your figures without opening Jupyter, run these commands from
-<code>lwfa_warpx/</code>:</p>
+<code>laser-wakefield/</code>:</p>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -731,6 +755,39 @@ not save a snapshot!</p>
 </div>
 </div>
 </div>
+<div id="regular-versus-random-particle-placement" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="regular-versus-random-particle-placement" class="callout-inner">
+<h3 class="callout-title">Regular versus random particle placement</h3>
+<div class="callout-content">
+<p>The raw electron histogram can show horizontal stripes: the baseline
+places one macroparticle per cell on a regular grid, and the histogram
+bins resolve those rows. Try randomizing the electron positions within
+each cell. In <code>lwfa_warpx_input.txt</code>, replace</p>
+<pre class="text"><code>electrons.injection_style = "NUniformPerCell"
+electrons.num_particles_per_cell_each_dim = 1 1 1</code></pre>
+<p>with</p>
+<pre class="text"><code><span><span class="va">electrons.injection_style</span> <span class="op">=</span> <span class="st">"NRandomPerCell"</span></span>
+<span><span class="va">electrons.num_particles_per_cell</span> <span class="op">=</span> <span class="fl">1</span></span></code></pre>
+<p>Remove the old <code>num_particles_per_cell_each_dim</code> line.
+Keep the density, grid, momentum distribution, and other settings fixed.
+These two loading styles use <a href="https://warpx.readthedocs.io/en/latest/usage/parameters.html#particle-initialization" class="external-link">different
+particle-count parameters</a>.</p>
+<p>Preserve the baseline diagnostics before rerunning. Compare the
+electron histogram and deposited-density plot at the same saved step. Do
+the regular bands disappear? How much random variation appears
+instead?</p>
+<p>This keeps one macroparticle per cell but changes its position.
+Random loading can replace regular sampling patterns with statistical
+noise and can affect the simulated fields, especially at this low
+particle count. A less striped plot alone does not demonstrate greater
+physical accuracy.</p>
+</div>
+</div>
+</div>
 </section><section><h2 class="section-heading" id="how-far-can-we-trust-the-picture">How far can we trust the picture? 🔍<a class="anchor" aria-label="anchor" href="#how-far-can-we-trust-the-picture"></a></h2>
 <hr class="half-width"><p>A striking picture is a starting point for investigation. The compact
 laser and target make this visual demonstration practical. The
@@ -772,7 +829,7 @@ any links that you are not going to use.
 </section></div> <!-- / div.lesson-content -->
     </main><!-- / main#main-content.main-content --><nav class="bottom-pagination mx-md-4" aria-label="Previous and Next Chapter Bottom"><div class="d-block d-sm-block d-md-none">
         <a class="chapter-link" href="a-laser-driven-ion-accelerator.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
-        <a class="chapter-link float-end" href="a-beam-beam-collision.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="a-beam-transport-line.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
@@ -780,8 +837,8 @@ any links that you are not going to use.
           <i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>
           Previous: A Laser-Driven Ion Accelerator...
         </a>
-        <a class="chapter-link float-end" href="a-beam-beam-collision.html" rel="next">
-          Next: A Beam-Beam Collision...
+        <a class="chapter-link float-end" href="a-beam-transport-line.html" rel="next">
+          Next: A Beam Transport Line...
           <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i>
         </a>
       </div>

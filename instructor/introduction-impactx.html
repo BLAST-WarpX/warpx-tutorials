@@ -303,7 +303,7 @@
 <div class="accordion accordion-flush" id="accordionFlush12">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading12">
-        <a href="a-beam-beam-collision.html">11. A Beam-Beam Collision</a>
+        <a href="a-beam-transport-line.html">11. A Beam Transport Line</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -312,7 +312,7 @@
 <div class="accordion accordion-flush" id="accordionFlush13">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading13">
-        <a href="ossfe2025.html">12. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
+        <a href="a-beam-beam-collision.html">12. A Beam-Beam Collision</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -321,7 +321,7 @@
 <div class="accordion accordion-flush" id="accordionFlush14">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading14">
-        <a href="ucb-2026-twostream.html">13. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
+        <a href="ossfe2025.html">13. OSSFE 2025 - Using WarpX, a general purpose particle-in-cell code</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -330,7 +330,7 @@
 <div class="accordion accordion-flush" id="accordionFlush15">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading15">
-        <a href="us-fcc-2026.html">14. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
+        <a href="ucb-2026-twostream.html">14. UCB 2026 -- Two-Stream Instability Live Tutorial</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -339,7 +339,16 @@
 <div class="accordion accordion-flush" id="accordionFlush16">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading16">
-        <a href="llnl-hpc-2026.html">15. LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial</a>
+        <a href="us-fcc-2026.html">15. US-FCC 2026: Beam-Beam and Tracking Tutorial</a>
+    </div><!--/div.accordion-header-->
+
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush17">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading17">
+        <a href="llnl-hpc-2026.html">16. LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -610,24 +619,13 @@ independently. This tracking is <strong>embarrassingly parallel</strong>
 coordination during their advance. More particles increase both tracking
 work and the amount of particle data that monitors can save.</p>
 <p>🤝 <strong>Collective effects change the challenge.</strong> The
-particles now influence one another through shared fields, requiring
-more computational work and coordination. For space charge, ImpactX can
-use <strong>PIC</strong> to deposit particle charge on a grid, solve for
-the field, and apply it back to the particles, avoiding a direct
-calculation of every particle pair’s interaction. Large calculations
-need both computing resources and efficient field solvers,
-communication, and workload distribution. This is an important
-connection to WarpX: both use particles coupled through fields on a
-grid. The field models differ—ImpactX’s PIC space-charge solver uses
-Poisson’s equation, while the electromagnetic WarpX examples evolve
-Maxwell’s equations.</p>
-<p>⏱️ <strong>Start with a small run.</strong> A CPU is often enough for
-a teaching example. The useful performance measurement depends on the
-study. A single small beamline run may spend much of its time starting
-up and writing diagnostics. A larger particle ensemble or many repeated
-magnet settings can make the tracking cost more significant. Compare
-runs with the same physical model and record what changed: particle
-count, hardware, and output settings.</p>
+particles now influence one another through the electromagnetic field,
+requiring more computational work and coordination. For space charge,
+ImpactX can use <strong>PIC</strong> to deposit particle charge on a
+grid, solve for the field, and apply it back to the particles, avoiding
+a direct calculation of every particle pair’s interaction. Large
+calculations need both computing resources and efficient field solvers,
+communication, and workload distribution.</p>
 </section><section><h2 class="section-heading" id="warpx-and-impactx-in-the-same-workflow">WarpX and ImpactX in the same workflow 🔗<a class="anchor" aria-label="anchor" href="#warpx-and-impactx-in-the-same-workflow"></a></h2>
 <hr class="half-width"><p><a href="introduction.html">WarpX</a> can resolve the evolving
 particles and fields in a laser–plasma accelerator. ImpactX can then

@@ -13,6 +13,9 @@
     <loc>https://warpx-tutorials.github.io/NA/a-beam-beam-collision.html</loc>
   </url>
   <url>
+    <loc>https://warpx-tutorials.github.io/NA/a-beam-transport-line.html</loc>
+  </url>
+  <url>
     <loc>https://warpx-tutorials.github.io/NA/a-fodo-cell.html</loc>
   </url>
   <url>
@@ -59,6 +62,9 @@
   </url>
   <url>
     <loc>https://warpx-tutorials.github.io/NA/instructor/a-beam-beam-collision.html</loc>
+  </url>
+  <url>
+    <loc>https://warpx-tutorials.github.io/NA/instructor/a-beam-transport-line.html</loc>
   </url>
   <url>
     <loc>https://warpx-tutorials.github.io/NA/instructor/a-fodo-cell.html</loc>
