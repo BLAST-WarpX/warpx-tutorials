@@ -76,7 +76,7 @@ The hosted image provides two Python environments:
 
 | Where you work | CPU | GPU |
 | --- | --- | --- |
-| Jupyter notebook: **Kernel > Change Kernel** | **WarpX CPU** | **WarpX GPU** |
+| Jupyter notebook:<br>**Kernel > Change Kernel** | **WarpX CPU** | **WarpX GPU** |
 | Terminal activation command | `source /opt/venv-cpu/bin/activate` | `source /opt/venv-gpu/bin/activate` |
 
 💡 **Two places to choose your environment:** both environments include
