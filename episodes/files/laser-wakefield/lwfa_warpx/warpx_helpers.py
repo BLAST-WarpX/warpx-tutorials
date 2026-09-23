@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Plot a central slice of the wake and its electron energy spectrum."""
+"""Plotting helpers for the laser wakefield accelerator notebook."""
+
 import argparse
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 from openpmd_viewer import OpenPMDTimeSeries
-from scipy.constants import e, m_e, c
+from scipy.constants import c, e, m_e
 
 
+# WarpX analysis
 def plot_snapshot(diags, iteration=None):
-    import matplotlib.pyplot as plt
     ts = OpenPMDTimeSeries(str(diags))
     # The final frame is in vacuum: choose a frame inside the target by default.
     if iteration is None:
@@ -30,7 +32,7 @@ def plot_snapshot(diags, iteration=None):
     if peak > 0:
         axes[0].contour(info.z*1e6, info.x*1e6, np.abs(ey), levels=[0.3*peak,0.7*peak],
                         colors='white', linewidths=0.5)
-    axes[0].set(title='Electron density; white: laser field', xlabel='z (µm)', ylabel='x (µm)')
+    axes[0].set(title='Electron density; white: |Ey|', xlabel='z (µm)', ylabel='x (µm)')
     scale = max(float(np.max(np.abs(ez)))/1e9, 1e-10)
     im = axes[1].imshow(ez/1e9, origin='lower', extent=extent, aspect='auto',
                         cmap='RdBu_r', vmin=-scale, vmax=scale)
@@ -46,22 +48,8 @@ def plot_snapshot(diags, iteration=None):
     return fig
 
 
-def main():
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('diags', nargs='?', default='diags/diag1')
-    parser.add_argument('--iteration', type=int)
-    parser.add_argument('--output', type=Path, default=Path('wakefield.png'))
-    parser.add_argument('--evolution', action='store_true', help='Plot three density snapshots')
-    args=parser.parse_args()
-    fig=plot_density_evolution(args.diags) if args.evolution else plot_snapshot(args.diags,args.iteration)
-    fig.savefig(args.output,dpi=150)
-    print(args.output.resolve())
-
-
-
 def plot_density_evolution(diags, iterations=None):
     """Three density slices on one color scale, following the moving window."""
-    import matplotlib.pyplot as plt
     ts = OpenPMDTimeSeries(str(diags))
     if iterations is None:
         indices = [round((len(ts.iterations)-1)*fraction) for fraction in (0.2,0.4,0.6)]
@@ -86,5 +74,17 @@ def plot_density_evolution(diags, iterations=None):
     return fig
 
 
-if __name__=='__main__':
-    main()
+def plot_wakefield_main(argv=None):
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('diags', nargs='?', default='diags/diag1')
+    parser.add_argument('--iteration', type=int)
+    parser.add_argument('--output', type=Path, default=Path('wakefield.png'))
+    parser.add_argument('--evolution', action='store_true', help='Plot three density snapshots')
+    args=parser.parse_args(argv)
+    fig=plot_density_evolution(args.diags) if args.evolution else plot_snapshot(args.diags,args.iteration)
+    fig.savefig(args.output,dpi=150)
+    print(args.output.resolve())
+
+
+if __name__ == '__main__':
+    plot_wakefield_main()
