@@ -75,3 +75,12 @@ episodes/files/llnl-hpc-2026/htu/lwfa_warpx/lwfa_warpx_input.txt
 episodes/files/llnl-hpc-2026/htu/lwfa_warpx/run_lwfa_warpx.py
 episodes/files/llnl-hpc-2026/htu/beamline_impactx/htu_transport.ipynb
 episodes/files/llnl-hpc-2026/htu/beamline_impactx/impactx_helpers.py
+episodes/files/llnl-hpc-2026/htu/beamline_impactx/htu_lattice.py
+
+# Generated shared-episode data
+episodes/files/beam-transport/runs/
+episodes/files/beam-transport/htu_lattice.py
+episodes/files/beam-transport/__pycache__/
+episodes/files/laser-wakefield/diags/
+episodes/files/laser-wakefield/warpx_used_inputs.txt
+episodes/files/laser-wakefield/__pycache__/

@@ -41,7 +41,7 @@ for i in "${!sources[@]}"; do
         continue
     fi
     mkdir -p -- "$(dirname -- "$destination")"
-    cp -n -- "$materials_dir/${sources[i]}" "$destination"
+    cp -- "$materials_dir/${sources[i]}" "$destination"
     printf 'Prepared %s\n' "${destinations[i]}"
 done
 printf 'Workshop files are ready. Existing files were left untouched.\n'

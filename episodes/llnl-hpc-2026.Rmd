@@ -256,7 +256,7 @@ fixed, and rerun the simulation and plotting cells.
 3. Restore the baseline input and compare CPU runs with **1, 2, and 4 OpenMP threads**
    by setting `export OMP_NUM_THREADS=` accordingly.
    Calculate the speedup as $T_1/T_N$, where $T_N$ is the time with $N$ threads.
-4. Restore the baseline input and run on GPU. What is the speedup with respect to the CPU runs?
+4. Restore the baseline input and run on GPU after `source /opt/venv-gpu/bin/activate`. What is the speedup with respect to the CPU runs?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -294,8 +294,8 @@ example; its output is not passed to ImpactX.
 ### Launch your first run 🔦
 
 Start from the `llnl-hpc-2026` tutorial directory. If you are still in
-`two_stream_instability/`, run `cd ..` first. The startup script prepares the wakefield files
-in this tutorial; no separate download is needed.
+`two_stream_instability/`, run `cd ..` first. The startup script already prepared
+the wakefield files; no separate download is needed.
 
 ```bash
 cd htu/lwfa_warpx
@@ -433,7 +433,7 @@ fixed, then rerun the simulation and beam viewer. How does the beam's sampled
 shape change? Record the runtime and output size, without assuming either
 scales in direct proportion to particle count.
 
-Try running on CPU and GPU. How does the performance differ?
+Switch the notebook kernel to **WarpX GPU** and rerun. How does the performance differ from CPU?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
