@@ -52,11 +52,11 @@ Hence, the idea is the following.
 First, define a well-posed initial condition, and then iterate the following:
 
 * Interpolate the fields from the grid to the particles' positions and compute the Lorentz force that acts on each macroparticle,
-* Advance the position and momenta of the macroparticles using Newton equations,
-* Project while cumulating the contribution to the current density of each macroparticle,
+* Advance the position and momenta of the macroparticles using the relativistic equations of motion,
+* Deposit the macroparticles' current contributions onto the grid,
 * Solve Maxwell's equations.
 
-In some cases, one can choose to solve Poisson's equation instead of Maxwell's. 
+In some cases, one can adopt an electrostatic approximation and solve Poisson's equation instead of the full Maxwell equations.
 In that case, the current $\textbf{J}$ calculation is replaced with the charge density $\rho$ calculation.
 Once $\rho$ is known, the electrostatic potential is computed to then find the electric field.
 
@@ -133,7 +133,7 @@ Some cool features of WarpX:
  
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-## From the PIC model to high-performance computing 🏋️
+## From PIC to HPC
 
 The PIC loop explains where the computing work comes from: update many
 particles, transfer information between particles and the grid, and update
@@ -142,12 +142,12 @@ fields on many cells. These operations repeat at every time step.
 | Simulation choice | Connection to the physics | Connection to computing |
 | --- | --- | --- |
 | Grid spacing | Determines which spatial structures can be resolved | Finer grids have more cells and require more memory |
-| Time step | Resolves evolution and must satisfy the chosen solver's stability constraints | More steps are needed to cover the same physical duration |
-| Macroparticles per cell | Controls how densely the particle distribution is sampled | More particles require more work and memory |
+| Time step | Determines which time scales can be resolved and must satisfy the chosen solver's stability constraints, if any | Shorter steps require more computing time to cover the same physical duration |
+| Macroparticles | Controls how densely the particle distribution is sampled and the noise | More particles require more work and memory |
 | Saved diagnostics | Determine which changes can be inspected after the run | Writing and reading data take time and storage |
 
-For example, a laser-wakefield simulation must resolve the laser as well as
-the surrounding plasma. A three-dimensional grid can therefore become large,
+A simulation must resolve the characteristic spatial and time scales of interest.
+A three-dimensional grid can therefore become large,
 even though the physical experiment is small. More macroparticles improve
 sampling, but do not compensate for an inadequately resolved grid.
 
@@ -155,11 +155,11 @@ sampling, but do not compensate for an inadequately resolved grid.
 structures, time steps resolve their evolution, and particle count controls
 sampling noise. A successful run alone does not establish accuracy. Repeat
 with finer numerical settings and check whether the quantities you care
-about—such as wave growth or electron energy—change appreciably. This is a
-**convergence study**: its purpose is to establish adequate resolution for
-your observable, rather than simply to make the calculation larger.
+about change appreciably. This is a **convergence study**: its purpose is
+to establish adequate resolution for your observable,
+rather than simply to make the calculation larger.
 
-**High-performance computing (HPC)** distributes this work across computing
+🏎️ **High-performance computing (HPC)** distributes this work across computing
 resources. A CPU has cores that can work concurrently; a GPU can carry out
 many similar particle or grid operations in parallel. On larger machines,
 work is also distributed across processes using **MPI**, a system for
@@ -173,24 +173,21 @@ describe how the grid is divided among processes and threads.
 Processes can work on different blocks, while CPU threads or GPU threads
 update particles and fields within them. Neighboring blocks exchange field
 data, and particles crossing a block boundary must be passed to their new
-owner. If particles concentrate in one region, some processes have more work
-than others. This is why both communication and balancing the work matter
+owner (we call it **redistribution**). If particles concentrate in one region,
+some processes may have more work than others and the simulation can be **unbalanced**.
+This is why both communication and balancing the workload matter
 when moving from one device to a large machine.
-
-The [HPC Innovation Center tutorial](llnl-hpc-2026.Rmd) connects these ideas
-to actual runs: a small two-stream simulation on a CPU and a 3D wakefield
-simulation on a GPU. For transport through accelerator components, also read
-[Introduction to ImpactX](introduction-impactx.Rmd).
 
 
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
- 🔮 **The particle-in-cell** method is used to simulate the self-consistent dynamics of relativistic charged particles
+ 🔮 **The particle-in-cell** method is used to simulate the dynamics of charged particles and their self-consistent fields
 
- 🚀 [**WarpX**][warpx] is an open-source high-performance particle-in-cell code
+ 🚀 [**WarpX**][warpx] is an open-source particle-in-cell code
 
  ✨ [**WarpX**][warpx] is used in a variety of scientific domains
 
+ 🏎️ [**WarpX**][warpx] is a high-performance code and can leverage HPC
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 

@@ -130,11 +130,11 @@ def beam_explorer(run):
         'srcdoc="'+html.escape(document, quote=True)+'"'])
 
 
-def lattice_layout(chicane_r56_um=200.):
+def lattice_layout():
     """Use the tracking lattice's element lengths, including zero-length screens."""
     layout = []
     position = 0.
-    for element in get_lattice("impactx", chicane_r56=chicane_r56_um):
+    for element in get_lattice("impactx"):
         length = float(element.ds)
         layout.append(dict(name=element.name, kind=type(element).__name__,
                            start=position, length=length))
@@ -142,12 +142,12 @@ def lattice_layout(chicane_r56_um=200.):
     return layout
 
 
-def plot_lattice(ax, chicane_r56_um=200.):
+def plot_lattice(ax):
     """Draw a longitudinal schematic, not the bent orbit or physical apertures."""
     from matplotlib.patches import Patch, Rectangle
     from matplotlib.lines import Line2D
 
-    layout = lattice_layout(chicane_r56_um)
+    layout = lattice_layout()
     end = layout[-1]['start'] + layout[-1]['length']
     colors = {'ChrQuad': '#087e8b', 'ExactSbend': '#dd8b16',
               'Kicker': '#5d9c43', 'BeamMonitor': '#7656a5'}
@@ -181,7 +181,7 @@ def plot_beam_sizes(run):
     fig, (ax, lattice_ax) = plt.subplots(2, 1, figsize=(11, 6.5), sharex=True,
         gridspec_kw={'height_ratios': [4, 1]}, constrained_layout=True)
     records = measurements(run)
-    plot_lattice(lattice_ax, records[0]['chicane_r56_um'])
+    plot_lattice(lattice_ax)
     summaries = {}
     for i, record in enumerate(records):
         energy = record['total_energy_MeV']

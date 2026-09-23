@@ -12,6 +12,16 @@ from scipy.constants import c, e, m_e
 
 # WarpX analysis
 def plot_snapshot(diags, iteration=None):
+    reduced_dir = Path(diags).parent / 'reducedfiles'
+    energy_histories = {}
+    for name in ('ParticleEnergy', 'FieldEnergy'):
+        path = reduced_dir / f'{name}.txt'
+        if not path.is_file():
+            raise FileNotFoundError(
+                f'{path} not found. Rerun the simulation with the energy reduced diagnostics enabled.'
+            )
+        # Columns: step, time (s), total energy (J), then diagnostic-specific values.
+        energy_histories[name] = np.loadtxt(path, usecols=(1, 2), ndmin=2)
     ts = OpenPMDTimeSeries(str(diags))
     # The final frame is in vacuum: choose a frame inside the target by default.
     if iteration is None:
@@ -23,7 +33,8 @@ def plot_snapshot(diags, iteration=None):
     order = [next(k for k,v in info.axes.items() if v == axis) for axis in ('x','z')]
     density, ez, ey = [np.transpose(a, order) for a in (density, ez, ey)]
     extent = [info.z[0]*1e6, info.z[-1]*1e6, info.x[0]*1e6, info.x[-1]*1e6]
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4), constrained_layout=True)
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8), constrained_layout=True)
+    axes = axes.ravel()
     im = axes[0].imshow(-density/e/1e25, origin='lower', extent=extent, aspect='auto',
                         cmap='viridis', vmin=0)
     fig.colorbar(im, ax=axes[0], label=r'$n_e$ ($10^{25}$ m$^{-3}$)')
@@ -44,6 +55,15 @@ def plot_snapshot(diags, iteration=None):
     axes[2].set(xlabel='Electron kinetic energy (MeV)', ylabel='Charge per bin (pC)',
                 title='All electrons in the moving box')
     axes[2].set_yscale('log')
+    for name, label in (('ParticleEnergy', 'Particle kinetic energy'),
+                        ('FieldEnergy', 'Electromagnetic field energy')):
+        history = energy_histories[name]
+        axes[3].plot(history[:, 0]*1e15, history[:, 1]*1e3, label=label)
+    snapshot_time = float(ts.t[np.flatnonzero(ts.iterations == iteration)[0]])
+    axes[3].axvline(snapshot_time*1e15, color='0.5', linestyle='--', label='Snapshot time')
+    axes[3].set(xlabel='Time (fs)', ylabel='Energy (mJ)', title='Energy in the moving box')
+    axes[3].legend()
+    axes[3].grid(alpha=0.3)
     fig.suptitle(f'WarpX snapshot: step {iteration}')
     return fig
 

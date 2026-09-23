@@ -1,7 +1,7 @@
 # Reduced 3D laser wakefield accelerator for teaching.
 # Small, dense plasma and short pulse for visualization on an 8 GB GPU.
 # Demonstrates wake excitation and density-downramp dynamics.
-# See ../../../a-laser-wakefield-accelerator.Rmd for the lesson.
+# See https://blast-warpx.github.io/warpx-tutorials/a-laser-wakefield-accelerator.html for the lesson.
 
 my_constants.micro = 1.e-6
 my_constants.femto = 1.e-15
@@ -161,3 +161,10 @@ diag1.fields_to_plot = Ey Ez rho_electrons
 diag1.format = openpmd
 diag1.species = electrons
 diag1.file_prefix = diags/diag1
+
+# Energy histories, sampled every step independently of the full snapshots.
+warpx.reduced_diags_names = ParticleEnergy FieldEnergy
+ParticleEnergy.type = ParticleEnergy
+ParticleEnergy.intervals = 1
+FieldEnergy.type = FieldEnergy
+FieldEnergy.intervals = 1
