@@ -1,8 +1,8 @@
 ---
 title: 'LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial'
 author: 'Arianna Formenti (LBNL), Axel Huebl (LBNL)'
-teaching: 0
-exercises: 0
+teaching: 60
+exercises: 120
 ---
 
 :::::::::::::::::::::::::::::::::::::: questions
