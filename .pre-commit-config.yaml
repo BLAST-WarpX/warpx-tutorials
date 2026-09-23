@@ -3,6 +3,7 @@ repos:
   rev: 1.9.1
   hooks:
     - id: nbqa-black
+      additional_dependencies: ["black==25.1.0"]
     - id: nbqa-pyupgrade
       args: ["--py37-plus"]
     - id: nbqa-isort
