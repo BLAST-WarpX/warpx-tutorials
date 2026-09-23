@@ -1,6 +1,6 @@
-# LLNL HPC Innovation Center 2026: HTU-inspired WarpX and ImpactX tutorial
+# LLNL HPC Innovation Center 2026: WarpX and ImpactX tutorial
 
-This directory contains the files for a three-part accelerator-physics
+This directory provides a three-part accelerator-physics
 tutorial combining WarpX and ImpactX:
 
 1. `two_stream_instability/`: a quick 1D two-stream instability warm-up with
@@ -8,7 +8,7 @@ tutorial combining WarpX and ImpactX:
    before the heavier exercises below;
 2. `htu/lwfa_warpx/`: a small, visual 3D wakefield demonstration; and
 3. `htu/beamline_impactx/htu_transport.ipynb`: the upstream 100 MeV total-energy HTU beam
-   with an optional 150 MeV off-energy comparison.
+   with an optional beam-energy experiment.
 
 The WarpX and ImpactX exercises are separate. Their helper modules are `htu/lwfa_warpx/warpx_helpers.py` for WarpX plots and `htu/beamline_impactx/impactx_helpers.py` for ImpactX analysis. The ImpactX notebook defines and runs the simulation directly in its kernel.
 
@@ -18,18 +18,15 @@ The complete lesson and explanations are in
 
 # Usage
 
+After choosing a setup option below, run `bash startup.sh` from this directory
+before starting the exercises. See [Prepare the exercise files](#prepare-the-exercise-files).
+
 ## Registered participants: use your Slack link
 
 Registered participants will receive a link in Slack that opens the AWS-hosted
-JupyterLab session directly. Open it; no local installation is needed. If you
-registered but cannot find your link, ask the organizers in Slack.
-
-Under `warpx-tutorials/episodes/files/`, open
-`llnl-hpc-2026/htu/lwfa_warpx/wakefield.ipynb` (select **WarpX GPU**) or
-`llnl-hpc-2026/htu/beamline_impactx/htu_transport.ipynb` (select **WarpX CPU**). Run the wakefield simulation in a GPU terminal, then use its
-notebook for analysis.
-The files are already on the instance. If you do not have access, use Docker
-or Conda below.
+JupyterLab session directly. Open it; no local installation is needed.
+In a terminal, go to `~/warpx-tutorials/episodes/files/llnl-hpc-2026`,
+then follow **Prepare the exercise files** below.
 
 ## Alternative A: run Docker yourself
 
@@ -48,7 +45,8 @@ Open <http://localhost:3000/lab>, launch a **Terminal**, and go to:
 cd ~/warpx-tutorials/episodes/files/llnl-hpc-2026
 ```
 
-The files described below are already there -- no download needed. See the
+The source materials are already there. Run `bash startup.sh` before the
+exercises; no download is needed. See the
 [tutorial container README](../../../containers/tutorial/README.md) for
 GPU access and other image details.
 
@@ -61,20 +59,19 @@ installation.
 
 ### Download the complete tutorial folder
 
-Keep the complete `llnl-hpc-2026/` directory together rather than
-downloading the files individually, since each exercise expects its
-scripts, inputs, and notebooks to remain alongside each other.
+Keep `llnl-hpc-2026/`, `laser-wakefield/`, and `beam-transport/` together
+under `episodes/files/`. The startup script copies the shared example
+materials into the workshop folders.
 
 With Git installed, download the tutorial folder using sparse checkout.
-This preserves its directory structure without downloading the other lessons'
-contents; files in parent directories are also included. No packaging script
-is needed.
+This preserves its directory structure without downloading unnecessary materials.
 
 ```bash
 git clone --depth 1 --filter=blob:none --sparse \
   https://github.com/BLAST-WarpX/warpx-tutorials.git
 cd warpx-tutorials
-git sparse-checkout set episodes/files/llnl-hpc-2026
+git sparse-checkout set episodes/files/llnl-hpc-2026 \
+  episodes/files/laser-wakefield episodes/files/beam-transport
 cd episodes/files/llnl-hpc-2026
 ```
 
@@ -117,6 +114,24 @@ To remove it completely:
 conda env remove --name llnlhpc26-warpx-tutorial
 ```
 
+## Prepare the exercise files
+
+Before starting any exercise, run from `llnl-hpc-2026/`:
+
+```bash
+bash startup.sh
+```
+
+The script copies the wakefield notebook, input, driver, and helper from
+`../laser-wakefield/` into `htu/lwfa_warpx/`, and the beam-transport notebook
+and helper from `../beam-transport/` into `htu/beamline_impactx/`.
+It does not copy figures or simulation results.
+
+**If a destination already exists, the script does nothing to it.** Rerunning
+fills in missing files only; it never refreshes existing copies or overwrites
+your edits. Missing source files produce an error before copying begins.
+The script also works when invoked by its path from another directory.
+
 ## Tutorial 1: two-stream instability warm-up
 
 ```bash
@@ -128,16 +143,12 @@ cd ..
 
 This runs a cheap 1D WarpX simulation of two counter-streaming electron
 populations, a classic kinetic instability that saturates in seconds on a
-laptop. Unlike the two exercises below, all its physical and numerical
-parameters are fixed rather than chosen by you -- the point here is just to
-confirm the simulate-then-analyze pipeline (WarpX, Python, Jupyter) works
-before moving on to the heavier LWFA and beamline stages. The simulation
-writes its diagnostics under `two_stream_instability/diags/`.
+laptop. The simulation writes its diagnostics under `two_stream_instability/diags/`.
 
 ## Two independent examples
 
-Run WarpX in a terminal, then open [wakefield.ipynb](htu/lwfa_warpx/wakefield.ipynb) to visualize the wake.
-Open [htu_transport.ipynb](htu/beamline_impactx/htu_transport.ipynb) to run
+Run WarpX in a terminal, then open `htu/lwfa_warpx/wakefield.ipynb` to visualize the wake.
+Open `htu/beamline_impactx/htu_transport.ipynb` to run
 the nominal HTU beam and explore off-energy transport with ImpactX.
 
 The [lesson](../../llnl-hpc-2026.Rmd) explains both examples. Each notebook uses its helper module

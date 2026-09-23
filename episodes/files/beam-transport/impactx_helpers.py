@@ -9,7 +9,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import openpmd_api as io
-from scipy.constants import e
+from scipy.constants import c, e, m_e
+from impactx import RefPart, elements
 
 from htu_lattice import get_lattice
 
@@ -130,50 +131,17 @@ def beam_explorer(run):
         'srcdoc="'+html.escape(document, quote=True)+'"'])
 
 
-def lattice_layout(chicane_r56_um=200.):
-    """Use the tracking lattice's element lengths, including zero-length screens."""
-    layout = []
-    position = 0.
-    for element in get_lattice("impactx", chicane_r56=chicane_r56_um):
-        length = float(element.ds)
-        layout.append(dict(name=element.name, kind=type(element).__name__,
-                           start=position, length=length))
-        position += length
-    return layout
-
-
-def plot_lattice(ax, chicane_r56_um=200.):
-    """Draw a longitudinal schematic, not the bent orbit or physical apertures."""
-    from matplotlib.patches import Patch, Rectangle
-    from matplotlib.lines import Line2D
-
-    layout = lattice_layout(chicane_r56_um)
-    end = layout[-1]['start'] + layout[-1]['length']
-    colors = {'ChrQuad': '#087e8b', 'ExactSbend': '#dd8b16',
-              'Kicker': '#5d9c43', 'BeamMonitor': '#7656a5'}
-    ax.plot([0, end], [0, 0], color='#a5adb8', lw=2, zorder=0)
-    for element in layout:
-        kind, start, length = element['kind'], element['start'], element['length']
-        if kind in ('ChrQuad', 'ExactSbend'):
-            ax.add_patch(Rectangle((start, -.3), length, .6,
-                                  facecolor=colors[kind], edgecolor='none'))
-        elif kind == 'Kicker':
-            ax.plot([start, start], [-.4, .4], color=colors[kind], lw=1.5)
-        elif kind == 'BeamMonitor':
-            ax.plot(start, .58, marker='v', color=colors[kind], ms=4)
-        elif kind != 'ExactDrift':
-            raise ValueError(f'Add a lattice symbol for {kind}.')
-    handles = [Patch(color=colors['ChrQuad'], label='Quadrupole'),
-               Patch(color=colors['ExactSbend'], label='Bending magnet'),
-               Line2D([], [], color=colors['Kicker'], marker='|', ls='', label='Steerer'),
-               Line2D([], [], color=colors['BeamMonitor'], marker='v', ls='', label='Screen'),
-               Line2D([], [], color='#a5adb8', label='Drift')]
-    ax.legend(handles=handles, loc='upper center', bbox_to_anchor=(.5, -.38),
-              ncol=5, frameon=False, fontsize=9)
-    ax.set(ylim=(-.65, .9), yticks=[], xlabel='Distance along the beamline (m)')
-    ax.set_title('Lattice: element lengths to scale; vertical sizes are symbolic',
-                 fontsize=10, loc='left')
-    ax.spines[['top', 'right', 'left']].set_visible(False)
+def plot_lattice(ax, total_energy_MeV):
+    """Draw the HTU lattice with ImpactX's survey and an electron reference."""
+    mass_MeV = m_e * c**2 / e / 1e6
+    ref = RefPart()
+    ref.set_charge_qe(-1.0).set_mass_MeV(mass_MeV).set_kin_energy_MeV(
+        total_energy_MeV - mass_MeV
+    )
+    lattice = elements.KnownElementsList()
+    lattice.extend(get_lattice("impactx"))
+    lattice.plot_survey(ref=ref, ax=ax)
+    ax.set_box_aspect(None)  # Keep the survey aligned with the shared beam-size axis.
 
 
 def plot_beam_sizes(run):
@@ -181,7 +149,7 @@ def plot_beam_sizes(run):
     fig, (ax, lattice_ax) = plt.subplots(2, 1, figsize=(11, 6.5), sharex=True,
         gridspec_kw={'height_ratios': [4, 1]}, constrained_layout=True)
     records = measurements(run)
-    plot_lattice(lattice_ax, records[0]['chicane_r56_um'])
+    plot_lattice(lattice_ax, records[0]["total_energy_MeV"])
     summaries = {}
     for i, record in enumerate(records):
         energy = record['total_energy_MeV']

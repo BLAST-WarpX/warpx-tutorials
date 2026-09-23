@@ -161,22 +161,12 @@ More particles increase both tracking work and the amount of particle data
 that monitors can save.
 
 🤝 **Collective effects change the challenge.** The particles now influence
-one another through shared fields, requiring more computational work and
+one another through the electromagnetic field, requiring more computational work and
 coordination. For space charge, ImpactX can use **PIC** to deposit particle
 charge on a grid, solve for the field, and apply it back to the particles,
 avoiding a direct calculation of every particle pair's interaction. Large
 calculations need both computing resources and efficient field solvers,
-communication, and workload distribution. This is an important connection
-to WarpX: both use particles coupled through fields on a grid. The field
-models differ—ImpactX's PIC space-charge solver uses Poisson's equation,
-while the electromagnetic WarpX examples evolve Maxwell's equations.
-
-⏱️ **Start with a small run.** A CPU is often enough for a teaching example.
-The useful performance measurement depends on the study. A single small
-beamline run may spend much of its time starting up and writing diagnostics.
-A larger particle ensemble or many repeated magnet settings can make the
-tracking cost more significant. Compare runs with the same physical model
-and record what changed: particle count, hardware, and output settings.
+communication, and workload distribution.
 
 ## WarpX and ImpactX in the same workflow 🔗
 

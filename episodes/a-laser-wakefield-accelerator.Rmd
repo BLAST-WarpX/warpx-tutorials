@@ -119,13 +119,16 @@ provides the software and instructions for GPU access. For other systems,
 see the [WarpX installation documentation](https://warpx.readthedocs.io/en/latest/install/users.html).
 CPU execution is also possible, but can take substantially longer.
 
-Use these files in `episodes/files/laser-wakefield/`:
+For the hosted workshop, follow the
+[LLNL launch instructions](llnl-hpc-2026.Rmd#exercise-2-accelerate-electrons-with-a-laser)
+and use the included files. For independent use, the same example is in
+`episodes/files/laser-wakefield/`:
 
-- [Analysis notebook](./files/laser-wakefield/lwfa_warpx/wakefield.ipynb) and
-  [helper script](./files/laser-wakefield/lwfa_warpx/warpx_helpers.py) in `laser-wakefield/lwfa_warpx/`.
-- [Input file](./files/laser-wakefield/lwfa_warpx/lwfa_warpx_input.txt) and
-  [Python driver](./files/laser-wakefield/lwfa_warpx/run_lwfa_warpx.py)
-  together in `laser-wakefield/lwfa_warpx/`.
+- [Analysis notebook](./files/laser-wakefield/wakefield.ipynb) and
+  [helper script](./files/laser-wakefield/warpx_helpers.py) in `laser-wakefield/`.
+- [Input file](./files/laser-wakefield/lwfa_warpx_input.txt) and
+  [Python driver](./files/laser-wakefield/run_lwfa_warpx.py)
+  together in `laser-wakefield/`.
 
 ### Download the example
 
@@ -155,7 +158,6 @@ cd laser-wakefield
 From `laser-wakefield/`, activate your WarpX environment and run:
 
 ```bash
-cd lwfa_warpx
 time python run_lwfa_warpx.py > run.log 2>&1
 ```
 
@@ -181,13 +183,13 @@ smallest grid spacing? How does that choice help us follow the laser?
 
 ## Interpret the results
 
-Open [wakefield.ipynb](./files/laser-wakefield/lwfa_warpx/wakefield.ipynb) from the
-`laser-wakefield/lwfa_warpx` folder after the run finishes. Select the kernel containing
+Open [wakefield.ipynb](./files/laser-wakefield/wakefield.ipynb) from the
+`laser-wakefield` folder after the run finishes. Select the kernel containing
 the analysis packages; in the tutorial container, **WarpX GPU** provides them.
 Plotting saved data itself does not require a GPU. The notebook reads
 `diags/diag1` and does not launch the simulation.
 
-Time to see what happened! 🔍 Use the three plots together:
+Time to see what happened! 🔍 Use the plots together:
 
 1. 🫧 **Find the cavity — electron density:** a slice at y = 0 reveals the electron-depleted
    cavity and the surrounding concentration of electrons. The three-frame
@@ -217,7 +219,21 @@ electron. Finally, inspect the energy spectrum. These views tell different
 parts of the same story; the spectrum alone does not show where those
 electrons are.
 
-To save your figures without opening Jupyter, run these commands from `lwfa_warpx/`:
+The notebook starts with a raw electron-charge histogram and a slice of the
+total transverse field `Ey`, which includes both laser and plasma fields.
+Its density-evolution plots use the moving coordinate `z-ct`. In the
+single-snapshot figure, white contours show `|Ey|`; the spectrum includes
+all electrons still in the moving box, including untrapped plasma electrons.
+
+The fourth snapshot panel reads `ParticleEnergy.txt` and `FieldEnergy.txt`
+from `diags/reducedfiles/`, saved every simulation step. It compares total
+particle kinetic energy (all species) and electromagnetic field energy in
+mJ versus physical time in fs; the dashed line marks the selected snapshot.
+Laser injection and particles and fields crossing the moving box boundaries
+mean their sum need not stay constant. If these files are missing from an
+older run, preserve its diagnostics and rerun with the current input.
+
+To save your figures without opening Jupyter, run these commands from `laser-wakefield/`:
 
 ```bash
 python warpx_helpers.py diags/diag1 --evolution --output wake-evolution.png
@@ -255,6 +271,42 @@ storage, and which moments can you no longer inspect?
 The physical input and time steps are unchanged; only the saved history is
 less frequent. Compare a step saved in both runs. The computer still has to
 advance through every time step, even when it does not save a snapshot!
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Regular versus random particle placement
+
+The raw electron histogram can show horizontal stripes: the baseline places
+one macroparticle per cell on a regular grid, and the histogram bins resolve
+those rows. Try randomizing the electron positions within each cell.
+In `lwfa_warpx_input.txt`, replace
+
+```text
+electrons.injection_style = "NUniformPerCell"
+electrons.num_particles_per_cell_each_dim = 1 1 1
+```
+
+with
+
+```text
+electrons.injection_style = "NRandomPerCell"
+electrons.num_particles_per_cell = 1
+```
+
+Remove the old `num_particles_per_cell_each_dim` line. Keep the density,
+grid, momentum distribution, and other settings fixed. These two loading
+styles use [different particle-count parameters](https://warpx.readthedocs.io/en/latest/usage/parameters.html#particle-initialization).
+
+Preserve the baseline diagnostics before rerunning. Compare the electron
+histogram and deposited-density plot at the same saved step. Do the regular
+bands disappear? How much random variation appears instead?
+
+This keeps one macroparticle per cell but changes its position. Random loading
+can replace regular sampling patterns with statistical noise and can affect
+the simulated fields, especially at this low particle count. A less striped
+plot alone does not demonstrate greater physical accuracy.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
