@@ -1,0 +1,163 @@
+# Reduced 3D laser wakefield accelerator for teaching.
+# Small, dense plasma and short pulse for visualization on an 8 GB GPU.
+# Demonstrates wake excitation and density-downramp dynamics.
+# See ../../../../a-laser-wakefield-accelerator.Rmd for the lesson.
+
+my_constants.micro = 1.e-6
+my_constants.femto = 1.e-15
+my_constants.cfl = 0.99
+my_constants.moving_window_v = 1.0
+
+# Compact Gaussian driver. Widths below are INTENSITY FWHM.
+# a0 is the independent strength knob; energy is derived consistently.
+my_constants.lambda0 = 0.8*micro
+my_constants.a0 = 3.0
+my_constants.spot_fwhm = 3.*micro*sqrt(2*log(2))
+my_constants.duration_fwhm = 6.*femto
+my_constants.w0 = spot_fwhm/sqrt(2*log(2))
+my_constants.tau = duration_fwhm/sqrt(2*log(2))
+my_constants.peak_intensity = 0.5*epsilon0*clight*(a0*m_e*clight*(2*pi*clight/lambda0)/q_e)^2
+my_constants.peak_power = peak_intensity*pi*w0*w0/2
+my_constants.energy = peak_power*tau*sqrt(pi/2)
+my_constants.z_antenna = 0.
+my_constants.z_foc = 10.*micro
+my_constants.t_peak = 3*tau
+
+# Simple finite target: entrance ramp, high plateau, sharp density drop,
+# low plateau, exit ramp. All densities are electron number densities [m^-3].
+my_constants.n_up = 4.e25
+my_constants.n_down = 2.e25
+my_constants.z_entrance = 0.
+my_constants.L_entrance = 3.*micro
+my_constants.z_transition = 20.*micro
+my_constants.L_transition = 2.*micro
+my_constants.z_plasma_end = 50.*micro  # START of the exit ramp
+my_constants.L_exit = 5.*micro
+
+#################
+### GEOMETRY  ###
+#################
+# Small moving box; dz = 0.0390625 um (20.48 cells per laser wavelength).
+my_constants.Lx = 16.*micro
+my_constants.Ly = 16.*micro
+my_constants.Lz = 16.*micro
+my_constants.z_margin = 4.*micro
+my_constants.nx = 32
+my_constants.ny = 32
+my_constants.nz = 512
+
+##########################
+### GENERAL PARAMETERS ###
+##########################
+warpx.verbose = 1
+warpx.limit_verbose_step = 100
+
+# CKC timestep is cfl*min(dx,dy,dz)/c. Stop after the rear of the
+# moving box clears the entire target, retaining the exiting bunch.
+my_constants.dz = (Lz+z_margin)/nz
+my_constants.dt = cfl*min(Lx/nx,min(Ly/ny,dz))/clight
+my_constants.t_sim = (z_plasma_end+L_exit+Lz-z_antenna)/(moving_window_v*clight)
+max_step = ceil(t_sim/dt)
+
+# Start the GPU pool at 1 GiB instead of reserving 75% of device memory.
+# This is a growing pool, not a memory cap. Avoid host-memory spillover.
+amrex.the_arena_init_size = 1073741824
+amrex.the_arena_is_managed = 0
+amrex.abort_on_out_of_gpu_memory = 1
+
+amr.n_cell = nx ny nz
+amr.max_grid_size = 128
+amr.blocking_factor = 16
+amr.max_level = 0
+geometry.dims = 3
+geometry.prob_lo = -0.5*Lx -0.5*Ly -Lz+z_antenna
+geometry.prob_hi =  0.5*Lx  0.5*Ly  z_antenna+z_margin
+
+###########################
+### BOUNDARY CONDITIONS ###
+###########################
+boundary.field_lo = pml pml pml
+boundary.field_hi = pml pml pml
+boundary.particle_lo = absorbing absorbing absorbing
+boundary.particle_hi = absorbing absorbing absorbing
+
+################
+### NUMERICS ###
+################
+algo.maxwell_solver = ckc
+warpx.cfl = cfl
+warpx.use_filter = 1
+warpx.do_dive_cleaning = 0
+algo.particle_shape = 1
+warpx.do_moving_window = 1
+warpx.moving_window_dir = z
+warpx.moving_window_v = moving_window_v   # units of clight
+
+#################
+### PARTICLES ###
+#################
+particles.species_names = electrons helium
+
+electrons.charge = -q_e
+electrons.mass = m_e
+electrons.injection_style = "NUniformPerCell"
+electrons.num_particles_per_cell_each_dim = 1 1 1
+electrons.xmin = -0.5*Lx
+electrons.xmax =  0.5*Lx
+electrons.ymin = -0.5*Ly
+electrons.ymax =  0.5*Ly
+electrons.zmin = z_entrance
+electrons.zmax = z_plasma_end+L_exit
+electrons.profile = parse_density_function
+# Three factors: entrance fraction * plateau/downramp density * exit fraction.
+# Each clipped ramp runs from 0 to 1; the product vanishes outside the target.
+electrons.density_function(x,y,z) = "max(0,min(1,(z-z_entrance)/L_entrance)) * (n_up+(n_down-n_up)*max(0,min(1,(z-z_transition)/L_transition))) * max(0,min(1,(z_plasma_end+L_exit-z)/L_exit))"
+electrons.momentum_distribution_type = "at_rest"
+electrons.do_continuous_injection = 1
+
+# Fully preionized helium approximation: stationary He2+ neutralizes electrons.
+# Equal particle locations/shapes ensure initial charge cancellation.
+helium.charge = 2*q_e
+helium.mass = 4*m_p
+helium.injection_style = NUniformPerCell
+helium.num_particles_per_cell_each_dim = 1 1 1
+helium.xmin = -0.5*Lx
+helium.xmax = 0.5*Lx
+helium.ymin = -0.5*Ly
+helium.ymax = 0.5*Ly
+helium.zmin = z_entrance
+helium.zmax = z_plasma_end+L_exit
+helium.profile = parse_density_function
+helium.density_function(x,y,z) = "0.5*(max(0,min(1,(z-z_entrance)/L_entrance)) * (n_up+(n_down-n_up)*max(0,min(1,(z-z_transition)/L_transition))) * max(0,min(1,(z_plasma_end+L_exit-z)/L_exit)))"
+helium.momentum_distribution_type = at_rest
+helium.do_continuous_injection = 1
+helium.do_not_push = 1
+helium.do_not_gather = 1
+
+#################
+### LASER     ###
+#################
+lasers.names        = laser1
+laser1.profile      = Gaussian
+laser1.position     = 0. 0. z_antenna
+laser1.direction    = 0. 0. 1.
+laser1.polarization = 0. 1. 0.
+laser1.a0           = a0
+laser1.profile_waist = w0
+laser1.profile_duration = tau
+laser1.profile_t_peak = t_peak
+laser1.profile_focal_distance = z_foc
+laser1.wavelength = lambda0
+
+##################
+### DIAGNOSTICS ##
+##################
+diagnostics.diags_names = diag1
+# Frequent snapshots to see the wake evolve, including at the density drop.
+diag1.intervals = 200
+diag1.dump_last_timestep = 1
+diag1.diag_type = Full
+diag1.fields_to_plot = Ey Ez rho_electrons
+diag1.format = openpmd
+diag1.species = electrons
+diag1.file_prefix = diags/diag1
