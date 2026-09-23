@@ -1,7 +1,7 @@
 # Reduced 3D laser wakefield accelerator for teaching.
 # Small, dense plasma and short pulse for visualization on an 8 GB GPU.
 # Demonstrates wake excitation and density-downramp dynamics.
-# See ../../../../a-laser-wakefield-accelerator.Rmd for the lesson.
+# See ../../../a-laser-wakefield-accelerator.Rmd for the lesson.
 
 my_constants.micro = 1.e-6
 my_constants.femto = 1.e-15
