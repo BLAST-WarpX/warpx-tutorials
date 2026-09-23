@@ -7,10 +7,10 @@ tutorial combining WarpX and ImpactX:
    WarpX, used to get everyone to a working simulate-then-analyze pipeline
    before the heavier exercises below;
 2. `htu/lwfa_warpx/`: a small, visual 3D wakefield demonstration; and
-3. `htu/beamline_impactx/`: independent synthetic beams transported through
-   HTU magnets to show energy sensitivity and possible losses/model breakdown.
+3. `htu/beamline_impactx/htu_transport.ipynb`: the upstream 100 MeV total-energy HTU beam
+   with an optional 150 MeV off-energy comparison.
 
-The WarpX and ImpactX exercises are separate. Coupling is an optional extension.
+The WarpX and ImpactX exercises are separate. Their helper modules are `htu/lwfa_warpx/warpx_helpers.py` for WarpX plots and `htu/beamline_impactx/impactx_helpers.py` for ImpactX analysis. The ImpactX notebook defines and runs the simulation directly in its kernel.
 
 The complete lesson and explanations are in
 [`episodes/llnl-hpc-2026.Rmd`](../../llnl-hpc-2026.Rmd) and on the
@@ -24,9 +24,10 @@ Registered participants will receive a link in Slack that opens the AWS-hosted
 JupyterLab session directly. Open it; no local installation is needed. If you
 registered but cannot find your link, ask the organizers in Slack.
 
-Browse to `warpx-tutorials/episodes/files/llnl-hpc-2026/htu/` and open
-`wakefield.ipynb` (select **WarpX GPU**) or `htu_transport.ipynb` (select
-**WarpX CPU**). In the hosted wakefield notebook use `warpx_executable = None`.
+Under `warpx-tutorials/episodes/files/`, open
+`llnl-hpc-2026/htu/lwfa_warpx/wakefield.ipynb` (select **WarpX GPU**) or
+`llnl-hpc-2026/htu/beamline_impactx/htu_transport.ipynb` (select **WarpX CPU**). Run the wakefield simulation in a GPU terminal, then use its
+notebook for analysis.
 The files are already on the instance. If you do not have access, use Docker
 or Conda below.
 
@@ -60,7 +61,7 @@ installation.
 
 ### Download the complete tutorial folder
 
-Keeping the complete `llnl-hpc-2026/` directory together is easier than
+Keep the complete `llnl-hpc-2026/` directory together rather than
 downloading the files individually, since each exercise expects its
 scripts, inputs, and notebooks to remain alongside each other.
 
@@ -135,9 +136,9 @@ writes its diagnostics under `two_stream_instability/diags/`.
 
 ## Two independent examples
 
-Open [wakefield.ipynb](htu/wakefield.ipynb) to run WarpX and visualize the wake.
-Open [htu_transport.ipynb](htu/htu_transport.ipynb) to compare independent
-100 MeV and 20 MeV synthetic beams in fixed HTU magnets with ImpactX.
+Run WarpX in a terminal, then open [wakefield.ipynb](htu/lwfa_warpx/wakefield.ipynb) to visualize the wake.
+Open [htu_transport.ipynb](htu/beamline_impactx/htu_transport.ipynb) to run
+the nominal HTU beam and explore off-energy transport with ImpactX.
 
-See the [short instructions](htu/README.md) for both examples and the
-[optional coupling section](htu/README.md#optional-coupling) for the converter.
+The [lesson](../../llnl-hpc-2026.Rmd) explains both examples. Each notebook uses its helper module
+in its own folder. The ImpactX notebook runs the simulation directly; no generated script is needed.
