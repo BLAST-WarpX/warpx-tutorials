@@ -1,5 +1,5 @@
 ---
-title: 'Laser-Wakefield Acceleration'
+title: 'A Laser Wakefield Accelerator'
 teaching: 15
 exercises: 20
 ---
@@ -21,7 +21,7 @@ exercises: 20
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Surfing a plasma wave 🏄
+## Surfing a plasma wave
 
 Imagine electrons surfing a wave, with a laser providing the push that
 creates it. 🏄 The wave here is a pattern of charge and electric field in a
@@ -36,23 +36,18 @@ can gain energy from its electric field. This is **laser-wakefield acceleration*
 
 WarpX can model how a laser and plasma evolve together and how electrons
 respond to the resulting fields. Read [Introduction to WarpX](introduction.Rmd)
-for the particle-in-cell (PIC) method. In this example, you will launch a laser into a small plasma target, watch
-the wake develop, and inspect which electrons gain energy. The setup is
-compact enough to visualize on a modest GPU.
+for the particle-in-cell (PIC) method. Here you will launch a laser into a
+small plasma target, watch the wake develop, and inspect the electron energy
+distribution. This reduced setup has been run on an 8 GB GPU.
 
-![Three electron-density slices show the wake evolving behind the laser.](./files/llnl-hpc-2026/htu/images/wake-density-evolution.png){alt="Central electron-density slices at three times show an electron-depleted cavity and surrounding regions of higher density behind a laser pulse."}
+![Three electron-density slices show the wake evolving behind the laser.](./files/laser-wakefield/images/wake-density-evolution.png){alt="Central electron-density slices at three times show an electron-depleted cavity and surrounding regions of higher density behind a laser pulse."}
 
-This is the same reduced example used in the
-[HPC Innovation Center tutorial](llnl-hpc-2026.Rmd). **Participants in that
-workshop should keep using the files in `llnl-hpc-2026/htu/`.** This page uses those same files.
-You can explore the wake on its own, without running ImpactX.
+## The laser and the plasma
 
-## The laser and the plasma 🔦
-
-There are three members of our cast:
+There are three members of the cast:
 
 - 🔦 **The laser:** a short pulse traveling along **z**, with its electric
-  field polarized along **y**. Its pulse and transverse profile are Gaussian.
+  field polarized along **y**. Its temporal and transverse envelopes are Gaussian.
 - ⚡ **The electrons:** mobile particles that respond to the fields and
   form the wake.
 - ⚓ **The helium ions:** a fixed positive background in this teaching model.
@@ -79,13 +74,9 @@ bunch in this particular calculation.
 | Density drop | z = 20–22 µm | `z_transition`, `L_transition` |
 | Exit ramp | z = 50–55 µm | `z_plasma_end`, `L_exit` |
 
-A micrometer (µm) is one millionth of a meter; a femtosecond (fs) is
-10^-15 seconds. The constants appear as `my_constants.<name>` in the input.
-The laser waist describes the **field amplitude**, whereas the pulse duration
-in this table describes **intensity**; the input converts these conventions
-for WarpX's laser parameters.
+The constants appear as `my_constants.<name>` in the input.
 
-## Put the experiment on a grid 🧩
+## Represent the accelerator numerically
 
 WarpX samples the plasma with computational particles and evolves the electric
 and magnetic fields on a **3D Cartesian grid**. Particles and fields affect
@@ -93,7 +84,8 @@ one another at each step. The input selects the CKC electromagnetic solver
 and a first-order particle shape, which distributes a macroparticle's charge
 to nearby grid points.
 
-🎥 Think of the **moving window** as a camera following the action. It moves
+The simulation domain moves along z to follow the laser.
+Think of the **moving window** as a camera following the action 🎥. It moves
 at the speed of light, keeping the laser and wake in view. Fresh plasma is
 loaded as the window advances into the target, while material behind it leaves
 the calculation. This keeps the computational volume small without shortening
@@ -114,44 +106,53 @@ boundaries allow outgoing disturbances and particles to leave the domain.
 20 cells. With this solver, the smallest cell spacing also constrains the
 time step. Finer resolution therefore increases both the work per step and
 the number of steps needed for the same physical duration. A GPU executes
-many particle and grid operations concurrently. The
-[HPC workshop](llnl-hpc-2026.Rmd#exercise-2-run-a-3d-laser-wakefield-on-a-gpu)
-uses this example to measure runtime and output costs.
+many particle and grid operations concurrently.
 
-## Get ready to run 💻
+## Get ready to run
 
-Use a WarpX installation with 3D support. The Python driver requires
-`pywarpx`; analysis requires NumPy, SciPy, Matplotlib, openPMD-viewer, and
-JupyterLab. A GPU run needs a GPU-enabled WarpX build. The
+Use a WarpX installation with 3D support. The Python script requires
+`pywarpx`, and diagnostic output requires openPMD support. Analysis uses
+Jupyter, NumPy, Matplotlib, SciPy, and `openpmd-viewer`.
+A GPU run needs a GPU-enabled WarpX build. The
 [tutorial container](https://github.com/BLAST-WarpX/warpx-tutorials/blob/main/containers/tutorial/README.md)
 provides the software and instructions for GPU access. For other systems,
 see the [WarpX installation documentation](https://warpx.readthedocs.io/en/latest/install/users.html).
 CPU execution is also possible, but can take substantially longer.
 
-Use these files in `episodes/files/llnl-hpc-2026/htu/`:
+Use these files in `episodes/files/laser-wakefield/`:
 
-- [Analysis notebook](./files/llnl-hpc-2026/htu/wakefield.ipynb) and
-  [shared helper script](./files/llnl-hpc-2026/htu/tutorial_helpers.py) in `htu/`.
-- [Input file](./files/llnl-hpc-2026/htu/lwfa_warpx/lwfa_warpx_input.txt) and
-  [Python driver](./files/llnl-hpc-2026/htu/lwfa_warpx/run_lwfa_warpx.py)
-  together in `htu/lwfa_warpx/`.
+- [Analysis notebook](./files/laser-wakefield/lwfa_warpx/wakefield.ipynb) and
+  [helper script](./files/laser-wakefield/lwfa_warpx/warpx_helpers.py) in `laser-wakefield/lwfa_warpx/`.
+- [Input file](./files/laser-wakefield/lwfa_warpx/lwfa_warpx_input.txt) and
+  [Python driver](./files/laser-wakefield/lwfa_warpx/run_lwfa_warpx.py)
+  together in `laser-wakefield/lwfa_warpx/`.
 
-With Git, a standalone download is:
+### Download the example
+
+In a JupyterLab terminal, start in a folder visible in the file browser.
+If `laser-wakefield/` is missing, download the repository archive and extract
+only this example:
 
 ```bash
-git clone --depth 1 --filter=blob:none --sparse \
-  https://github.com/BLAST-WarpX/warpx-tutorials.git
-cd warpx-tutorials
-git sparse-checkout set episodes/files/llnl-hpc-2026/htu
-cd episodes/files/llnl-hpc-2026/htu
+wakefield_archive=$(mktemp)
+curl -fL https://github.com/BLAST-WarpX/warpx-tutorials/archive/refs/heads/main.tar.gz \
+  -o "$wakefield_archive" && \
+tar -xzf "$wakefield_archive" --strip-components=3 \
+  warpx-tutorials-main/episodes/files/laser-wakefield
+rm -f "$wakefield_archive"
 ```
 
-If you already have the repository or container, use its existing folder.
-AWS workshop participants already have these files; no download is needed.
+This creates `laser-wakefield/` in your current directory. Refresh the file
+browser to see it. If the folder already exists, use it and preserve any
+modified inputs or previous results before downloading a replacement.
+
+```bash
+cd laser-wakefield
+```
 
 ## Launch the laser! 🚀
 
-Ready? From `htu/`, activate your WarpX environment and run:
+From `laser-wakefield/`, activate your WarpX environment and run:
 
 ```bash
 cd lwfa_warpx
@@ -180,11 +181,11 @@ smallest grid spacing? How does that choice help us follow the laser?
 
 ## Interpret the results
 
-Open [wakefield.ipynb](./files/llnl-hpc-2026/htu/wakefield.ipynb) from the
-`htu` folder after the run finishes. Select the kernel containing
+Open [wakefield.ipynb](./files/laser-wakefield/lwfa_warpx/wakefield.ipynb) from the
+`laser-wakefield/lwfa_warpx` folder after the run finishes. Select the kernel containing
 the analysis packages; in the tutorial container, **WarpX GPU** provides them.
 Plotting saved data itself does not require a GPU. The notebook reads
-`lwfa_warpx/diags/diag1` and does not launch the simulation.
+`diags/diag1` and does not launch the simulation.
 
 Time to see what happened! 🔍 Use the three plots together:
 
@@ -198,9 +199,10 @@ Time to see what happened! 🔍 Use the three plots together:
    charge, so the longitudinal electric force is opposite to Ez. An electron
    moving forward can gain energy where this force points forward. In the
    single-snapshot figure, white contours on the density panel show the
-   magnitude of Ey, marking the laser field.
+   magnitude of Ey to help locate the pulse. Ey is the total transverse
+   electric field and also includes plasma fields.
 3. 📈 **Find the energetic electrons — the energy spectrum:** the horizontal axis is kinetic energy and
-   the vertical axis is charge per energy bin. Particle weights account for
+   the vertical axis is charge magnitude per energy bin. Particle weights account for
    the physical electrons represented by each macroparticle. The spectrum
    includes **all electrons in the moving window**, not a selected bunch.
 
@@ -218,8 +220,8 @@ electrons are.
 To save your figures without opening Jupyter, run these commands from `lwfa_warpx/`:
 
 ```bash
-python ../tutorial_helpers.py wakefield diags/diag1 --evolution --output wake-evolution.png
-python ../tutorial_helpers.py wakefield diags/diag1 --iteration 800 --output wake-snapshot.png
+python warpx_helpers.py diags/diag1 --evolution --output wake-evolution.png
+python warpx_helpers.py diags/diag1 --iteration 800 --output wake-snapshot.png
 ```
 
 ## Your turn: change one thing 🎛️
@@ -262,13 +264,11 @@ A striking picture is a starting point for investigation. The compact laser
 and target make this visual demonstration practical. The
 simulation uses fixed, already-ionized helium ions, low particle sampling,
 and a grid that has not been refined to establish numerical convergence.
-It should not be used to predict experimental beam quality or assume a
-100 MeV output bunch.
+It does not establish experimental beam quality or a target beam energy.
 
 A wake and a high-energy tail demonstrate different things. Identifying a
 usable accelerated bunch also requires examining its spatial and momentum
-distribution, charge, and evolution after it leaves the plasma. The workshop's
-ImpactX beam is generated independently for that reason.
+distribution, charge, and evolution after it leaves the plasma.
 
 For other laser-wakefield configurations, including the role of geometry,
 see the [official WarpX LWFA examples](https://warpx.readthedocs.io/en/latest/usage/examples/lwfa/README.html).

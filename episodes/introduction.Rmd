@@ -88,7 +88,7 @@ sets the grid, time stepping, and which results to save. WarpX produces
 **diagnostics**: particle snapshots, fields on the grid, and reduced
 quantities such as total field energy. The log tells you how the run
 progressed; analysis notebooks turn the saved diagnostics into physical
-observations. The [wakefield example](a-laser-wakefield.Rmd) walks through
+observations. The [wakefield example](a-laser-wakefield-accelerator.Rmd) walks through
 this input-to-plot workflow.
 
 ## Features and applications of WarpX

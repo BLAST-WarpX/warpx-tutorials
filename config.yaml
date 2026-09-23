@@ -74,7 +74,7 @@ episodes:
 - a-magnetic-mirror.Rmd
 - a-fodo-cell.Rmd
 - a-laser-driven-ion-accelerator.Rmd
-- a-laser-wakefield.Rmd
+- a-laser-wakefield-accelerator.Rmd
 - a-beam-beam-collision.Rmd
 # --- Events and workshops ---
 - ossfe2025.Rmd
