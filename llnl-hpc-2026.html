@@ -118,7 +118,7 @@
     <a id="search-button" class="btn btn-primary" href="aio.html" role="button" aria-label="Search the All In One page">Search the All In One page</a>
   </div><!--/div.container-fluid -->
 </nav><aside class="col-md-12 lesson-progress"><div class="progress incubator">
-    <div class="progress-bar incubator" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson Progress">100%</div>
+    <div class="progress-bar incubator" role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson Progress">70%</div>
   </div>
 </aside><div class="container">
       <div class="row">
@@ -507,9 +507,9 @@ plots</strong>. Those notes will help you explain differences between
 runs.</p>
 <p>The hosted image provides two Python environments:</p>
 <table class="table"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><thead><tr><th>Where you work</th>
-<th>CPU</th>
+<th>CPU (default)</th>
 <th>GPU</th>
-</tr></thead><tbody><tr><td>Jupyter notebook: <strong>Kernel &gt; Change Kernel</strong>
+</tr></thead><tbody><tr><td>Jupyter notebook:<br><strong>Kernel &gt; Change Kernel</strong>
 </td>
 <td><strong>WarpX CPU</strong></td>
 <td><strong>WarpX GPU</strong></td>
@@ -573,7 +573,7 @@ particle–field update cycle.</p>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="bu">cd</span> two_stream_instability</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="fu">ls</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1" aria-label="code-block-2-3"></a><span class="bu">export</span> <span class="va">OMP_NUM_THREADS</span><span class="op">=</span>4  <span class="co"># matches the 4 vCPUs on the AWS instance.</span></span></code></pre>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1" aria-label="code-block-2-3"></a><span class="bu">export</span> <span class="va">OMP_NUM_THREADS</span><span class="op">=</span>2  <span class="co"># one thread per physical core (4 vCPUs = 2 cores)</span></span></code></pre>
 </div>
 <p>You can launch the same simulation using either the <a href="./files/llnl-hpc-2026/two_stream_instability/run_two_stream_instability.py">Python
 script</a> or the <code>warpx.1d</code> executable. Both read the same
@@ -606,7 +606,7 @@ check the disk space used by the diagnostics:</p>
   💡 Optional: timing and saving output
   </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <p>To include Python startup in the timing, launch your run with:</p>
 <div class="codewrapper sourceCode" id="cb5">
@@ -849,7 +849,24 @@ physical box size and other settings fixed. How do the cell count and
 workload change?</li>
 <li>Run the same case on CPU. How does the time per step compare with
 GPU?</li>
-</ol></div>
+</ol><div id="callout2" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div class="callout-inner">
+<div class="callout-content">
+<p>On HPC for highly parallel simulations, grid cells are blocked
+together for parallel <a href="https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html" class="external-link">Domain
+Decomposition</a>. The example’s inputs set
+<code>amr.blocking_factor = 16</code>, thus use multiples of 16 for grid
+cells <code>nx</code>, <code>ny</code>, and <code>nz</code>. A smaller
+<code>dz</code> also shortens the time step, so the run needs more
+steps.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -937,7 +954,7 @@ particle count.</p>
   Optional: change the beam energy
   </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
 <p>Set <code>particles = 10000</code>,
 <code>total_energies_MeV = [100, 150]</code>, and
