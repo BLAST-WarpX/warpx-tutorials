@@ -1,8 +1,8 @@
 ---
 title: 'LLNL HPC Innovation Center 2026: WarpX/ImpactX Tutorial'
 author: 'Arianna Formenti (LBNL), Axel Huebl (LBNL)'
-teaching: 0
-exercises: 0
+teaching: 60
+exercises: 120
 ---
 
 :::::::::::::::::::::::::::::::::::::: questions
@@ -74,9 +74,9 @@ help you explain differences between runs.
 
 The hosted image provides two Python environments:
 
-| Where you work | CPU | GPU |
+| Where you work | CPU (default) | GPU |
 | --- | --- | --- |
-| Jupyter notebook: **Kernel > Change Kernel** | **WarpX CPU** | **WarpX GPU** |
+| Jupyter notebook:<br>**Kernel > Change Kernel** | **WarpX CPU** | **WarpX GPU** |
 | Terminal activation command | `source /opt/venv-cpu/bin/activate` | `source /opt/venv-gpu/bin/activate` |
 
 💡 **Two places to choose your environment:** both environments include
@@ -132,7 +132,7 @@ In a terminal with the CPU environment active, start from the
 ```bash
 cd two_stream_instability
 ls
-export OMP_NUM_THREADS=4  # matches the 4 vCPUs on the AWS instance.
+export OMP_NUM_THREADS=2  # one thread per physical core (4 vCPUs = 2 cores)
 ```
 
 You can launch the same simulation using either the
@@ -385,6 +385,14 @@ plot alone does not demonstrate greater physical accuracy.
 1. Change the grid spacing in all three directions, keeping the physical box size and other settings fixed.
 How do the cell count and workload change?
 2. Run the same case on CPU. How does the time per step compare with GPU?
+
+::: callout
+
+On HPC for highly parallel simulations, grid cells are blocked together for parallel [Domain Decomposition](https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html).
+The example's inputs set `amr.blocking_factor = 16`, thus use multiples of 16 for grid cells `nx`, `ny`, and `nz`.
+A smaller `dz` also shortens the time step, so the run needs more steps.
+
+:::
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
