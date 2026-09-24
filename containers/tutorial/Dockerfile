@@ -718,12 +718,17 @@ RUN apt-get update \
 # Non-root user to run the tutorial
 RUN useradd --create-home --shell /bin/bash ${USER}
 
+# The two flavor venvs belong to the tutorial user so that participants can
+# `pip install` extra packages; a venv hides user site-packages, so
+# `pip install --user` is no alternative. Chown on COPY rather than in a later
+# RUN, which would duplicate the venvs in a new layer. The shared /opt/venv
+# stays root-owned: a package installed into a flavor venv shadows it anyway.
 COPY --from=build-cpu /opt/deps      /opt/deps
 COPY --from=build-cpu /opt/venv      /opt/venv
 COPY --from=build-cpu /opt/warpx-cpu /opt/warpx-cpu
-COPY --from=build-cpu /opt/venv-cpu  /opt/venv-cpu
+COPY --from=build-cpu --chown=${USER}:${USER} /opt/venv-cpu /opt/venv-cpu
 COPY --from=build-gpu /opt/warpx-gpu /opt/warpx-gpu
-COPY --from=build-gpu /opt/venv-gpu  /opt/venv-gpu
+COPY --from=build-gpu --chown=${USER}:${USER} /opt/venv-gpu /opt/venv-gpu
 
 # Only /opt/deps goes into the global loader cache. The two flavor prefixes
 # hold libraries with identical SONAMEs (libamrex_3d.so, libablastr_3d.so),
