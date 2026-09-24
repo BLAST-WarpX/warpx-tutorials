@@ -140,9 +140,9 @@ RUN git clone --branch ${OPENPMD_VERSION} --depth 1 \
 # extensions under /opt/venv/share/jupyter/labextensions; the server in
 # /opt/venv-cpu is pointed there in the build-cpu stage.
 #
-# Note: no PYTHONDONTWRITEBYTECODE anywhere in this build. /opt/venv is
-# root-owned and the tutorial runs unprivileged, so a missing .pyc could
-# never be written later - every kernel start would recompile the stack.
+# Note: no PYTHONDONTWRITEBYTECODE anywhere in this build. The .pyc files
+# must ship in the image: written at runtime instead, they would be lost with
+# every fresh container, whose first kernel start would recompile the stack.
 RUN python3 -m venv /opt/venv \
  && /opt/venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
  && /opt/venv/bin/pip install --no-cache-dir \
@@ -732,17 +732,17 @@ RUN apt-get update \
 # Non-root user to run the tutorial
 RUN useradd --create-home --shell /bin/bash ${USER}
 
-# The two flavor venvs belong to the tutorial user so that participants can
-# `pip install` extra packages; a venv hides user site-packages, so
-# `pip install --user` is no alternative. Chown on COPY rather than in a later
-# RUN, which would duplicate the venvs in a new layer. The shared /opt/venv
-# stays root-owned: a package installed into a flavor venv shadows it anyway.
-COPY --from=build-cpu /opt/deps      /opt/deps
-COPY --from=build-cpu /opt/venv      /opt/venv
-COPY --from=build-cpu /opt/warpx-cpu /opt/warpx-cpu
-COPY --from=build-cpu --chown=${USER}:${USER} /opt/venv-cpu /opt/venv-cpu
-COPY --from=build-gpu /opt/warpx-gpu /opt/warpx-gpu
-COPY --from=build-gpu --chown=${USER}:${USER} /opt/venv-gpu /opt/venv-gpu
+# Everything under /opt belongs to the tutorial user, so participants can
+# `pip install` extra packages (a venv hides user site-packages, so
+# `pip install --user` is no alternative) or otherwise modify the software
+# stack without root. Chown on COPY rather than in a later RUN, which would
+# duplicate the trees in a new layer.
+COPY --from=build-cpu --chown=${USER}:${USER} /opt/deps      /opt/deps
+COPY --from=build-cpu --chown=${USER}:${USER} /opt/venv      /opt/venv
+COPY --from=build-cpu --chown=${USER}:${USER} /opt/warpx-cpu /opt/warpx-cpu
+COPY --from=build-cpu --chown=${USER}:${USER} /opt/venv-cpu  /opt/venv-cpu
+COPY --from=build-gpu --chown=${USER}:${USER} /opt/warpx-gpu /opt/warpx-gpu
+COPY --from=build-gpu --chown=${USER}:${USER} /opt/venv-gpu  /opt/venv-gpu
 
 # Only /opt/deps goes into the global loader cache. The two flavor prefixes
 # hold libraries with identical SONAMEs (libamrex_3d.so, libablastr_3d.so),
