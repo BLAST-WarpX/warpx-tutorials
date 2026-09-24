@@ -69,7 +69,7 @@ again. To avoid this for a specific GPU, build the image yourself with, e.g.,
 | Path | Contents |
 |---|---|
 | `/opt/deps` | ADIOS2 and openPMD-api (C++ **and** Python), shared by both flavors |
-| `/opt/venv` | the shared Python analysis stack (numpy, scipy, matplotlib, pandas, openpmd-viewer, imageio, IPython) |
+| `/opt/venv` | the shared Python analysis stack (numpy, scipy, matplotlib, pandas, openpmd-viewer, imageio, IPython, ipywidgets, ipympl) |
 | `/opt/warpx-cpu`, `/opt/warpx-gpu` | BLAS++, LAPACK++, AMReX, WarpX (`warpx.1d`, `warpx.2d`, `warpx.rz`, `warpx.3d`), ImpactX (`impactx`) |
 | `/opt/venv-cpu` | `amrex`, `pywarpx`, `impactx` for CPU, plus JupyterLab and `imageio-ffmpeg` |
 | `/opt/venv-gpu` | `amrex`, `pywarpx`, `impactx` for CUDA, plus `cupy` |

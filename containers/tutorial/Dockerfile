@@ -136,7 +136,11 @@ RUN git clone --branch ${OPENPMD_VERSION} --depth 1 \
 # flavor venvs avoids ~370 MB of duplication (scipy, pandas, matplotlib and
 # the IPython machinery are the bulk of it).
 #
-# Note: no PYTHONDONTWRITEBYTECODE anywhere in this build. /opt/venv* is
+# ipywidgets and ipympl (`%matplotlib widget`) ship JupyterLab frontend
+# extensions under /opt/venv/share/jupyter/labextensions; the server in
+# /opt/venv-cpu is pointed there in the build-cpu stage.
+#
+# Note: no PYTHONDONTWRITEBYTECODE anywhere in this build. /opt/venv is
 # root-owned and the tutorial runs unprivileged, so a missing .pyc could
 # never be written later - every kernel start would recompile the stack.
 RUN python3 -m venv /opt/venv \
@@ -144,6 +148,7 @@ RUN python3 -m venv /opt/venv \
  && /opt/venv/bin/pip install --no-cache-dir \
         imageio \
         ipykernel \
+        ipympl \
         ipython \
         ipywidgets \
         matplotlib \
@@ -152,7 +157,9 @@ RUN python3 -m venv /opt/venv \
         pandas \
         scipy \
  && /opt/venv/bin/python -c "import site, pathlib; pathlib.Path(site.getsitepackages()[0], 'openpmd-deps.pth').write_text('/opt/deps/python\n')" \
- && /opt/venv/bin/python -c "import openpmd_api, openpmd_viewer; print('shared stack ok', openpmd_api.__version__)"
+ && /opt/venv/bin/python -c "import openpmd_api, openpmd_viewer; print('shared stack ok', openpmd_api.__version__)" \
+ && test -d /opt/venv/share/jupyter/labextensions/@jupyter-widgets/jupyterlab-manager \
+ && test -d /opt/venv/share/jupyter/labextensions/jupyter-matplotlib
 
 
 ###############################################################################
@@ -259,6 +266,11 @@ RUN AMREX_TAG=$(python3 -c "import json;print(json.load(open('/tmp/warpx-src/dep
 # and JupyterLab loads as a blank page. The pin sits in this venv only, because
 # it is the one running the server. Drop it once Tornado or jupyter_server ships
 # a fix: tornadoweb/tornado#3724, jupyterlab/jupyterlab#19767.
+# The .pth file makes the shared Python packages importable, but JupyterLab
+# looks for frontend extensions only under its own prefix, so without
+# jupyter_lab_config.json the ipywidgets and ipympl outputs render as plain
+# text. A config file inside the venv, rather than JUPYTER_PATH, keeps this
+# working however the server is launched.
 RUN python3 -m venv ${VENV} \
  && ${VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
  && ${VENV}/bin/pip install --no-cache-dir \
@@ -266,6 +278,8 @@ RUN python3 -m venv ${VENV} \
         jupyterlab \
         "tornado<6.5.9" \
  && ${VENV}/bin/python -c "import site, sys, pathlib; v=f'python{sys.version_info.major}.{sys.version_info.minor}'; pathlib.Path(site.getsitepackages()[0], 'shared-deps.pth').write_text(f'/opt/venv/lib/{v}/site-packages\n/opt/deps/python\n')" \
+ && printf '{"LabApp": {"extra_labextensions_path": ["/opt/venv/share/jupyter/labextensions"]}}\n' \
+        > ${VENV}/etc/jupyter/jupyter_lab_config.json \
  && ${VENV}/bin/python -c "import openpmd_api, openpmd_viewer, numpy, scipy, matplotlib, ipykernel; print('shared stack visible')"
 
 # Shared pyAMReX. pyAMReX_CODES must list BOTH codes: WarpX asks for the
