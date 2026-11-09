@@ -1,0 +1,93 @@
+####################
+### MY CONSTANTS ###
+####################
+# PLASMAS
+my_constants.n0 = ... # [m^-3]
+my_constants.T0 = ...*q_e # [J]
+my_constants.beta0 = ... # [-]
+my_constants.omega_pe = sqrt(n0*q_e**2/(m_e*epsilon0)) # [1/s]
+my_constants.skin_depth = clight / omega_pe # [m]
+# BOX
+my_constants.Lx = ...*skin_depth
+my_constants.nx = ...
+my_constants.dx = Lx/nx
+# TIME
+my_constants.cfl = ...
+my_constants.T = .../omega_pe
+my_constants.dt = cfl*dx/(sqrt(2)*clight)
+my_constants.nt = floor(T/dt) 
+
+##########################
+### GENERAL PARAMETERS ###
+##########################
+stop_time = T
+amr.n_cell = nx nx nx
+amr.max_level = 0
+geometry.dims = 2
+geometry.prob_lo = -0.5*Lx -0.5*Lx  -0.5*Lx
+geometry.prob_hi =  0.5*Lx  0.5*Lx   0.5*Lx
+
+##########################
+### BOUNDARY CONDITION ###
+##########################
+boundary.field_lo = periodic periodic periodic 
+boundary.field_hi = periodic periodic periodic 
+boundary.particle_lo = periodic periodic periodic
+boundary.particle_hi = periodic periodic periodic
+
+################
+### NUMERICS ###
+################
+warpx.cfl = cfl
+algo.maxwell_solver = yee
+algo.particle_shape = 3
+algo.particle_pusher = boris
+warpx.use_filter = 1 
+
+#################
+### PARTICLES ###
+#################
+particles.species_names = ele1 ele2 
+
+ele1.species_type = electron
+ele1.injection_style = NRandomPerCell
+ele1.num_particles_per_cell = 80
+ele1.profile = constant
+ele1.density = n0
+ele1.momentum_distribution_type = maxwell_boltzmann
+ele1.theta_distribution_type = constant
+ele1.theta = T0 / (m_e * clight**2) 
+ele1.beta_distribution_type = parser
+ele1.beta_function(x,y,z) = beta0
+ele1.bulk_vel_dir = +y
+
+ele2.species_type = electron
+ele2.injection_style = NRandomPerCell
+ele2.num_particles_per_cell = 80
+ele2.profile = constant
+ele2.density = n0
+ele2.momentum_distribution_type = maxwell_boltzmann
+ele2.theta_distribution_type = constant
+ele2.theta = T0 / (m_e * clight**2) 
+ele2.beta_distribution_type = constant
+ele2.beta = beta0
+ele2.bulk_vel_dir = -y
+
+###################
+### DIAGNOSTICS ###
+###################
+# FULL
+diagnostics.diags_names =  fields
+fields.intervals = floor(nt/200)
+fields.diag_type = Full
+fields.write_species = 0
+fields.fields_to_plot = Bx Bz
+fields.format = openpmd
+fields.openpmd_backend = bp
+fields.dump_last_timestep = 1
+# REDUCED
+warpx.reduced_diags_names = FieldEnergy FieldMaximum
+FieldEnergy.type = FieldEnergy
+FieldEnergy.intervals = 1 
+FieldMaximum.type = FieldMaximum
+FieldMaximum.intervals = 1 
